@@ -1,0 +1,261 @@
+# =============================================================================
+# VOLUNSPHERE PROJECT - UNIFIED .GITIGNORE
+# =============================================================================
+
+# =============================================================================
+# GENERAL FILES
+# =============================================================================
+# OS and Editor files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+*.sublime-*
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =============================================================================
+# PYTHON/BACKEND SPECIFIC
+# =============================================================================
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# =============================================================================
+# FLUTTER/DART/FRONTEND SPECIFIC
+# =============================================================================
+# Miscellaneous
+*.class
+migrate_working_dir/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+frontend/build/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# =============================================================================
+# ANDROID SPECIFIC
+# =============================================================================
+# Android Studio will place build artifacts here
+frontend/android/app/debug/
+frontend/android/app/profile/
+frontend/android/app/release/
+
+# Android Gradle files
+frontend/android/gradle-wrapper.jar
+frontend/android/.gradle/
+frontend/android/captures/
+frontend/android/gradlew
+frontend/android/gradlew.bat
+frontend/android/local.properties
+frontend/android/GeneratedPluginRegistrant.java
+frontend/android/.cxx/
+
+# Android keystore files
+frontend/android/key.properties
+frontend/android/**/*.keystore
+frontend/android/**/*.jks
+
+# =============================================================================
+# IOS SPECIFIC
+# =============================================================================
+frontend/ios/**/dgph
+frontend/ios/*.mode1v3
+frontend/ios/*.mode2v3
+frontend/ios/*.moved-aside
+frontend/ios/*.pbxuser
+frontend/ios/*.perspectivev3
+frontend/ios/**/*sync/
+frontend/ios/.sconsign.dblite
+frontend/ios/.tags*
+frontend/ios/**/.vagrant/
+frontend/ios/**/DerivedData/
+frontend/ios/Icon?
+frontend/ios/**/Pods/
+frontend/ios/**/.symlinks/
+frontend/ios/profile
+frontend/ios/xcuserdata
+frontend/ios/**/.generated/
+frontend/ios/Flutter/App.framework
+frontend/ios/Flutter/Flutter.framework
+frontend/ios/Flutter/Flutter.podspec
+frontend/ios/Flutter/Generated.xcconfig
+frontend/ios/Flutter/ephemeral/
+frontend/ios/Flutter/app.flx
+frontend/ios/Flutter/app.zip
+frontend/ios/Flutter/flutter_assets/
+frontend/ios/Flutter/flutter_export_environment.sh
+frontend/ios/ServiceDefinitions.json
+frontend/ios/Runner/GeneratedPluginRegistrant.*
+
+# iOS exceptions
+!frontend/ios/default.mode1v3
+!frontend/ios/default.mode2v3
+!frontend/ios/default.pbxuser
+!frontend/ios/default.perspectivev3
+
+# =============================================================================
+# MACOS SPECIFIC
+# =============================================================================
+# Flutter-related
+frontend/macos/**/Flutter/ephemeral/
+frontend/macos/**/Pods/
+
+# Xcode-related
+frontend/macos/**/dgph
+frontend/macos/**/xcuserdata/
+
+# =============================================================================
+# LINUX SPECIFIC
+# =============================================================================
+frontend/linux/flutter/ephemeral/
+
+# =============================================================================
+# WINDOWS SPECIFIC
+# =============================================================================
+frontend/windows/flutter/ephemeral/
+
+# Visual Studio user-specific files
+frontend/windows/*.suo
+frontend/windows/*.user
+frontend/windows/*.userosscache
+frontend/windows/*.sln.docstates
+
+# Visual Studio build-related files
+frontend/windows/x64/
+frontend/windows/x86/
+
+# Visual Studio cache files
+frontend/windows/*.[Cc]ache
+!frontend/windows/*.[Cc]ache/
+
+# =============================================================================
+# DATABASE
+# =============================================================================
+*.db
+*.sqlite
+*.sqlite3
+
+# =============================================================================
+# DEPENDENCIES
+# =============================================================================
+node_modules/
+bower_components/
+
+# =============================================================================
+# TEMPORARY FILES
+# =============================================================================
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+
+# =============================================================================
+# DOCKER
+# =============================================================================
+.dockerignore
+docker-compose.override.yml
+
+# =============================================================================
+# CERTIFICATES & KEYS
+# =============================================================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# =============================================================================
+# DEPLOYMENT
+# =============================================================================
+.vercel
+.netlify
