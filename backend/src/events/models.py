@@ -22,7 +22,7 @@ class Event(SQLModel, table=True):
     location: Optional[str] = None
 
 
-    # New start and end datetimes
+    
     start_datetime: datetime = Field(
         sa_column=Column(TIMESTAMP(timezone=True), nullable=False)
     )
@@ -30,7 +30,7 @@ class Event(SQLModel, table=True):
         sa_column=Column(TIMESTAMP(timezone=True), nullable=False)
     )
 
-    # Auto-calculated duration in minutes
+     
     duration_minutes: int = Field(
         default=0,
         sa_column=Column(nullable=False)

@@ -13,11 +13,6 @@ import 'joined_events_screen.dart';
 import 'event_details_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
-
-import 'package:provider/provider.dart';
-import '../services/auth_service.dart';
-import 'login_screen.dart';
-import 'theme_provider.dart';
 import 'app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -141,8 +136,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(

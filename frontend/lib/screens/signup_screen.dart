@@ -1,7 +1,4 @@
- 
-
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import '../services/auth_service.dart';
 import '../services/location_service.dart';
@@ -104,14 +101,21 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon) {
+  InputDecoration _buildInputDecoration(String label, IconData icon) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.green.shade700),
-      filled: true,
-      fillColor: Colors.grey.shade100,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-      contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+      labelStyle: const TextStyle(
+        fontFamily: 'Poppins',
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+        color: Color(0xFF626C7A),
+        letterSpacing: -1,
+      ),
+      prefixIcon: Icon(icon),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Color(0xFF626C7A), width: 1),
+      ),
     );
   }
 
@@ -134,7 +138,11 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() => isLoading = true);
 
     final firstName = fullNameController.text.trim().split(" ").first;
-    final lastName = fullNameController.text.trim().split(" ").skip(1).join(" ");
+    final lastName = fullNameController.text
+        .trim()
+        .split(" ")
+        .skip(1)
+        .join(" ");
 
     try {
       final result = await authService.signupWithResponse(
@@ -152,19 +160,26 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (result.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Signup successful!"), backgroundColor: Colors.green),
+          const SnackBar(
+            content: Text("Signup successful!"),
+            backgroundColor: Colors.green,
+          ),
         );
         await Future.delayed(const Duration(milliseconds: 800));
         Navigator.pop(context);
       } else {
         final detail = json.decode(result.body)['detail'];
-        String errorMessage = detail.toString().toLowerCase().contains('email')
-            ? "Email already exists"
-            : detail.toString().toLowerCase().contains('username')
+        String errorMessage =
+            detail.toString().toLowerCase().contains('email')
+                ? "Email already exists"
+                : detail.toString().toLowerCase().contains('username')
                 ? "Username already exists"
                 : "Signup failed";
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(errorMessage), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } catch (e) {
@@ -177,173 +192,345 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFd0f0c0), Color(0xFFb2dfdb)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+      backgroundColor: const Color(0xFFF4F6F9),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 225, 192, 255),
+              Color.fromARGB(255, 255, 255, 255),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+        ),
+        child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 140, child: Lottie.asset('assets/animations/signup.json')),
-                  const Text("Create Your Account",
-                      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.teal)),
-                  const SizedBox(height: 16),
-                  Card(
-                    elevation: 8,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              controller: usernameController,
-                              decoration: _inputDecoration("Username", Icons.person),
-                              validator: (value) => value!.isEmpty ? "Username required" : null,
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: fullNameController,
-                              decoration: _inputDecoration("Full Name", Icons.badge),
-                              validator: (value) => value!.isEmpty ? "Full name required" : null,
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: emailController,
-                              keyboardType: TextInputType.emailAddress,
-                              decoration: _inputDecoration("Email", Icons.email),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) return "Email required";
-                                final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                                if (!emailRegex.hasMatch(value)) return "Enter valid email";
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: phoneController,
-                              keyboardType: TextInputType.phone,
-                              decoration: _inputDecoration("Phone", Icons.phone),
-                              validator: (value) => value!.length < 6 ? "Phone number too short" : null,
-                            ),
-                            const SizedBox(height: 16),
-                            // Country Dropdown Search
-                            DropdownSearch<String>(
-                              asyncItems: (_) async => countries,
-                              selectedItem: selectedCountry,
-                              dropdownDecoratorProps: DropDownDecoratorProps(
-                                dropdownSearchDecoration: _inputDecoration("Country", Icons.flag),
-                              ),
-                              popupProps: const PopupProps.menu(showSearchBox: true),
-                              onChanged: (val) {
-                                if (val != null && val != selectedCountry) {
-                                  setState(() {
-                                    selectedCountry = val;
-                                    selectedCity = null;
-                                    cities = [];
-                                  });
-                                  _loadCities(val);
-                                }
-                              },
-                              validator: (value) => value == null ? "Please select a country" : null,
-                            ),
-                            const SizedBox(height: 16),
-                            DropdownSearch<String>(
-                              asyncItems: (_) async => cities,
-                              selectedItem: selectedCity,
-                              enabled: selectedCountry != null,
-                              dropdownDecoratorProps: DropDownDecoratorProps(
-                                dropdownSearchDecoration:
-                                    _inputDecoration("City", Icons.location_city),
-                              ),
-                              popupProps: const PopupProps.menu(showSearchBox: true),
-                              onChanged: (val) => setState(() => selectedCity = val),
-                              validator: (value) => value == null ? "Please select a city" : null,
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: passwordController,
-                              obscureText: obscurePassword,
-                              onChanged: checkPasswordStrength,
-                              decoration: _inputDecoration("Password", Icons.lock).copyWith(
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    obscurePassword ? Icons.visibility_off : Icons.visibility),
-                                  onPressed: () {
-                                    setState(() => obscurePassword = !obscurePassword);
-                                  },
-                                ),
-                              ),
-                              validator: (value) => value!.length < 6 ? "Min 6 characters required" : null,
-                            ),
-                            if (passwordStrengthText.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: LinearProgressIndicator(
-                                        value: passwordStrength,
-                                        color: passwordStrengthColor,
-                                        backgroundColor: Colors.grey[300],
-                                        minHeight: 6,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(passwordStrengthText,
-                                        style: TextStyle(color: passwordStrengthColor)),
-                                  ],
-                                ),
-                              ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Checkbox(
-                                  value: agreedToTerms,
-                                  onChanged: (val) => setState(() => agreedToTerms = val ?? false),
-                                ),
-                                const Expanded(
-                                  child: Text("I agree to the Terms & Conditions",
-                                      style: TextStyle(fontSize: 14)),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: isLoading ? null : () => handleSignup(context),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                              ),
-                              child: isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          color: Colors.white, strokeWidth: 2),
-                                    )
-                                  : const Text("Sign Up",
-                                      style: TextStyle(
-                                          fontSize: 18, fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/images/logo.png',
+                      height: 120,
+                      width: 280,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      "Create Your Account",
+                      style: TextStyle(
+                        color: Color(0xFF27264A),
+                        fontFamily: 'Poppins',
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 16),
+                    Text(
+                      "Sign up to start volunteering and making a difference",
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w200,
+                        color: const Color(0xFF6E6E86),
+                        fontSize: 14,
+                        letterSpacing: -1,
+                      ),
+                    ),
+                    const SizedBox(height: 36),
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            controller: usernameController,
+                            decoration: _buildInputDecoration(
+                              "Username",
+                              Icons.person,
+                            ),
+                            validator:
+                                (value) =>
+                                    value!.isEmpty ? "Username required" : null,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: fullNameController,
+                            decoration: _buildInputDecoration(
+                              "Full Name",
+                              Icons.badge,
+                            ),
+                            validator:
+                                (value) =>
+                                    value!.isEmpty
+                                        ? "Full name required"
+                                        : null,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: _buildInputDecoration(
+                              "Email",
+                              Icons.email,
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return "Email required";
+                              final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                              if (!emailRegex.hasMatch(value))
+                                return "Enter valid email";
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: _buildInputDecoration(
+                              "Phone",
+                              Icons.phone,
+                            ),
+                            validator:
+                                (value) =>
+                                    value!.length < 6
+                                        ? "Phone number too short"
+                                        : null,
+                          ),
+                          const SizedBox(height: 16),
+                           
+                          DropdownSearch<String>(
+                            asyncItems: (_) async => countries,
+                            selectedItem: selectedCountry,
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: _buildInputDecoration(
+                                "Country",
+                                Icons.flag,
+                              ),
+                            ),
+                            popupProps: const PopupProps.menu(
+                              showSearchBox: true,
+                              searchFieldProps: TextFieldProps(
+                                decoration: InputDecoration(
+                                  hintText: "Search country...",
+                                  prefixIcon: Icon(Icons.search),
+                                ),
+                              ),
+                            ),
+                            onChanged: (val) {
+                              if (val != null && val != selectedCountry) {
+                                setState(() {
+                                  selectedCountry = val;
+                                  selectedCity = null;
+                                  cities = [];
+                                });
+                                _loadCities(val);
+                              }
+                            },
+                            validator:
+                                (value) =>
+                                    value == null
+                                        ? "Please select a country"
+                                        : null,
+                          ),
+                          const SizedBox(height: 16),
+                          DropdownSearch<String>(
+                            asyncItems: (_) async => cities,
+                            selectedItem: selectedCity,
+                            enabled: selectedCountry != null,
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: _buildInputDecoration(
+                                "City",
+                                Icons.location_city,
+                              ),
+                            ),
+                            popupProps: const PopupProps.menu(
+                              showSearchBox: true,
+                              searchFieldProps: TextFieldProps(
+                                decoration: InputDecoration(
+                                  hintText: "Search city...",
+                                  prefixIcon: Icon(Icons.search),
+                                ),
+                              ),
+                            ),
+                            onChanged:
+                                (val) => setState(() => selectedCity = val),
+                            validator:
+                                (value) =>
+                                    value == null
+                                        ? "Please select a city"
+                                        : null,
+                          ),
+                          const SizedBox(height: 16),
+                          TextFormField(
+                            controller: passwordController,
+                            obscureText: obscurePassword,
+                            onChanged: checkPasswordStrength,
+                            decoration: _buildInputDecoration(
+                              "Password",
+                              Icons.lock,
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  obscurePassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: const Color(0xFF9929ea),
+                                ),
+                                onPressed: () {
+                                  setState(
+                                    () => obscurePassword = !obscurePassword,
+                                  );
+                                },
+                              ),
+                            ),
+                            validator:
+                                (value) =>
+                                    value!.length < 6
+                                        ? "Min 6 characters required"
+                                        : null,
+                          ),
+                          if (passwordStrengthText.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: LinearProgressIndicator(
+                                      value: passwordStrength,
+                                      color: passwordStrengthColor,
+                                      backgroundColor: Colors.grey[300],
+                                      minHeight: 6,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    passwordStrengthText,
+                                    style: TextStyle(
+                                      color: passwordStrengthColor,
+                                      fontFamily: 'Poppins',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: [
+                              Checkbox(
+                                value: agreedToTerms,
+                                onChanged:
+                                    (val) => setState(
+                                      () => agreedToTerms = val ?? false,
+                                    ),
+                                activeColor: const Color(0xFF9929ea),
+                                tristate: false,
+                                fillColor: MaterialStateProperty.all(
+                                  const Color.fromARGB(255, 255, 255, 255),
+                                ),
+                                checkColor: const Color(0xFF9929ea),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              const Expanded(
+                                child: Text(
+                                  "I agree to the Terms & Conditions",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFF626C7A),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF9929ea),
+                                elevation: 0,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 24,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                disabledBackgroundColor: const Color(
+                                  0xFF9929ea,
+                                ).withValues(alpha: 0.6),
+                              ),
+                              onPressed:
+                                  isLoading
+                                      ? null
+                                      : () => handleSignup(context),
+                              child:
+                                  isLoading
+                                      ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                      : const Text(
+                                        "Sign Up",
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
+                                          color: Colors.white,
+                                          letterSpacing: -1,
+                                        ),
+                                      ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                "Already have an account? ",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 16,
+                                  color: Color(0xFF626C7A),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  "Login",
+                                  style: TextStyle(
+                                    color: Color(0xFF9929ea),
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

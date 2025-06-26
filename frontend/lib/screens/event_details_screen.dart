@@ -1,8 +1,5 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/event_model.dart';
@@ -10,8 +7,16 @@ import '../services/events_service.dart';
 import '../services/auth_service.dart';
 import 'edit_event_screen.dart';
 import 'user_profile_screen.dart';
-import 'star_rating.dart';
 import 'chat_screen.dart';
+
+import 'event_details/event_header.dart';
+import 'event_details/event_images.dart';
+import 'event_details/event_description.dart';
+import 'event_details/event_organizer.dart';
+import 'event_details/event_location.dart';
+import 'event_details/event_date_time.dart';
+import 'event_details/event_actions.dart';
+import 'event_details/event_attendees.dart';
 
 class EventDetailsScreen extends StatefulWidget {
   final String eventId;
@@ -22,7 +27,8 @@ class EventDetailsScreen extends StatefulWidget {
   State<EventDetailsScreen> createState() => _EventDetailsScreenState();
 }
 
-class _EventDetailsScreenState extends State<EventDetailsScreen> {
+class _EventDetailsScreenState extends State<EventDetailsScreen>
+    with SingleTickerProviderStateMixin {
   Event? event;
   String? currentUserId;
   bool isLoading = true;
@@ -35,17 +41,35 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   Map<String, dynamic>? creatorInfo;
   bool isLoadingCreator = true;
 
-  GoogleMapController? _mapController;
   Set<Marker> _markers = {};
 
   Map<String, int> _ratings = {};
   Map<String, double> _workTimes = {};
   Map<String, bool> _editedResponses = {};
 
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
     super.initState();
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+
     _loadEvent();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkIfGuest() async {
@@ -62,7 +86,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     });
 
     try {
-       
       await _checkIfGuest();
 
       final tokenData = await AuthService.getTokenData();
@@ -106,6 +129,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         isLoading = false;
         isLoadingCreator = false;
       });
+
+      _animationController.forward();
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -122,18 +147,85 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   void _deleteEvent() async {
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: false,
       builder:
-          (_) => AlertDialog(
-            title: const Text("Delete Event"),
-            content: const Text("Are you sure you want to delete this event?"),
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            elevation: 10,
+            backgroundColor: Colors.white,
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.delete_forever_rounded,
+                    color: Colors.red.shade400,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  "Delete Event",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                    color: Color(0xFF2D3748),
+                  ),
+                ),
+              ],
+            ),
+            content: const Text(
+              "Are you sure you want to delete this event? This action cannot be undone and all attendees will be notified.",
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF4A5568),
+                height: 1.5,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel"),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
-              TextButton(
+              ElevatedButton(
                 onPressed: () => Navigator.pop(context, true),
-                child: const Text("Delete"),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade400,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 2,
+                ),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
               ),
             ],
           ),
@@ -194,14 +286,68 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   void _showSignupDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Sign Up Required"),
-          content: const Text("You need to sign up to join events."),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 10,
+          backgroundColor: Colors.white,
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.teal.shade300, Colors.teal.shade400],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.person_add_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                "Sign Up Required",
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+            ],
+          ),
+          content: const Text(
+            "Join our community to participate in events, connect with like-minded volunteers, and make a difference!",
+            style: TextStyle(
+              fontSize: 14,
+              color: Color(0xFF4A5568),
+              height: 1.5,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel"),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                "Maybe Later",
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -211,8 +357,19 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
                 foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 2,
               ),
-              child: const Text("Sign Up"),
+              child: const Text(
+                "Sign Up",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ],
         );
@@ -243,6 +400,20 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     );
   }
 
+  void _navigateToChat() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (_) => ChatScreen(
+              eventId: event!.id.toString(),
+              attendees: attendees,
+              creator: creatorInfo!,
+            ),
+      ),
+    );
+  }
+
   Future<void> _updateResponse(
     String userId,
     int rating,
@@ -260,6 +431,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         setState(() {
           _ratings[userId] = rating;
           _workTimes[userId] = workTime;
+          _editedResponses[userId] = false;
         });
         ScaffoldMessenger.of(
           context,
@@ -276,35 +448,80 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     }
   }
 
-  Widget _buildSectionTitle(String title, {IconData? icon}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, left: 2.0, top: 16.0),
-      child: Row(
-        children: [
-          if (icon != null) Icon(icon, color: Colors.teal, size: 22),
-          if (icon != null) const SizedBox(width: 8),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.teal.shade700,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
-      ),
-    );
+  void _onRatingChanged(String userId, int newRating) {
+    setState(() {
+      _ratings[userId] = newRating;
+      _editedResponses[userId] = true;
+    });
+  }
+
+  void _onWorkTimeChanged(String userId, double newWorkTime) {
+    setState(() {
+      _workTimes[userId] = newWorkTime;
+      _editedResponses[userId] = true;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-
     if (isLoading) {
-      return const Scaffold(
-        backgroundColor: Color(0xFFF8F9FA),
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        backgroundColor: const Color(0xFFF8F9FA),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFFF8F9FA), Color(0xFFF0F8FF)],
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.teal.withValues(alpha: 0.1),
+                        blurRadius: 30,
+                        spreadRadius: 5,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.teal,
+                          ),
+                          strokeWidth: 3,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        "Loading event details...",
+                        style: TextStyle(
+                          color: Colors.grey.shade700,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
     }
 
@@ -313,590 +530,163 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         backgroundColor: const Color(0xFFF8F9FA),
         appBar: AppBar(
           backgroundColor: Colors.teal,
-          title: const Text("Event Details"),
+          title: const Text(
+            "Event Details",
+            style: TextStyle(color: Colors.white),
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
-        body: const Center(child: Text("Event not found")),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.event_busy_rounded, size: 64, color: Colors.grey),
+              SizedBox(height: 16),
+              Text(
+                "Event not found",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey,
+                ),
+              ),
+            ],
+          ),
+        ),
       );
     }
 
     final isCreator = currentUserId == event!.creatorId.toString();
-    final formattedDate = DateFormat.yMMMMd().format(event!.startDatetime);
-    final formattedStartTime = DateFormat.jm().format(event!.startDatetime);
-    final formattedEndTime = DateFormat.jm().format(event!.endDatetime);
     final isPastEvent = DateTime.now().isAfter(event!.endDatetime);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.teal.shade800,
-        title: Text(
-          event!.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.teal,
-            fontSize: 22,
-            letterSpacing: 0.5,
+      appBar: EventHeader(
+        event: event!,
+        isCreator: isCreator,
+        onEdit: _editEvent,
+        onDelete: _deleteEvent,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFF8F9FA), Color(0xFFF0F8FF)],
           ),
         ),
-        centerTitle: true,
-        actions:
-            isCreator
-                ? [
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.teal),
-                    onPressed: _editEvent,
-                    tooltip: 'Edit Event',
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.redAccent),
-                    onPressed: _deleteEvent,
-                    tooltip: 'Delete Event',
-                  ),
-                ]
-                : [],
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                 
-                if (event!.imageUrls != null && event!.imageUrls!.isNotEmpty)
-                  SizedBox(
-                    height: 180,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: event!.imageUrls!.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 14),
-                        itemBuilder: (context, index) {
-                          final url = event!.imageUrls![index];
-                          return Material(
-                            elevation: 2,
-                            borderRadius: BorderRadius.circular(18),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(18),
-                              child: Image.network(
-                                url,
-                                width: 180,
-                                height: 180,
-                                fit: BoxFit.cover,
-                                loadingBuilder: (
-                                  context,
-                                  child,
-                                  loadingProgress,
-                                ) {
-                                  if (loadingProgress == null) return child;
-                                  return Container(
-                                    width: 180,
-                                    height: 180,
-                                    color: Colors.grey.shade200,
-                                    child: const Center(
-                                      child: CircularProgressIndicator(),
-                                    ),
-                                  );
-                                },
-                                errorBuilder:
-                                    (_, __, ___) => Container(
-                                      color: Colors.grey.shade200,
-                                      width: 180,
-                                      height: 180,
-                                      child: const Icon(
-                                        Icons.broken_image,
-                                        size: 60,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                if (event!.imageUrls != null && event!.imageUrls!.isNotEmpty)
-                  const SizedBox(height: 18),
-
-                
-                if (!isGuest)
-                  _buildSectionTitle("Organizer", icon: Icons.person),
-                if (!isGuest && isLoadingCreator)
-                  const Center(child: CircularProgressIndicator())
-                else if (!isGuest && creatorInfo != null)
-                  Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(vertical: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    color: Colors.white,
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.all(16),
-                      leading: CircleAvatar(
-                        radius: 28,
-                        backgroundColor: Colors.teal.shade100,
-                        backgroundImage:
-                            creatorInfo!['profile_image_url'] != null
-                                ? NetworkImage(
-                                  creatorInfo!['profile_image_url'],
-                                )
-                                : null,
-                        child:
-                            creatorInfo!['profile_image_url'] == null
-                                ? const Icon(
-                                  Icons.person,
-                                  color: Colors.teal,
-                                  size: 28,
-                                )
-                                : null,
-                      ),
-                      title: Text(
-                        creatorInfo!['username'] ?? 'Creator',
-                        style: textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.teal.shade900,
-                        ),
-                      ),
-                      subtitle: Text(
-                        creatorInfo!['email'] ?? '',
-                        style: textTheme.bodySmall?.copyWith(
-                          color: Colors.teal.shade700,
-                        ),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.info_outline,
-                          color: Colors.teal,
-                        ),
-                        onPressed: () => _navigateToUserProfile(creatorInfo!),
-                        tooltip: "View Profile",
-                      ),
-                    ),
-                  ),
-
-            
-                _buildSectionTitle("Location", icon: Icons.location_on),
-                Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  color: Colors.white,
+        child: SafeArea(
+          child: AnimatedBuilder(
+            animation: _fadeAnimation,
+            builder: (context, child) {
+              return Opacity(
+                opacity: _fadeAnimation.value,
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 12,
                     ),
-                    child: Row(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.place, color: Colors.teal, size: 22),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            event!.location ?? 'No location specified',
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.teal.shade900,
+                        EventImages(event: event!),
+
+                        const SizedBox(height: 16),
+
+                        EventDescription(event: event!),
+
+                        const SizedBox(height: 20),
+
+                        EventOrganizer(
+                          creatorInfo: creatorInfo,
+                          isLoadingCreator: isLoadingCreator,
+                          isGuest: isGuest,
+                          onNavigateToProfile: _navigateToUserProfile,
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        EventLocation(event: event!, markers: _markers),
+
+                        const SizedBox(height: 20),
+
+                        EventDateTime(event: event!),
+
+                        const SizedBox(height: 20),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Colors.white, Color(0xFFF8F9FA)],
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.teal.withValues(alpha: 0.1),
+                                blurRadius: 20,
+                                spreadRadius: 2,
+                                offset: const Offset(0, 8),
+                              ),
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                spreadRadius: 1,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              width: 1,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(24),
+                            child: EventActions(
+                              event: event!,
+                              isCreator: isCreator,
+                              isPastEvent: isPastEvent,
+                              isGuest: isGuest,
+                              hasJoined: hasJoined,
+                              attendees: attendees,
+                              creatorInfo: creatorInfo,
+                              onJoinLeave: _joinOrLeaveEvent,
+                              onShowSignupDialog: _showSignupDialog,
+                              onNavigateToChat: _navigateToChat,
                             ),
                           ),
                         ),
+
+                        const SizedBox(height: 20),
+
+                        EventAttendees(
+                          attendees: attendees,
+                          filteredAttendees: filteredAttendees,
+                          searchQuery: searchQuery,
+                          isGuest: isGuest,
+                          isCreator: isCreator,
+                          isPastEvent: isPastEvent,
+                          eventCreatorId: event!.creatorId.toString(),
+                          ratings: _ratings,
+                          workTimes: _workTimes,
+                          editedResponses: _editedResponses,
+                          onFilterAttendees: _filterAttendees,
+                          onNavigateToProfile: _navigateToUserProfile,
+                          onUpdateResponse: _updateResponse,
+                          onRatingChanged: _onRatingChanged,
+                          onWorkTimeChanged: _onWorkTimeChanged,
+                        ),
+
+                        const SizedBox(height: 32),
                       ],
                     ),
                   ),
                 ),
-                if (_markers.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10, bottom: 4),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: SizedBox(
-                        height: 180,
-                        child: GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                            target: _markers.first.position,
-                            zoom: 15,
-                          ),
-                          markers: _markers,
-                          onMapCreated: (controller) {
-                            _mapController = controller;
-                          },
-                          myLocationEnabled: false,
-                          zoomControlsEnabled: false,
-                          scrollGesturesEnabled: false,
-                          tiltGesturesEnabled: false,
-                          rotateGesturesEnabled: false,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                 
-                _buildSectionTitle("Date & Time", icon: Icons.access_time),
-                Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          color: Colors.teal,
-                          size: 22,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            '$formattedDate\n$formattedStartTime - $formattedEndTime',
-                            style: textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.teal.shade900,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                 
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: Row(
-                    children: [
-                      if (!isCreator && !isPastEvent)
-                        Expanded(
-                          child: ElevatedButton(
-                            onPressed:
-                                isGuest ? _showSignupDialog : _joinOrLeaveEvent,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  hasJoined ? Colors.redAccent : Colors.teal,
-                              foregroundColor: Colors.white,
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            child: Text(
-                              isGuest
-                                  ? "Join Event"
-                                  : (hasJoined ? "Leave Event" : "Join Event"),
-                            ),
-                          ),
-                        ),
-                      if ((isCreator || hasJoined) &&
-                          (!isCreator || isPastEvent))
-                        const SizedBox(width: 12),
-                      if (isCreator || hasJoined)
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            icon: const Icon(Icons.chat_bubble_outline),
-                            label: const Text("Discussion"),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (_) => ChatScreen(
-                                        eventId: event!.id.toString(),
-                                        attendees: attendees,
-                                        creator: creatorInfo!,
-                                      ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal.shade700,
-                              foregroundColor: Colors.white,
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              textStyle: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-
-                if (!isCreator && isPastEvent && !hasJoined && !isGuest)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: Text(
-                      "Event has ended. You cannot join now.",
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-
-                 
-                if (!isGuest)
-                  _buildSectionTitle("Attendees", icon: Icons.people_alt),
-                if (!isGuest)
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Search Attendees',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: Colors.white,
-                    ),
-                    onChanged: _filterAttendees,
-                  ),
-                if (!isGuest) const SizedBox(height: 10),
-                if (!isGuest)
-                  filteredAttendees.isEmpty
-                      ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 24),
-                        child: Center(
-                          child: Text(
-                            "No attendees found",
-                            style: textTheme.bodyLarge?.copyWith(
-                              color: Colors.grey.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      )
-                      : ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: filteredAttendees.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final attendee = filteredAttendees[index];
-                          final isCreatorUser =
-                              attendee['id'].toString() ==
-                              event!.creatorId.toString();
-                          final userId = attendee['id'].toString();
-
-                          return Card(
-                            elevation: 1,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            color: Colors.white,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 8,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.teal.shade100,
-                                      backgroundImage:
-                                          attendee['profile_image_url'] != null
-                                              ? NetworkImage(
-                                                attendee['profile_image_url'],
-                                              )
-                                              : null,
-                                      child:
-                                          attendee['profile_image_url'] == null
-                                              ? const Icon(
-                                                Icons.person,
-                                                color: Colors.teal,
-                                              )
-                                              : null,
-                                    ),
-                                    title: Text(
-                                      attendee['username'] ?? 'Unknown',
-                                      style: textTheme.titleMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.teal.shade900,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      attendee['email'] ?? '',
-                                      style: textTheme.bodySmall?.copyWith(
-                                        color: Colors.teal.shade700,
-                                      ),
-                                    ),
-                                    trailing:
-                                        isCreatorUser
-                                            ? Chip(
-                                              label: const Text(
-                                                "Creator",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              backgroundColor:
-                                                  Colors.teal.shade700,
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                  ),
-                                            )
-                                            : null,
-                                    onTap:
-                                        () => _navigateToUserProfile(attendee),
-                                  ),
-
-                                  
-                                  if (isCreator &&
-                                      isPastEvent &&
-                                      !isCreatorUser)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 6,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "Rating:",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              StarRating(
-                                                rating: _ratings[userId] ?? 0,
-                                                onRatingChanged: (newRating) {
-                                                  setState(() {
-                                                    _ratings[userId] =
-                                                        newRating;
-                                                    _editedResponses[userId] =
-                                                        true;
-                                                  });
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 8),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "Work Hours:",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              SizedBox(
-                                                width: 80,
-                                                child: TextFormField(
-                                                  initialValue:
-                                                      (_workTimes[userId] ??
-                                                              0.0)
-                                                          .toStringAsFixed(1),
-                                                  keyboardType:
-                                                      const TextInputType.numberWithOptions(
-                                                        decimal: true,
-                                                      ),
-                                                  decoration: InputDecoration(
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                    ),
-                                                    contentPadding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 4,
-                                                        ),
-                                                    isDense: true,
-                                                  ),
-                                                  onChanged: (val) {
-                                                    final parsed =
-                                                        double.tryParse(val) ??
-                                                        0.0;
-                                                    setState(() {
-                                                      _workTimes[userId] =
-                                                          parsed;
-                                                      _editedResponses[userId] =
-                                                          true;
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 10),
-                                          Align(
-                                            alignment: Alignment.centerRight,
-                                            child: ElevatedButton.icon(
-                                              icon: const Icon(Icons.check),
-                                              label: const Text("Submit"),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    Colors.teal.shade700,
-                                                foregroundColor: Colors.white,
-                                                elevation: 1,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                ),
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 18,
-                                                      vertical: 10,
-                                                    ),
-                                              ),
-                                              onPressed: () async {
-                                                final rating =
-                                                    _ratings[userId] ?? 0;
-                                                final workTime =
-                                                    _workTimes[userId] ?? 0.0;
-                                                await _updateResponse(
-                                                  userId,
-                                                  rating,
-                                                  workTime,
-                                                );
-                                                setState(() {
-                                                  _editedResponses[userId] =
-                                                      false;
-                                                });
-                                              },
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                const SizedBox(height: 24),
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),

@@ -329,8 +329,8 @@ async def guest_login():
      
     guest_user_data = {
         "uid": f"guest_{uuid.uuid4()}",
-        "email": f"guest_{random.randint(1000, 9999)}@volunshare.com",
-        "guest": True  # marker to identify this is a guest user
+        "email": f"guest_{random.randint(1000, 9999)}@volunsphere.com",
+        "guest": True   
     }
 
     access_token = create_access_token(guest_user_data)

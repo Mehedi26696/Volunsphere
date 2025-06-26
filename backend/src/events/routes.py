@@ -26,6 +26,7 @@ async def create_event(
     
     
     user_id = UUID(token_data.get("sub"))
+    
 
     db_event = Event(
         title=event.title,
@@ -104,7 +105,7 @@ async def update_event(
     if event.creator_id != user_id:
         raise HTTPException(status_code=403, detail="Forbidden")
 
-    # Update fields
+    
     event.title = event_update.title
     event.description = event_update.description
     event.location = event_update.location
@@ -155,7 +156,7 @@ async def join_event(
             detail="Cannot join event after it has ended"
         )
 
-    # All good, create RSVP
+    
     rsvp = EventResponse(event_id=event_id, user_id=user_id)
     session.add(rsvp)
     await session.commit()

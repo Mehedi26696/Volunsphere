@@ -72,33 +72,33 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            
             Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.teal.withOpacity(0.3),
+                    color: Colors.teal.withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 5,
-                  )
+                  ),
                 ],
               ),
               child: CircleAvatar(
                 radius: 64,
                 backgroundColor: Colors.grey.shade300,
-                backgroundImage: user['profile_image_url'] != null
-                    ? NetworkImage(user['profile_image_url'])
-                    : null,
-                child: user['profile_image_url'] == null
-                    ? const Icon(Icons.person, size: 64, color: Colors.grey)
-                    : null,
+                backgroundImage:
+                    user['profile_image_url'] != null
+                        ? NetworkImage(user['profile_image_url'])
+                        : null,
+                child:
+                    user['profile_image_url'] == null
+                        ? const Icon(Icons.person, size: 64, color: Colors.grey)
+                        : null,
               ),
             ),
 
             const SizedBox(height: 16),
 
-            
             Text(
               "${user['first_name'] ?? ''} ${user['last_name'] ?? ''}".trim(),
               style: const TextStyle(
@@ -111,7 +111,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             const SizedBox(height: 6),
 
-            
             Text(
               "@${user['username'] ?? ''}",
               style: TextStyle(
@@ -123,15 +122,17 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             const SizedBox(height: 24),
 
-            
             Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 4,
               shadowColor: Colors.teal.withOpacity(0.3),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 child: Column(
                   children: [
                     _contactRow(
@@ -160,22 +161,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             const SizedBox(height: 32),
 
-            
             Card(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               elevation: 4,
               shadowColor: Colors.teal.withOpacity(0.3),
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       "Profile Stats",
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -193,7 +198,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
 
             const SizedBox(height: 32),
 
-            
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -206,21 +210,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     onPressed: () {
                       showDialog(
                         context: context,
-                        builder: (_) => AlertDialog(
-                          title: const Text("All Events"),
-                          content: SizedBox(
-                            width: double.maxFinite,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: joinedEvents.length,
-                              itemBuilder: (context, index) {
-                                return ListTile(
-                                  title: Text(joinedEvents[index]),
-                                );
-                              },
+                        builder:
+                            (_) => AlertDialog(
+                              title: const Text("All Events"),
+                              content: SizedBox(
+                                width: double.maxFinite,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: joinedEvents.length,
+                                  itemBuilder: (context, index) {
+                                    return ListTile(
+                                      title: Text(joinedEvents[index]),
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
                       );
                     },
                     child: const Text(
@@ -230,45 +235,52 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  )
+                  ),
               ],
             ),
 
             const SizedBox(height: 12),
 
             Column(
-              children: joinedEvents.take(3).map((title) {
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 2,
-                  child: ListTile(
-                    title: Text(title),
-                    trailing: const Icon(Icons.arrow_forward_ios,
-                        size: 16, color: Colors.teal),
-                    onTap: () async {
-                      final allEvents = await EventsService.getAllEvents();
-                      final event = allEvents.firstWhere(
-                        (e) => e.title == title,
-                        orElse: () => null as Event,
-                      );
-                      if (event != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => EventDetailsScreen(eventId: event.id),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Event not found")),
-                        );
-                      }
-                    },
-                  ),
-                );
-              }).toList(),
+              children:
+                  joinedEvents.take(3).map((title) {
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 2,
+                      child: ListTile(
+                        title: Text(title),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.teal,
+                        ),
+                        onTap: () async {
+                          final allEvents = await EventsService.getAllEvents();
+                          final event = allEvents.firstWhere(
+                            (e) => e.title == title,
+                            orElse: () => null as Event,
+                          );
+                          if (event != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) =>
+                                        EventDetailsScreen(eventId: event.id),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Event not found")),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  }).toList(),
             ),
           ],
         ),

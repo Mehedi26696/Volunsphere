@@ -43,8 +43,8 @@ def create_access_token(user_data: dict, expiry: timedelta = None, refresh: bool
      
     payload = {}
 
-    payload["sub"] = str(user_data["uid"])  # ✅ Set user ID as subject
-    payload["email"] = user_data["email"]   # Optional, good for quick access
+    payload["sub"] = str(user_data["uid"])   
+    payload["email"] = user_data["email"]   
     payload["exp"] = datetime.now(timezone.utc) + (expiry or timedelta(seconds=ACCESS_TOKEN_EXPIRY))
     payload["jti"] = str(uuid.uuid4())
     payload["refresh"] = refresh
