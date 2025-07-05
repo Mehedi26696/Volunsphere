@@ -24,7 +24,7 @@ password_context = CryptContext(
     schemes=["bcrypt"]
 )
 
-ACCESS_TOKEN_EXPIRY = 120
+ACCESS_TOKEN_EXPIRY =720
 
 def generate_hash_password(password: str) -> str:
      

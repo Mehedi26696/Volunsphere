@@ -122,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
-    final uri = Uri.parse('$baseUrl/upload-profile-image');
+    final uri = Uri.parse('$baseUrl/auth/upload-profile-image');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..files.add(await http.MultipartFile.fromPath('file', croppedFile.path));

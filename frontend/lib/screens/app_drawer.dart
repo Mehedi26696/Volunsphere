@@ -109,9 +109,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
     final profileImageUrl = _profileData?['profile_image_url'];
     final userName =
-        _profileData?['username'] ??
-        _profileData?['first_name'] ??
-        'Guest';
+        _profileData?['username'] ?? _profileData?['first_name'] ?? 'Guest';
     final userEmail = _profileData?['email'];
 
     return Drawer(
@@ -202,6 +200,16 @@ class _AppDrawerState extends State<AppDrawer> {
               title: const Text("Leaderboard"),
               onTap: () => _navigateAndCloseDrawer(const LeaderboardScreen()),
             ),
+
+            if (!isGuest)
+              ListTile(
+                leading: const Icon(Icons.smart_toy),
+                title: const Text("Database Assistant"),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/chatbot');
+                },
+              ),
 
             if (!isGuest)
               ListTile(
