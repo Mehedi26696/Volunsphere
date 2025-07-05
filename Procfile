@@ -1,1 +1,1 @@
-web: bash startup.sh
+web: cd backend && python main.py
