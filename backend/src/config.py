@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
 
 class Settings(BaseSettings):
     DATABASE_URL : str
@@ -18,5 +19,25 @@ class Settings(BaseSettings):
         env_file = ".env",
         extra="ignore"
     )
+
+    @property
+    def async_database_url(self) -> str:
+        """Convert DATABASE_URL to use asyncpg driver"""
+        url = self.DATABASE_URL
+        if url.startswith("postgresql://"):
+            return url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql+asyncpg://", 1)
+        return url
+
+    @property 
+    def sync_database_url(self) -> str:
+        """Convert DATABASE_URL to use psycopg2 driver for alembic"""
+        url = self.DATABASE_URL
+        if url.startswith("postgresql+asyncpg://"):
+            return url.replace("postgresql+asyncpg://", "postgresql://", 1)
+        elif url.startswith("postgres://"):
+            return url.replace("postgres://", "postgresql://", 1)
+        return url
 
 Config = Settings()

@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 # Use create_async_engine for better async support
 async_engine = create_async_engine(
-    Config.DATABASE_URL,
+    Config.async_database_url,
     echo=True if Config.ENVIRONMENT == "development" else False,
     pool_pre_ping=True,  # Verify connections before use
     pool_recycle=300,    # Recycle connections every 5 minutes
