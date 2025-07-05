@@ -11,8 +11,8 @@ class Settings(BaseSettings):
     SUPABASE_URL: str
     SUPABASE_KEY: str
     GROQ_API_KEY: str
+    GEMINI_API_KEY: str
     ENVIRONMENT: str = "development"
-    FRONTEND_URL: str = "http://localhost:3000"
 
     model_config = SettingsConfigDict(
         env_file = ".env",

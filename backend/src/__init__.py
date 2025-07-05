@@ -28,10 +28,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Add CORS middleware
+# Add CORS middleware - Allow all origins since frontend will be hosted separately
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if os.getenv("ENVIRONMENT") == "development" else [os.getenv("FRONTEND_URL", "")],
+    allow_origins=["*"],  # Allow all origins for external frontend
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
