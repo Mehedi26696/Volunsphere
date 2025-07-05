@@ -14,7 +14,8 @@ from src.chat.models import ChatMessage
 from sqlmodel import SQLModel
 from src.config import Config 
 
-databese_url = Config.DATABASE_URL
+# Use sync database URL for alembic migrations
+database_url = Config.sync_database_url
 
 
 # this is the Alembic Config object, which provides
@@ -23,7 +24,7 @@ config = context.config
 
 config.set_main_option(
     "sqlalchemy.url",
-    databese_url
+    database_url
 )
 
 # Interpret the config file for Python logging.
