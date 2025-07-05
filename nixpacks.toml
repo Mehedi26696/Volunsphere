@@ -1,0 +1,5 @@
+# Let Railway auto-detect Python and use default configuration
+# Railway will automatically:
+# 1. Detect Python from requirements.txt
+# 2. Install dependencies with pip
+# 3. Use the start command from Railway dashboard settings
