@@ -14,10 +14,15 @@ from src.chatbot.routes import chatbot_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print(f"Server is starting...")
-    await init_db()
+    print(f"🚀 Server is starting...")
+    try:
+        await init_db()
+        print(f"✅ Database initialized successfully")
+    except Exception as e:
+        print(f"⚠️ Database initialization warning: {e}")
+        # Continue anyway, tables might already exist
     yield
-    print(f"Server has been stopped.")
+    print(f"🛑 Server has been stopped.")
 
 version = "v1"
 
