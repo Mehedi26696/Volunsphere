@@ -4,13 +4,8 @@ from src.config import Config
 JTI_EXPIRY = 3600  
 OTP_EXPIRY = 300   
 
-# Redis client instance
-redis_client = redis.Redis(
-    host=Config.REDIS_HOST,
-    port=Config.REDIS_PORT,
-    db=0,
-    decode_responses=True   
-)
+# Redis client instance - use the connection params from config
+redis_client = redis.Redis(**Config.redis_connection_params)
 
  
 

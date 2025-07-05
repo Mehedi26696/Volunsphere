@@ -4,6 +4,7 @@ import os
 
 from contextlib import asynccontextmanager
 from src.db.main import init_db
+from src.db.redis import redis_client
 from src.auth.routes import auth_router
 from src.events.routes import events_router
 from src.users.routes import user_router
@@ -21,7 +22,24 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         print(f"⚠️ Database initialization warning: {e}")
         # Continue anyway, tables might already exist
+    
+    # Test Redis connection
+    try:
+        await redis_client.ping()
+        print(f"✅ Redis connected successfully")
+    except Exception as e:
+        print(f"⚠️ Redis connection warning: {e}")
+        # Continue anyway, Redis is optional
+    
     yield
+    
+    # Cleanup
+    try:
+        await redis_client.close()
+        print(f"🔌 Redis disconnected")
+    except Exception as e:
+        print(f"⚠️ Redis disconnect warning: {e}")
+    
     print(f"🛑 Server has been stopped.")
 
 version = "v1"
