@@ -191,269 +191,598 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   InputDecoration _inputDecoration(String label, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
+      labelStyle: const TextStyle(
+        fontFamily: 'Poppins',
+        color: Color(0xFF626C7A),
+        fontWeight: FontWeight.w500,
+      ),
       filled: true,
-      fillColor: Colors.grey[50],
+      fillColor: Colors.white.withValues(alpha: 0.8),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: const BorderSide(color: Colors.teal, width: 2),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: Color(0xFF7B2CBF),
+          width: 2,
+        ),
       ),
       suffixIcon: suffixIcon,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
     );
   }
 
   Widget _sectionTitle(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8, top: 18),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 18,
-          color: Colors.teal,
-          letterSpacing: 0.5,
-        ),
+      padding: const EdgeInsets.only(bottom: 16, top: 24),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 24,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Color(0xFF27264A),
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Create Event'),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.teal),
-        titleTextStyle: const TextStyle(
-          color: Colors.teal,
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
-        ),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 500),
-          child: Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
-            elevation: 6,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            child: Padding(
-              padding: const EdgeInsets.all(22.0),
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    _sectionTitle("Event Details"),
-                    TextFormField(
-                      controller: _titleController,
-                      decoration: _inputDecoration('Title', suffixIcon: const Icon(Icons.title_rounded, color: Colors.teal)),
-                      validator: _validateNonEmpty,
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: _inputDecoration('Description', suffixIcon: const Icon(Icons.description_rounded, color: Colors.teal)),
-                      maxLines: 3,
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _locationController,
-                      readOnly: true,
-                      decoration: _inputDecoration('Location (auto-filled from map)', suffixIcon: const Icon(Icons.location_on_rounded, color: Colors.teal)),
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                    _sectionTitle("Date & Time"),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: _pickStartDatetime,
-                            child: AbsorbPointer(
-                              child: TextFormField(
-                                decoration: _inputDecoration('Start Date & Time', suffixIcon: const Icon(Icons.calendar_today, color: Colors.teal)),
-                                controller: TextEditingController(text: _formatDatetime(_startDatetime)),
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: _pickEndDatetime,
-                            child: AbsorbPointer(
-                              child: TextFormField(
-                                decoration: _inputDecoration('End Date & Time', suffixIcon: const Icon(Icons.calendar_today, color: Colors.teal)),
-                                controller: TextEditingController(text: _formatDatetime(_endDatetime)),
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    _sectionTitle("Location"),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.teal.withOpacity(0.05),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _latitude == null || _longitude == null
-                                ? const Text('No location selected', style: TextStyle(fontSize: 13, color: Colors.black54))
-                                : Text(
-                                    'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}',
-                                    style: const TextStyle(fontSize: 13, color: Colors.teal, fontWeight: FontWeight.w500),
-                                  ),
-                          ),
-                          ElevatedButton.icon(
-                            icon: const Icon(Icons.map, size: 20),
-                            label: const Text("Pick on Map"),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                              textStyle: const TextStyle(fontWeight: FontWeight.w500),
-                              elevation: 0,
-                            ),
-                            onPressed: _pickLocation,
-                          ),
-                        ],
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
                       ),
                     ),
-                    if (_latitude != null && _longitude != null) ...[
-                      const SizedBox(height: 14),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(14),
-                        child: SizedBox(
-                          height: 180,
-                          child: GoogleMap(
-                            initialCameraPosition: CameraPosition(
-                              target: LatLng(_latitude!, _longitude!),
-                              zoom: 14,
-                            ),
-                            markers: {
-                              Marker(
-                                markerId: const MarkerId("selected_location"),
-                                position: LatLng(_latitude!, _longitude!),
-                                infoWindow: const InfoWindow(title: "Event Location"),
-                              ),
-                            },
-                            zoomControlsEnabled: false,
-                            myLocationButtonEnabled: false,
-                            liteModeEnabled: true,
-                          ),
-                        ),
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(10),
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                    child: Text(
+                      "Create Event",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.add_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.95),
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
-                    _sectionTitle("Images"),
-                    if (_pickedImages.isNotEmpty)
-                      SizedBox(
-                        height: 100,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _pickedImages.length,
-                          itemBuilder: (context, index) {
-                            return Stack(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
-                                        blurRadius: 6,
-                                        offset: const Offset(0, 2),
+                  ),
+                  padding: const EdgeInsets.all(24),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _sectionTitle("Event Details"),
+                        TextFormField(
+                          controller: _titleController,
+                          decoration: _inputDecoration(
+                            'Event Title',
+                            suffixIcon: Icon(
+                              Icons.title_rounded,
+                              color: const Color(0xFF7B2CBF),
+                            ),
+                          ),
+                          validator: _validateNonEmpty,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _descriptionController,
+                          decoration: _inputDecoration(
+                            'Event Description',
+                            suffixIcon: Icon(
+                              Icons.description_rounded,
+                              color: const Color(0xFF7B2CBF),
+                            ),
+                          ),
+                          maxLines: 4,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _locationController,
+                          readOnly: true,
+                          decoration: _inputDecoration(
+                            'Location (auto-filled from map)',
+                            suffixIcon: Icon(
+                              Icons.location_on_rounded,
+                              color: const Color(0xFF7B2CBF),
+                            ),
+                          ),
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+
+                        _sectionTitle("Date & Time"),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: _pickStartDatetime,
+                                child: AbsorbPointer(
+                                  child: TextFormField(
+                                    decoration: _inputDecoration(
+                                      'Start Date & Time',
+                                      suffixIcon: Icon(
+                                        Icons.calendar_today_rounded,
+                                        color: const Color(0xFF4CAF50),
                                       ),
-                                    ],
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.file(
-                                      _pickedImages[index],
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
+                                    ),
+                                    controller: TextEditingController(
+                                      text: _formatDatetime(_startDatetime),
+                                    ),
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      color: Color(0xFF27264A),
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
                                 ),
-                                Positioned(
-                                  right: 8,
-                                  top: 8,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        _pickedImages.removeAt(index);
-                                      });
-                                    },
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black54,
-                                        borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: _pickEndDatetime,
+                                child: AbsorbPointer(
+                                  child: TextFormField(
+                                    decoration: _inputDecoration(
+                                      'End Date & Time',
+                                      suffixIcon: Icon(
+                                        Icons.event_rounded,
+                                        color: const Color(0xFFFF9800),
                                       ),
-                                      padding: const EdgeInsets.all(4),
-                                      child: const Icon(Icons.close, color: Colors.white, size: 18),
+                                    ),
+                                    controller: TextEditingController(
+                                      text: _formatDatetime(_endDatetime),
+                                    ),
+                                    style: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 14,
+                                      color: Color(0xFF27264A),
+                                      fontWeight: FontWeight.w400,
                                     ),
                                   ),
-                                )
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        icon: const Icon(Icons.add_photo_alternate, color: Colors.teal),
-                        label: const Text("Pick Images (max 3)", style: TextStyle(color: Colors.teal)),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.teal,
-                          textStyle: const TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                        onPressed: _pickImages,
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _submit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                elevation: 2,
+                                ),
                               ),
-                              child: const Text("Create Event"),
+                            ),
+                          ],
+                        ),
+
+                        _sectionTitle("Location"),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFF7B2CBF).withValues(alpha: 0.05),
+                                const Color(0xFF9D4EDD).withValues(alpha: 0.02),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(18),
+                            border: Border.all(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                              width: 1,
                             ),
                           ),
-                  ],
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: _latitude == null || _longitude == null
+                                    ? Text(
+                                        'No location selected',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 14,
+                                          color: const Color(0xFF626C7A).withValues(alpha: 0.7),
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}',
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 13,
+                                          color: Color(0xFF7B2CBF),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              ),
+                              const SizedBox(width: 12),
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF2196F3), Color(0xFF64B5F6)],
+                                  ),
+                                  borderRadius: BorderRadius.circular(14),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF2196F3).withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton.icon(
+                                  icon: const Icon(Icons.map_rounded, size: 20),
+                                  label: const Text("Pick on Map"),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    elevation: 0,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    textStyle: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  onPressed: _pickLocation,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        if (_latitude != null && _longitude != null) ...[
+                          const SizedBox(height: 20),
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: SizedBox(
+                                height: 200,
+                                child: GoogleMap(
+                                  initialCameraPosition: CameraPosition(
+                                    target: LatLng(_latitude!, _longitude!),
+                                    zoom: 14,
+                                  ),
+                                  markers: {
+                                    Marker(
+                                      markerId: const MarkerId("selected_location"),
+                                      position: LatLng(_latitude!, _longitude!),
+                                      infoWindow: const InfoWindow(title: "Event Location"),
+                                    ),
+                                  },
+                                  zoomControlsEnabled: false,
+                                  myLocationButtonEnabled: false,
+                                  liteModeEnabled: true,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+
+                        _sectionTitle("Event Images"),
+                        if (_pickedImages.isNotEmpty) ...[
+                          Container(
+                            height: 120,
+                            margin: const EdgeInsets.only(bottom: 16),
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: _pickedImages.length,
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  margin: const EdgeInsets.only(right: 12),
+                                  child: Stack(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(16),
+                                          border: Border.all(
+                                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                            width: 1.5,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 4),
+                                            ),
+                                          ],
+                                        ),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(14),
+                                          child: Image.file(
+                                            _pickedImages[index],
+                                            width: 120,
+                                            height: 120,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        right: 8,
+                                        top: 8,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _pickedImages.removeAt(index);
+                                            });
+                                          },
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [Colors.red.shade400, Colors.red.shade500],
+                                              ),
+                                              borderRadius: BorderRadius.circular(20),
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.red.withValues(alpha: 0.3),
+                                                  blurRadius: 6,
+                                                  offset: const Offset(0, 2),
+                                                ),
+                                              ],
+                                            ),
+                                            padding: const EdgeInsets.all(6),
+                                            child: const Icon(
+                                              Icons.close_rounded,
+                                              color: Colors.white,
+                                              size: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                        
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                const Color(0xFFFF9800).withValues(alpha: 0.1),
+                                const Color(0xFFFFB74D).withValues(alpha: 0.05),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: const Color(0xFFFF9800).withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            borderRadius: BorderRadius.circular(16),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(16),
+                              onTap: _pickImages,
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add_photo_alternate_rounded,
+                                      color: const Color(0xFFFF9800),
+                                      size: 24,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      "Pick Images (max 3)",
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: Color(0xFFFF9800),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 32),
+
+                        // Submit Button
+                        _isLoading
+                            ? Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(18),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                                      blurRadius: 15,
+                                      offset: const Offset(0, 6),
+                                    ),
+                                  ],
+                                ),
+                                child: ElevatedButton(
+                                  onPressed: _submit,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    shadowColor: Colors.transparent,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(vertical: 18),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(18),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    "Create Event",
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: Colors.white,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

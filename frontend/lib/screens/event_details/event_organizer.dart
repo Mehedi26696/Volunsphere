@@ -19,18 +19,42 @@ class EventOrganizer extends StatelessWidget {
     String title, {
     IconData? icon,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0, left: 2.0, top: 16.0),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16, top: 20),
       child: Row(
         children: [
-          if (icon != null) Icon(icon, color: Colors.teal, size: 22),
-          if (icon != null) const SizedBox(width: 8),
+          Container(
+            width: 4,
+            height: 24,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              icon ?? Icons.person_rounded,
+                color: const Color(0xFF388E3C),
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 12),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.teal.shade700,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              color: Color(0xFF27264A),
               fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+              fontSize: 18,
+              letterSpacing: -0.5,
             ),
           ),
         ],
@@ -42,57 +66,138 @@ class EventOrganizer extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isGuest) return const SizedBox.shrink();
 
-    final textTheme = Theme.of(context).textTheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionTitle(context, "Organizer", icon: Icons.person),
-        if (isLoadingCreator)
-          const Center(child: CircularProgressIndicator())
-        else if (creatorInfo != null)
-          Card(
-            elevation: 2,
-            margin: const EdgeInsets.symmetric(vertical: 4),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: Colors.white,
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              leading: CircleAvatar(
-                radius: 28,
-                backgroundColor: Colors.teal.shade100,
-                backgroundImage:
-                    creatorInfo!['profile_image_url'] != null
-                        ? NetworkImage(creatorInfo!['profile_image_url'])
-                        : null,
-                child:
-                    creatorInfo!['profile_image_url'] == null
-                        ? const Icon(Icons.person, color: Colors.teal, size: 28)
-                        : null,
-              ),
-              title: Text(
-                creatorInfo!['username'] ?? 'Creator',
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal.shade900,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildSectionTitle(context, "Organizer", icon: Icons.person_rounded),
+          if (isLoadingCreator)
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
                 ),
               ),
-              subtitle: Text(
-                creatorInfo!['email'] ?? '',
-                style: textTheme.bodySmall?.copyWith(
-                  color: Colors.teal.shade700,
+            )
+            else if (creatorInfo != null)
+            Container(
+              decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.95),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: const Color(0xFF2E7D32).withOpacity(0.15), // Darker green
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                color: const Color(0xFF2E7D32).withOpacity(0.08), // Darker green
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+                ),
+              ],
+              ),
+              child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(25),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(25),
+                onTap: () => onNavigateToProfile(creatorInfo!),
+                hoverColor: const Color(0xFF2E7D32).withOpacity(0.05), // Darker green
+                child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                  Container(
+                    decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFF2E7D32).withOpacity(0.3), // Darker green
+                      width: 2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                      color: const Color(0xFF2E7D32).withOpacity(0.2), // Darker green
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                      ),
+                    ],
+                    ),
+                    child: CircleAvatar(
+                    radius: 28,
+                    backgroundColor: Colors.white,
+                    backgroundImage: creatorInfo!['profile_image_url'] != null
+                      ? NetworkImage(creatorInfo!['profile_image_url'])
+                      : null,
+                    child: creatorInfo!['profile_image_url'] == null
+                      ? const Icon(
+                        Icons.person_rounded,
+                        color: Color(0xFF2E7D32), // Darker green
+                        size: 28,
+                        )
+                      : null,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                      creatorInfo!['username'] ?? 'Creator',
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Color(0xFF27264A),
+                        letterSpacing: -0.5,
+                      ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                      creatorInfo!['email'] ?? '',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        color: const Color(0xFF626C7A).withOpacity(0.8),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      ),
+                    ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                    color: const Color(0xFF2E7D32).withOpacity(0.1), // Darker green
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: const Color(0xFF2E7D32).withOpacity(0.2), // Darker green
+                      width: 1,
+                    ),
+                    ),
+                    child: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: const Color(0xFF2E7D32), // Darker green
+                    size: 16,
+                    ),
+                  ),
+                  ],
+                ),
                 ),
               ),
-              trailing: IconButton(
-                icon: const Icon(Icons.info_outline, color: Colors.teal),
-                onPressed: () => onNavigateToProfile(creatorInfo!),
-                tooltip: "View Profile",
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

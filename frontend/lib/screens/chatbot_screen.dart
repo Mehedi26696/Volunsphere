@@ -211,76 +211,237 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Database Assistant'),
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-        elevation: 2,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                return ChatBubble(message: _messages[index]);
-              },
-            ),
-          ),
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
               child: Row(
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 12),
-                  Text('Thinking...'),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(10),
+                      ),
+                    ),
+                  ),
+                  const Expanded(
+                    child: Text(
+                      "VolunBot",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.smart_toy_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
                 ],
               ),
             ),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              boxShadow: [
-                BoxShadow(
-                  offset: const Offset(0, -2),
-                  blurRadius: 6,
-                  color: Colors.black.withOpacity(0.1),
+            
+            // Chat Messages
+            Expanded(
+              child: ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                child: ListView.builder(
+                  controller: _scrollController,
+                  padding: const EdgeInsets.all(16),
+                  itemCount: _messages.length,
+                  itemBuilder: (context, index) {
+                    return ChatBubble(message: _messages[index]);
+                  },
                 ),
-              ],
+              ),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      hintText: 'Ask about users, events, or responses...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 12,
-                      ),
+            
+            // Loading Indicator
+            if (_isLoading)
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.05),
+                  border: Border(
+                    top: BorderSide(
+                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                      width: 1,
                     ),
-                    onSubmitted: (_) => _sendMessage(),
-                    enabled: !_isLoading,
                   ),
                 ),
-                const SizedBox(width: 8),
-                FloatingActionButton(
-                  onPressed: _isLoading ? null : _sendMessage,
-                  mini: true,
-                  child: const Icon(Icons.send),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'AI is thinking...',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 14,
+                        color: Color(0xFF7B2CBF),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+            
+            // Input Area
+            Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF626C7A).withValues(alpha: 0.03),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _messageController,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          decoration: const InputDecoration(
+                            hintText: 'Ask about users, events, or responses...',
+                            hintStyle: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Color(0xFF626C7A),
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          onSubmitted: (_) => _sendMessage(),
+                          enabled: !_isLoading,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.send_rounded),
+                        onPressed: _isLoading ? null : _sendMessage,
+                        color: Colors.white,
+                        iconSize: 24,
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.all(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -317,58 +478,109 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
       child: Row(
         mainAxisAlignment:
             message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!message.isUser) ...[
-            const CircleAvatar(
-              radius: 16,
-              child: Icon(Icons.smart_toy, size: 18),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.transparent,
+                child: Icon(Icons.smart_toy_rounded, size: 20, color: Colors.white),
+              ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 12),
           ],
           Flexible(
             child: Container(
-              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color:
-                    message.isUser
-                        ? Theme.of(context).primaryColor
-                        : message.isError
-                        ? Colors.red.shade50
-                        : Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(16),
-                border:
-                    message.isError && !message.isUser
-                        ? Border.all(color: Colors.red.shade200, width: 1)
-                        : null,
+                gradient: message.isUser
+                    ? const LinearGradient(
+                        colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      )
+                    : message.isError
+                    ? LinearGradient(
+                        colors: [
+                          Colors.red.shade50,
+                          Colors.red.shade100,
+                        ],
+                      )
+                    : LinearGradient(
+                        colors: [
+                          Colors.white.withValues(alpha: 0.95),
+                          Colors.white.withValues(alpha: 0.85),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: Radius.circular(message.isUser ? 20 : 6),
+                  bottomRight: Radius.circular(message.isUser ? 6 : 20),
+                ),
+                border: message.isUser ? null : Border.all(
+                  color: message.isError 
+                      ? Colors.red.withValues(alpha: 0.3)
+                      : const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                  width: 1,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: message.isUser
+                        ? const Color(0xFF7B2CBF).withValues(alpha: 0.3)
+                        : Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     message.text,
                     style: TextStyle(
-                      color:
-                          message.isUser
-                              ? Colors.white
-                              : message.isError
-                              ? Colors.red.shade700
-                              : Colors.black87,
+                      fontFamily: 'Poppins',
+                      color: message.isUser
+                          ? Colors.white
+                          : message.isError
+                          ? Colors.red.shade700
+                          : const Color(0xFF27264A),
                       fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      height: 1.4,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
-                      color:
-                          message.isUser
-                              ? Colors.white.withOpacity(0.7)
-                              : Colors.grey.shade600,
+                      fontFamily: 'Poppins',
+                      color: message.isUser
+                          ? Colors.white.withValues(alpha: 0.8)
+                          : const Color(0xFF626C7A).withValues(alpha: 0.7),
                       fontSize: 10,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
                 ],
@@ -376,8 +588,28 @@ class ChatBubble extends StatelessWidget {
             ),
           ),
           if (message.isUser) ...[
-            const SizedBox(width: 8),
-            const CircleAvatar(radius: 16, child: Icon(Icons.person, size: 18)),
+            const SizedBox(width: 12),
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                  width: 2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const CircleAvatar(
+                radius: 18,
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person_rounded, size: 20, color: Color(0xFF7B2CBF)),
+              ),
+            ),
           ],
         ],
       ),

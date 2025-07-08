@@ -60,229 +60,465 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     final String? phoneNumber = user['phone'];
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: Text(user['username'] ?? 'User Profile'),
-        backgroundColor: Colors.teal,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.teal.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: CircleAvatar(
-                radius: 64,
-                backgroundColor: Colors.grey.shade300,
-                backgroundImage:
-                    user['profile_image_url'] != null
-                        ? NetworkImage(user['profile_image_url'])
-                        : null,
-                child:
-                    user['profile_image_url'] == null
-                        ? const Icon(Icons.person, size: 64, color: Colors.grey)
-                        : null,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            Text(
-              "${user['first_name'] ?? ''} ${user['last_name'] ?? ''}".trim(),
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.6,
-                color: Colors.black87,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              "@${user['username'] ?? ''}",
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade600,
-                letterSpacing: 0.5,
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 4,
-              shadowColor: Colors.teal.withOpacity(0.3),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
-                ),
-                child: Column(
+      backgroundColor: const Color(0xFFF4F6F9),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 225, 192, 255),
+              Color.fromARGB(255, 248, 250, 255),
+              Color.fromARGB(255, 255, 255, 255),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            stops: [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Enhanced Custom App Bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
                   children: [
-                    _contactRow(
-                      icon: Icons.email,
-                      label: user['email'] ?? 'N/A',
-                      iconColor: Colors.teal,
-                    ),
-                    const Divider(height: 32),
-                    InkWell(
-                      onTap: () async {
-                        if (phoneNumber != null && phoneNumber.isNotEmpty) {
-                          await _makeDirectCall(phoneNumber);
-                        }
-                      },
-                      child: _contactRow(
-                        icon: Icons.phone,
-                        label: phoneNumber ?? 'N/A',
-                        iconColor: Colors.teal,
-                        isLink: phoneNumber != null && phoneNumber.isNotEmpty,
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                            const Color(0xFF9D4EDD).withValues(alpha: 0.05),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: Color(0xFF7B2CBF),
+                          size: 20,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.all(12),
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 48),
                   ],
                 ),
               ),
-            ),
-
-            const SizedBox(height: 32),
-
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              elevation: 4,
-              shadowColor: Colors.teal.withOpacity(0.3),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 20,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Profile Stats",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              
+              // Scrollable Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Profile Picture
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: const Color(0xFF7B2CBF),
+                            width: 4,
+                          ),
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Container(
+                            width: 138,
+                            height: 138,
+                            color: Colors.white,
+                            child: user['profile_image_url'] != null
+                                ? Image.network(
+                                    user['profile_image_url'],
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Icon(
+                                        Icons.person_rounded,
+                                        size: 64,
+                                        color: Color(0xFF7B2CBF),
+                                      );
+                                    },
+                                  )
+                                : const Icon(
+                                    Icons.person_rounded,
+                                    size: 64,
+                                    color: Color(0xFF7B2CBF),
+                                  ),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        _buildStat("Events", eventsJoined.toString()),
-                        _buildStat("Hours", totalHours.toStringAsFixed(1)),
-                        _buildStat("Rating", averageRating.toStringAsFixed(1)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
 
-            const SizedBox(height: 32),
+                      const SizedBox(height: 25),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "Joined Events",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                if (joinedEvents.length > 3)
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => AlertDialog(
-                              title: const Text("All Events"),
-                              content: SizedBox(
-                                width: double.maxFinite,
-                                child: ListView.builder(
-                                  shrinkWrap: true,
-                                  itemCount: joinedEvents.length,
-                                  itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(joinedEvents[index]),
-                                    );
-                                  },
+                      Text(
+                        "${user['first_name'] ?? ''} ${user['last_name'] ?? ''}".trim(),
+                        style: const TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.8,
+                          color: Color(0xFF27264A),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                              const Color(0xFF9D4EDD).withValues(alpha: 0.05),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Text(
+                          "@${user['username'] ?? ''}",
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 17,
+                            color: Color(0xFF7B2CBF),
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Contact Info Card
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.95),
+                              Colors.white.withValues(alpha: 0.85),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [
+                              _contactRow(
+                                icon: Icons.email_rounded,
+                                label: user['email'] ?? 'N/A',
+                                iconColor: const Color(0xFF7B2CBF),
+                              ),
+                              const SizedBox(height: 20),
+                              Container(
+                                height: 1,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                      const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                                      const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              InkWell(
+                                onTap: () async {
+                                  if (phoneNumber != null && phoneNumber.isNotEmpty) {
+                                    await _makeDirectCall(phoneNumber);
+                                  }
+                                },
+                                borderRadius: BorderRadius.circular(12),
+                                child: _contactRow(
+                                  icon: Icons.phone_rounded,
+                                  label: phoneNumber ?? 'N/A',
+                                  iconColor: const Color(0xFF7B2CBF),
+                                  isLink: phoneNumber != null && phoneNumber.isNotEmpty,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Stats Card
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withValues(alpha: 0.95),
+                              Colors.white.withValues(alpha: 0.85),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Profile Stats",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF27264A),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  _buildStat("Events", eventsJoined.toString(), const Color(0xFF7B2CBF)),
+                                  _buildStat("Hours", totalHours.toStringAsFixed(1), const Color(0xFF4CAF50)),
+                                  _buildStat("Rating", averageRating.toStringAsFixed(1), const Color(0xFFFF9800)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Events Section Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Joined Events",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF27264A),
+                              letterSpacing: -0.5,
+                            ),
+                          ),
+                          if (joinedEvents.length > 3)
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                    const Color(0xFF9D4EDD).withValues(alpha: 0.05),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      title: const Text(
+                                        "All Events",
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFF27264A),
+                                        ),
+                                      ),
+                                      content: SizedBox(
+                                        width: double.maxFinite,
+                                        child: ListView.builder(
+                                          shrinkWrap: true,
+                                          itemCount: joinedEvents.length,
+                                          itemBuilder: (context, index) {
+                                            return Container(
+                                              margin: const EdgeInsets.only(bottom: 8),
+                                              padding: const EdgeInsets.all(12),
+                                              decoration: BoxDecoration(
+                                                color: const Color(0xFF7B2CBF).withValues(alpha: 0.05),
+                                                borderRadius: BorderRadius.circular(12),
+                                                border: Border.all(
+                                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                                ),
+                                              ),
+                                              child: Text(
+                                                joinedEvents[index],
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                ),
+                                child: const Text(
+                                  "See All",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: Color(0xFF7B2CBF),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ),
                             ),
-                      );
-                    },
-                    child: const Text(
-                      "See All",
-                      style: TextStyle(
-                        color: Colors.teal,
-                        fontWeight: FontWeight.w600,
+                        ],
                       ),
-                    ),
-                  ),
-              ],
-            ),
 
-            const SizedBox(height: 12),
+                      const SizedBox(height: 16),
 
-            Column(
-              children:
-                  joinedEvents.take(3).map((title) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      elevation: 2,
-                      child: ListTile(
-                        title: Text(title),
-                        trailing: const Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: Colors.teal,
-                        ),
-                        onTap: () async {
-                          final allEvents = await EventsService.getAllEvents();
-                          final event = allEvents.firstWhere(
-                            (e) => e.title == title,
-                            orElse: () => null as Event,
-                          );
-                          if (event != null) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) =>
-                                        EventDetailsScreen(eventId: event.id),
+                      // Events List
+                      Column(
+                        children: joinedEvents.take(3).map((title) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.white.withValues(alpha: 0.95),
+                                  Colors.white.withValues(alpha: 0.85),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
                               ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Event not found")),
-                            );
-                          }
-                        },
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.9),
+                                width: 1,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                                  blurRadius: 15,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                              title: Text(
+                                title,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                  color: Color(0xFF27264A),
+                                  letterSpacing: -0.3,
+                                ),
+                              ),
+                              trailing: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                      const Color(0xFF9D4EDD).withValues(alpha: 0.05),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: const Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  size: 16,
+                                  color: Color(0xFF7B2CBF),
+                                ),
+                              ),
+                              onTap: () async {
+                                final allEvents = await EventsService.getAllEvents();
+                                final event = allEvents.firstWhere(
+                                  (e) => e.title == title,
+                                  orElse: () => null as Event,
+                                );
+                                if (event != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) =>
+                                              EventDetailsScreen(eventId: event.id),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("Event not found")),
+                                  );
+                                }
+                              },
+                            ),
+                          );
+                        }).toList(),
                       ),
-                    );
-                  }).toList(),
-            ),
-          ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -296,16 +532,30 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }) {
     return Row(
       children: [
-        Icon(icon, color: iconColor),
-        const SizedBox(width: 14),
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                iconColor.withValues(alpha: 0.1),
+                iconColor.withValues(alpha: 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: iconColor, size: 20),
+        ),
+        const SizedBox(width: 16),
         Expanded(
           child: Text(
             label,
             style: TextStyle(
+              fontFamily: 'Poppins',
               fontSize: 16,
-              color: isLink ? Colors.blue.shade700 : Colors.grey.shade800,
+              color: isLink ? const Color(0xFF7B2CBF) : const Color(0xFF27264A),
               decoration: isLink ? TextDecoration.underline : null,
-              fontWeight: isLink ? FontWeight.w600 : FontWeight.normal,
+              fontWeight: FontWeight.w500,
+              letterSpacing: -0.2,
             ),
           ),
         ),
@@ -313,27 +563,90 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-  Widget _buildStat(String label, String value) {
+  Widget _buildStat(String label, String value, Color color) {
     return Column(
       children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.teal,
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                color.withValues(alpha: 0.1),
+                color.withValues(alpha: 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+              letterSpacing: -0.5,
+            ),
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey.shade700,
-            fontWeight: FontWeight.w600,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 14,
+            color: Color(0xFF626C7A),
+            fontWeight: FontWeight.w500,
+            letterSpacing: -0.2,
           ),
         ),
       ],
     );
   }
 }
+  Widget _buildStat(String label, String value, Color color) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                color.withValues(alpha: 0.1),
+                color.withValues(alpha: 0.05),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withValues(alpha: 0.2),
+              width: 1,
+            ),
+          ),
+          child: Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+              letterSpacing: -0.5,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(
+            fontFamily: 'Poppins',
+            fontSize: 14,
+            color: Color(0xFF626C7A),
+            fontWeight: FontWeight.w500,
+            letterSpacing: -0.2,
+          ),
+        ),
+      ],
+    );
+  }

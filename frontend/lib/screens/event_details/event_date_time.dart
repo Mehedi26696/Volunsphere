@@ -17,24 +17,37 @@ class EventDateTime extends StatelessWidget {
       child: Row(
         children: [
           Container(
+            width: 4,
+            height: 24,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.purple.withOpacity(0.1),
+              color: const Color(0xFF9C27B0).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
-              icon ?? Icons.schedule_outlined,
-              color: Colors.purple.shade600,
+              icon ?? Icons.schedule_rounded,
+              color: const Color(0xFF9C27B0),
               size: 20,
             ),
           ),
           const SizedBox(width: 12),
           Text(
             title,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: Colors.purple.shade700,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.3,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              color: Color(0xFF27264A),
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              letterSpacing: -0.5,
             ),
           ),
         ],
@@ -44,7 +57,6 @@ class EventDateTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final formattedDate = DateFormat(
       'EEEE, MMMM d, y',
     ).format(event.startDatetime);
@@ -63,49 +75,57 @@ class EventDateTime extends StatelessWidget {
         DateTime.now().isBefore(event.endDatetime);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionTitle(
             context,
             "When & Duration",
-            icon: Icons.schedule_outlined,
+            icon: Icons.schedule_rounded,
           ),
 
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
+              color: Colors.white.withValues(alpha: 0.95),
+              borderRadius: BorderRadius.circular(25),
+              border: Border.all(
+                color: const Color(0xFF9C27B0).withValues(alpha: 0.15),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 15,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 5),
+                  color: const Color(0xFF9C27B0).withValues(alpha: 0.08),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
-              border: Border.all(
-                color: Colors.purple.withOpacity(0.1),
-                width: 1,
-              ),
             ),
             child: Column(
               children: [
                 // Date section
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   child: Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.purple.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(16),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF9C27B0), Color(0xFFBA68C8)],
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF9C27B0).withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        child: Icon(
-                          Icons.calendar_month,
-                          color: Colors.purple.shade600,
+                        child: const Icon(
+                          Icons.calendar_month_rounded,
+                          color: Colors.white,
                           size: 24,
                         ),
                       ),
@@ -116,19 +136,24 @@ class EventDateTime extends StatelessWidget {
                           children: [
                             Text(
                               'Date',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.shade600,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: const Color(0xFF626C7A).withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500,
-                                letterSpacing: 0.5,
+                                fontSize: 12,
+                                letterSpacing: -0.2,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            const SizedBox(height: 6),
                             Text(
                               formattedDate,
-                              style: textTheme.titleMedium?.copyWith(
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w600,
-                                color: Colors.purple.shade800,
+                                fontSize: 16,
+                                color: Color(0xFF27264A),
                                 height: 1.2,
+                                letterSpacing: -0.3,
                               ),
                             ),
                           ],
@@ -138,23 +163,32 @@ class EventDateTime extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
-                          vertical: 6,
+                          vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color:
-                              isPastEvent
-                                  ? Colors.grey.withOpacity(0.1)
-                                  : isOngoing
-                                  ? Colors.green.withOpacity(0.1)
-                                  : Colors.blue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            colors: isPastEvent
+                                ? [
+                                    const Color(0xFF626C7A).withValues(alpha: 0.1),
+                                    const Color(0xFF626C7A).withValues(alpha: 0.05),
+                                  ]
+                                : isOngoing
+                                ? [
+                                    const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                                    const Color(0xFF4CAF50).withValues(alpha: 0.05),
+                                  ]
+                                : [
+                                    const Color(0xFF2196F3).withValues(alpha: 0.1),
+                                    const Color(0xFF2196F3).withValues(alpha: 0.05),
+                                  ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color:
-                                isPastEvent
-                                    ? Colors.grey.withOpacity(0.3)
-                                    : isOngoing
-                                    ? Colors.green.withOpacity(0.3)
-                                    : Colors.blue.withOpacity(0.3),
+                            color: isPastEvent
+                                ? const Color(0xFF626C7A).withValues(alpha: 0.3)
+                                : isOngoing
+                                ? const Color(0xFF4CAF50).withValues(alpha: 0.3)
+                                : const Color(0xFF2196F3).withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -163,19 +197,18 @@ class EventDateTime extends StatelessWidget {
                           children: [
                             Icon(
                               isPastEvent
-                                  ? Icons.check_circle_outline
+                                  ? Icons.check_circle_rounded
                                   : isOngoing
-                                  ? Icons.play_circle_outline
-                                  : Icons.upcoming_outlined,
+                                  ? Icons.play_circle_rounded
+                                  : Icons.upcoming_rounded,
                               size: 16,
-                              color:
-                                  isPastEvent
-                                      ? Colors.grey.shade600
-                                      : isOngoing
-                                      ? Colors.green.shade600
-                                      : Colors.blue.shade600,
+                              color: isPastEvent
+                                  ? const Color(0xFF626C7A)
+                                  : isOngoing
+                                  ? const Color(0xFF4CAF50)
+                                  : const Color(0xFF2196F3),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: 6),
                             Text(
                               isPastEvent
                                   ? 'Ended'
@@ -183,14 +216,14 @@ class EventDateTime extends StatelessWidget {
                                   ? 'Live'
                                   : 'Upcoming',
                               style: TextStyle(
+                                fontFamily: 'Poppins',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color:
-                                    isPastEvent
-                                        ? Colors.grey.shade600
-                                        : isOngoing
-                                        ? Colors.green.shade600
-                                        : Colors.blue.shade600,
+                                color: isPastEvent
+                                    ? const Color(0xFF626C7A)
+                                    : isOngoing
+                                    ? const Color(0xFF4CAF50)
+                                    : const Color(0xFF2196F3),
                               ),
                             ),
                           ],
@@ -203,13 +236,21 @@ class EventDateTime extends StatelessWidget {
                 // Divider
                 Container(
                   height: 1,
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  color: Colors.grey.shade200,
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                        const Color(0xFF9C27B0).withValues(alpha: 0.3),
+                        const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                      ],
+                    ),
+                  ),
                 ),
 
                 // Time section
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(24),
                   child: Row(
                     children: [
                       // Start time
@@ -219,29 +260,42 @@ class EventDateTime extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF4CAF50), Color(0xFF81C784)],
+                                ),
                                 borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                              child: Icon(
-                                Icons.play_arrow,
-                                color: Colors.green.shade600,
+                              child: const Icon(
+                                Icons.play_arrow_rounded,
+                                color: Colors.white,
                                 size: 20,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             Text(
                               'Start Time',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.shade600,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: const Color(0xFF626C7A).withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500,
+                                fontSize: 11,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               formattedStartTime,
-                              style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.green.shade700,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color(0xFF4CAF50),
                               ),
                             ),
                           ],
@@ -255,29 +309,42 @@ class EventDateTime extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.orange.withOpacity(0.1),
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFE65100), Color(0xFFFF8F00)],
+                                ),
                                 borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFE65100).withValues(alpha: 0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                              child: Icon(
-                                Icons.timelapse,
-                                color: Colors.orange.shade600,
+                              child: const Icon(
+                                Icons.timelapse_rounded,
+                                color: Colors.white,
                                 size: 20,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             Text(
                               'Duration',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.shade600,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: const Color(0xFF626C7A).withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500,
+                                fontSize: 11,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               durationText,
-                              style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.orange.shade700,
+                              style: const TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Color(0xFFE65100),
                               ),
                             ),
                           ],
@@ -291,29 +358,42 @@ class EventDateTime extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.red.withOpacity(0.1),
+                                gradient: LinearGradient(
+                                  colors: [Colors.red.shade400, Colors.red.shade300],
+                                ),
                                 borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.red.withValues(alpha: 0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                              child: Icon(
-                                Icons.stop,
-                                color: Colors.red.shade600,
+                              child: const Icon(
+                                Icons.stop_rounded,
+                                color: Colors.white,
                                 size: 20,
                               ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 10),
                             Text(
                               'End Time',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: Colors.grey.shade600,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: const Color(0xFF626C7A).withValues(alpha: 0.8),
                                 fontWeight: FontWeight.w500,
+                                fontSize: 11,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               formattedEndTime,
-                              style: textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.red.shade700,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.red.shade600,
                               ),
                             ),
                           ],

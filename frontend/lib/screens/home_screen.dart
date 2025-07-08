@@ -14,6 +14,7 @@ import 'event_details_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'app_drawer.dart';
+import 'community_feed_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -73,6 +74,12 @@ class _HomeScreenState extends State<HomeScreen> {
         );
         break;
       case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CommunityNewsfeedScreen()),
+        );
+        break;
+      case 3:
         if (!isGuest) {
           Navigator.push(
             context,
@@ -80,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         break;
-      case 3:
+      case 4:
         if (!isGuest) {
           Navigator.push(
             context,
@@ -91,39 +98,119 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _buildStatItem(IconData icon, String label, String value) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.teal.withOpacity(0.1),
-            shape: BoxShape.circle,
-          ),
-          padding: const EdgeInsets.all(12),
-          child: Icon(icon, size: 32, color: Colors.teal.shade700),
+  Widget _buildStatItem(IconData icon, String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            color.withValues(alpha: 0.1),
+            color.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        const SizedBox(height: 10),
-        Text(
-          value,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-            color: Colors.teal.shade900,
-            letterSpacing: 1.2,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: color.withValues(alpha: 0.2),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color, color.withValues(alpha: 0.8)],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(icon, size: 32, color: Colors.white),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+              color: color,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              letterSpacing: -0.2,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String title,
+    required VoidCallback onPressed,
+    required List<Color> gradientColors,
+    bool isFullWidth = false,
+  }) {
+    return Container(
+      width: isFullWidth ? double.infinity : null,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: gradientColors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: gradientColors[0].withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onPressed,
+          hoverColor: Colors.white.withValues(alpha: 0.1),
+          splashColor: Colors.white.withValues(alpha: 0.2),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 24, color: Colors.white),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                    letterSpacing: -0.3,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.grey.shade700,
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -137,503 +224,680 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text(
-          "Volunsphere",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 26,
-            letterSpacing: 1.2,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.teal.shade700,
-        elevation: 0,
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {},
-            tooltip: "Notifications",
-          ),
-        ],
-      ),
-      drawer: const AppDrawer(),
-      body: FutureBuilder<List<Event>>(
-        future: _futureEvents,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Text('Error loading events: ${snapshot.error}'),
-            );
-          }
-
-          final allEvents = snapshot.data ?? [];
-          final homeEvents = allEvents.take(3).toList();
-
-          return ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 18.0,
-              vertical: 18.0,
-            ),
-            children: [
-              Row(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.teal.shade100,
-                    child: Icon(
-                      Icons.volunteer_activism,
-                      color: Colors.teal.shade700,
-                      size: 32,
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Builder(
+                      builder: (context) => IconButton(
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        icon: const Icon(
+                          Icons.menu_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.all(12),
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Welcome, Volunteer!",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.teal,
-                            letterSpacing: 1.1,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          "Make a difference today.",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                  const Expanded(
+                    child: Text(
+                      "VolunSphere",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                        color: Colors.white,
+                        letterSpacing: -0.8,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.notifications_none_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      onPressed: () {},
+                      tooltip: "Notifications",
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(12),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 22),
-              if (!isGuest)
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                  elevation: 5,
-                  color: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 22.0,
-                      horizontal: 10,
-                    ),
-                    child:
-                        isStatsLoading
-                            ? const Center(child: CircularProgressIndicator())
-                            : Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Expanded(
-                                  child: _buildStatItem(
-                                    Icons.event,
-                                    "Events Joined",
-                                    userStats?['events_joined']?.toString() ??
-                                        '0',
-                                  ),
-                                ),
-                                Container(
-                                  height: 48,
-                                  width: 1,
-                                  color: Colors.grey[300],
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _buildStatItem(
-                                    Icons.access_time,
-                                    "Hours Volunteered",
-                                    userStats?['hours_volunteered']
-                                            ?.toString() ??
-                                        '0',
-                                  ),
-                                ),
-                                Container(
-                                  height: 48,
-                                  width: 1,
-                                  color: Colors.grey[300],
-                                  margin: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: _buildStatItem(
-                                    Icons.favorite,
-                                    "Avg. Rating",
-                                    userStats?['average_rating']
-                                            ?.toStringAsFixed(1) ??
-                                        '0.0',
-                                  ),
-                                ),
-                              ],
+            ),
+
+            // Content
+            Expanded(
+              child: FutureBuilder<List<Event>>(
+                future: _futureEvents,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(40),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
                             ),
-                  ),
-                ),
-              const SizedBox(height: 28),
-              if (!isGuest) ...[
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.add, size: 20),
-                        label: const Text(
-                          "Create Event",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          ],
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal.shade700,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 2,
-                        ),
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const CreateEventScreen(),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                ),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
                               ),
                             ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.event_available, size: 20),
-                        label: const Text(
-                          "My Events",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal.shade400,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          elevation: 2,
-                        ),
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const MyEventsScreen(),
-                              ),
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.group, size: 20),
-                  label: const Text(
-                    "Joined Events",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade200,
-                    foregroundColor: Colors.teal.shade900,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    elevation: 2,
-                  ),
-                  onPressed:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const JoinedEventsScreen(),
-                        ),
-                      ),
-                ),
-              ],
-              const SizedBox(height: 28),
-              Row(
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AllEventsScreen(),
-                          ),
-                        );
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          children: const [
-                            Text(
-                              "Volunteer Opportunities",
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Loading events...',
                               style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.teal,
+                                fontFamily: 'Poppins',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF27264A),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Colors.teal,
-                              size: 20,
                             ),
                           ],
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 14),
-              if (allEvents.isEmpty)
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 32),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.sentiment_dissatisfied,
-                        color: Colors.grey.shade400,
-                        size: 48,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        "No volunteer opportunities currently available.",
-                        style: TextStyle(fontSize: 16, color: Colors.black54),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                )
-              else
-                ...homeEvents.map(
-                  (event) => Padding(
-                    padding: const EdgeInsets.only(bottom: 14.0),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 3,
-                      color: Colors.white,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) =>
-                                        EventDetailsScreen(eventId: event.id),
-                              ),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error loading events: ${snapshot.error}'),
+                    );
+                  }
+
+                  final allEvents = snapshot.data ?? [];
+                  final homeEvents = allEvents.take(3).toList();
+
+                  return ScrollConfiguration(
+                    behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                    child: ListView(
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                        // Welcome Section
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                          child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                            "Welcome, Volunteer!",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF27264A),
+                              letterSpacing: -0.5,
                             ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 14,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 54,
-                                height: 54,
-                                decoration: BoxDecoration(
-                                  color: Colors.teal.shade50,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.event,
-                                  color: Colors.teal.shade400,
-                                  size: 32,
-                                ),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      event.title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 17,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.place,
-                                          size: 16,
-                                          color: Colors.teal.shade300,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Expanded(
-                                          child: Text(
-                                            event.location ?? "No location",
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.teal.shade700,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      event.description ?? "No description",
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.black54,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.access_time,
-                                          size: 15,
-                                          color: Colors.teal.shade300,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          _formatDateRange(
-                                            event.startDatetime,
-                                            event.endDatetime,
-                                          ),
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.black45,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal.shade700,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 14,
-                                    vertical: 10,
-                                  ),
-                                  textStyle: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                onPressed:
-                                    () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (_) => EventDetailsScreen(
-                                              eventId: event.id,
-                                            ),
-                                      ),
-                                    ),
-                                child: const Text("Details"),
-                              ),
-                            ],
+                            ),
+                            SizedBox(height: 6),
+                            Text(
+                            "Make a difference in your community today.",
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Color(0xFF626C7A),
+                              fontWeight: FontWeight.w400,
+                              letterSpacing: -0.2,
+                            ),
+                            ),
+                          ],
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              const SizedBox(height: 18),
-            ],
-          );
-        },
+
+                        const SizedBox(height: 24),
+
+                        // Stats Section
+                        if (!isGuest)
+                          isStatsLoading
+                            ? const Center(
+                              child: CircularProgressIndicator(
+                              color: Color(0xFF7B2CBF),
+                              ),
+                            )
+                            : Row(
+                              children: [
+                              Expanded(
+                                child: _buildStatItem(
+                                Icons.event_rounded,
+                                "Events Joined",
+                                userStats?['events_joined']?.toString() ?? '0',
+                                const Color(0xFF4CAF50),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildStatItem(
+                                Icons.access_time_rounded,
+                                "Hours Volunteered",
+                                userStats?['hours_volunteered']?.toString() ?? '0',
+                                const Color(0xFF2196F3),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: _buildStatItem(
+                                Icons.star_rounded,
+                                "Avg. Rating",
+                                userStats?['average_rating']?.toStringAsFixed(1) ?? '0.0',
+                                const Color(0xFFFF9800),
+                                ),
+                              ),
+                              ],
+                            ),
+
+                        const SizedBox(height: 24),
+
+                        // Action Buttons
+                        if (!isGuest) ...[
+                          Row(
+                          children: [
+                            Expanded(
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: _buildActionButton(
+                              icon: Icons.add_rounded,
+                              title: "Create Event",
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                builder: (_) => const CreateEventScreen(),
+                                ),
+                              ),
+                              gradientColors: [
+                                const Color(0xFFE040FB), // Pink gradient start
+                                const Color(0xFFFF80AB), // Pink gradient end
+                              ],
+                              ),
+                            ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: _buildActionButton(
+                              icon: Icons.event_note_rounded,
+                              title: "My Events",
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                builder: (_) => const MyEventsScreen(),
+                                ),
+                              ),
+                              gradientColors: [
+                                const Color(0xFF2196F3),
+                                const Color(0xFF64B5F6),
+                              ],
+                              ),
+                            ),
+                            ),
+                          ],
+                          ),
+                          const SizedBox(height: 16),
+                          MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: _buildActionButton(
+                            icon: Icons.group_rounded,
+                            title: "Joined Events",
+                            onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const JoinedEventsScreen(),
+                            ),
+                            ),
+                            gradientColors: [
+                            const Color(0xFF4CAF50),
+                            const Color(0xFF81C784),
+                            ],
+                            isFullWidth: true,
+                          ),
+                          ),
+                          const SizedBox(height: 28),
+                        ],
+
+                        // Events Section
+                        Row(
+                          children: [
+                            const Expanded(
+                              child: Text(
+                                "Volunteer Opportunities",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF27264A),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ),
+                            Material(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(12),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AllEventsScreen(),
+                                    ),
+                                  );
+                                },
+                                hoverColor: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "See All",
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: const Color(0xFF7B2CBF),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14,
+                                          letterSpacing: -0.2,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        color: const Color(0xFF7B2CBF),
+                                        size: 16,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Events List
+                        if (allEvents.isEmpty)
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 32),
+                            padding: const EdgeInsets.all(40),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.95),
+                              borderRadius: BorderRadius.circular(25),
+                              border: Border.all(
+                                color: const Color(0xFF626C7A).withValues(alpha: 0.2),
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Icon(
+                                    Icons.sentiment_dissatisfied_rounded,
+                                    color: const Color(0xFF626C7A).withValues(alpha: 0.7),
+                                    size: 48,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "No volunteer opportunities currently available.",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    color: Color(0xFF626C7A),
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          )
+                        else
+                          ...homeEvents.map(
+                            (event) => Container(
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.95),
+                                borderRadius: BorderRadius.circular(25),
+                                border: Border.all(
+                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                                  width: 1.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                borderRadius: BorderRadius.circular(25),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(25),
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => EventDetailsScreen(eventId: event.id),
+                                    ),
+                                  ),
+                                  hoverColor: const Color(0xFF7B2CBF).withValues(alpha: 0.05),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                            ),
+                                            borderRadius: BorderRadius.circular(18),
+                                          ),
+                                          child: const Icon(
+                                            Icons.event_rounded,
+                                            color: Colors.white,
+                                            size: 32,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                event.title,
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 17,
+                                                  color: Color(0xFF27264A),
+                                                  letterSpacing: -0.5,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.all(6),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.location_on_rounded,
+                                                      size: 16,
+                                                      color: const Color(0xFF4CAF50),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: Text(
+                                                      event.location ?? "No location",
+                                                      style: const TextStyle(
+                                                        fontFamily: 'Poppins',
+                                                        fontSize: 13,
+                                                        color: Color(0xFF626C7A),
+                                                        fontWeight: FontWeight.w500,
+                                                        letterSpacing: -0.2,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                event.description ?? "No description",
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 13,
+                                                  color: Color(0xFF626C7A),
+                                                  letterSpacing: -0.2,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 8),
+                                              Row(
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.all(6),
+                                                    decoration: BoxDecoration(
+                                                      color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                                                      borderRadius: BorderRadius.circular(8),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.access_time_rounded,
+                                                      size: 15,
+                                                      color: const Color(0xFF2196F3),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    _formatDateRange(
+                                                      event.startDatetime,
+                                                      event.endDatetime,
+                                                    ),
+                                                    style: const TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 12,
+                                                      color: Color(0xFF626C7A),
+                                                      letterSpacing: -0.2,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            gradient: const LinearGradient(
+                                              colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                            ),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.transparent,
+                                              shadowColor: Colors.transparent,
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 16,
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                            onPressed: () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => EventDetailsScreen(
+                                                  eventId: event.id,
+                                                ),
+                                              ),
+                                            ),
+                                            child: const Text(
+                                              "Details",
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        const SizedBox(height: 20),
+                      ],
+                  ),);
+              },
+              ),
+            ),
+          ],
+        ),
       ),
+      drawer: const AppDrawer(),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.teal.withOpacity(0.08),
+              color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
               blurRadius: 16,
               offset: const Offset(0, -2),
             ),
           ],
         ),
         child: BottomNavigationBar(
-          selectedItemColor: Colors.teal.shade700,
-          unselectedItemColor: Colors.grey[500],
+          selectedItemColor: const Color(0xFF7B2CBF),
+          unselectedItemColor: const Color(0xFF626C7A).withValues(alpha: 0.7),
           backgroundColor: Colors.white,
           currentIndex: _selectedIndex,
           onTap: _onNavTap,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w400),
-          items:
-              isGuest
-                  ? const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: "Home",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.event),
-                      label: "Events",
-                    ),
-                  ]
-                  : const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: "Home",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.event),
-                      label: "Events",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: "Profile",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.settings),
-                      label: "Settings",
-                    ),
-                  ],
+          selectedLabelStyle: const TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w400,
+            fontSize: 12,
+          ),
+          items: isGuest
+              ? const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_rounded),
+                    label: "Home",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.event_rounded),
+                    label: "Events",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.forum_rounded),
+                    label: "Community",
+                  ),
+                ]
+              : const [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_rounded),
+                    label: "Home",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.event_rounded),
+                    label: "Events",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.forum_rounded),
+                    label: "Community",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.person_rounded),
+                    label: "Profile",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.settings_rounded),
+                    label: "Settings",
+                  ),
+                ],
         ),
       ),
     );

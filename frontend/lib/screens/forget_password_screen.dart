@@ -44,81 +44,302 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Forgot Password"),
-        backgroundColor: Colors.teal,
-        elevation: 2,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 28.0, vertical: 36),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                "Reset Your Password",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
-                  letterSpacing: 1.1,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Email is required";
-                  }
-                  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                  if (!emailRegex.hasMatch(value)) {
-                    return "Enter a valid email address";
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  labelText: "Enter your email",
-                  prefixIcon: const Icon(Icons.email, color: Colors.teal),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
                   ),
-                  filled: true,
-                  fillColor: Colors.grey.shade100,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
-                ),
+                ],
               ),
-              const SizedBox(height: 30),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : _sendOtp,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
-                    elevation: 4,
-                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(10),
+                      ),
+                    ),
                   ),
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  const Expanded(
+                    child: Text(
+                      "Forgot Password",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.lock_reset_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(28),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 40),
+                      
+                      // Icon and Title
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
                           ),
-                        )
-                      : const Text("Send OTP"),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.lock_reset_rounded,
+                          color: Colors.white,
+                          size: 48,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 32),
+                      
+                      const Text(
+                        "Reset Your Password",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF27264A),
+                          letterSpacing: -0.8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      Text(
+                        "Enter your email address and we'll send you a verification code",
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14,
+                          color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      const SizedBox(height: 40),
+                      
+                      // Email Input
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                              blurRadius: 15,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: TextFormField(
+                          controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Email is required";
+                            }
+                            final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+                            if (!emailRegex.hasMatch(value)) {
+                              return "Enter a valid email address";
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            labelText: "Enter your email",
+                            labelStyle: const TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Color(0xFF626C7A),
+                              fontWeight: FontWeight.w500,
+                            ),
+                            prefixIcon: Icon(
+                              Icons.email_rounded,
+                              color: const Color(0xFF7B2CBF),
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 18,
+                              horizontal: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 32),
+                      
+                      // Send OTP Button
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(18),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                              blurRadius: 15,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : _sendOtp,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                          ),
+                          child: isLoading
+                              ? Container(
+                                  padding: const EdgeInsets.all(2),
+                                  child: const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  ),
+                                )
+                              : const Text(
+                                  "Send OTP",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 32),
+                      
+                      // Info Container
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: const Color(0xFF2196F3).withValues(alpha: 0.2),
+                            width: 1,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_rounded,
+                              color: const Color(0xFF2196F3),
+                              size: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                "Check your email inbox and spam folder for the verification code",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 13,
+                                  color: const Color(0xFF2196F3),
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.4,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

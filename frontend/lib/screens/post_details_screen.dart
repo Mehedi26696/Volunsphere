@@ -109,216 +109,605 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        title: const Text("Post Details"),
-        elevation: 0,
-        backgroundColor: theme.colorScheme.background,
-        foregroundColor: theme.colorScheme.onBackground,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Material(
-            elevation: 2,
-            borderRadius: BorderRadius.circular(20),
-            color: theme.cardColor,
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      if (post.user.profileImageUrl != null && post.user.profileImageUrl!.isNotEmpty)
-                        CircleAvatar(
-                          radius: 26,
-                          backgroundImage: CachedNetworkImageProvider(post.user.profileImageUrl!),
-                        )
-                      else
-                        const CircleAvatar(
-                          radius: 26,
-                          child: Icon(Icons.person, size: 28),
-                        ),
-                      const SizedBox(width: 14),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            post.user.username,
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            "Posted on: ${formatDateTime(post.createdAt)}",
-                            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    post.content,
-                    style: theme.textTheme.bodyLarge?.copyWith(fontSize: 17, height: 1.5),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 200),
-                          transitionBuilder: (child, anim) => ScaleTransition(scale: anim, child: child),
-                          child: Icon(
-                            post.likedByMe ? Icons.favorite : Icons.favorite_border,
-                            key: ValueKey(post.likedByMe),
-                            color: post.likedByMe ? Colors.redAccent : theme.iconTheme.color,
-                            size: 28,
-                          ),
-                        ),
-                        onPressed: toggleLike,
-                        splashRadius: 22,
-                      ),
-                      Text(
-                        "${post.likesCount}",
-                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        "likes",
-                        style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                      ),
-                      const SizedBox(width: 20),
-                      Icon(Icons.comment, size: 24, color: theme.iconTheme.color?.withOpacity(0.8)),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${post.commentsCount}",
-                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        "comments",
-                        style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: Container(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: loadingComments
-                  ? const Center(child: CircularProgressIndicator())
-                  : comments.isEmpty
-                      ? Center(
-                          child: Text(
-                            "No comments yet",
-                            style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey[500]),
-                          ),
-                        )
-                      : ListView.separated(
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          itemCount: comments.length,
-                          separatorBuilder: (_, __) => Divider(
-                            indent: 70,
-                            endIndent: 16,
-                            height: 0,
-                            color: Colors.grey[200],
-                          ),
-                          itemBuilder: (context, index) {
-                            final comment = comments[index];
-                            return ListTile(
-                              leading: (comment.profileImageUrl != null && comment.profileImageUrl!.isNotEmpty)
-                                  ? CircleAvatar(
-                                      backgroundImage: CachedNetworkImageProvider(comment.profileImageUrl!),
-                                      radius: 22,
-                                    )
-                                  : const CircleAvatar(child: Icon(Icons.person), radius: 22),
-                              title: Text(
-                                comment.username,
-                                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Padding(
-                                padding: const EdgeInsets.only(top: 2.0),
-                                child: Text(
-                                  comment.content,
-                                  style: theme.textTheme.bodyLarge?.copyWith(fontSize: 15),
-                                ),
-                              ),
-                              trailing: Text(
-                                DateFormat('MMM d, yyyy').format(comment.createdAt),
-                                style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[500], fontSize: 12),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                            );
-                          },
-                        ),
-            ),
-          ),
-          SafeArea(
-            top: false,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.03),
-                    blurRadius: 6,
-                    offset: const Offset(0, -2),
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
               child: Row(
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _commentController,
-                      decoration: InputDecoration(
-                        hintText: "Write a comment...",
-                        filled: true,
-                        fillColor: theme.inputDecorationTheme.fillColor ?? Colors.grey[100],
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: BorderSide.none,
-                        ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
                       ),
-                      minLines: 1,
-                      maxLines: 3,
+                    ),
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context, post),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(10),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: const CircleBorder(),
-                      padding: const EdgeInsets.all(12),
-                      backgroundColor: theme.colorScheme.primary,
-                      elevation: 2,
+                  const Expanded(
+                    child: Text(
+                      "Post Details",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                    onPressed: addComment,
-                    child: const Icon(Icons.send, color: Colors.white, size: 22),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.article_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+            
+            // Post Content
+            Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: post.user.profileImageUrl != null && post.user.profileImageUrl!.isNotEmpty
+                              ? CircleAvatar(
+                                  radius: 26,
+                                  backgroundColor: Colors.white,
+                                  backgroundImage: CachedNetworkImageProvider(post.user.profileImageUrl!),
+                                )
+                              : const CircleAvatar(
+                                  radius: 26,
+                                  backgroundColor: Colors.white,
+                                  child: Icon(
+                                    Icons.person_rounded,
+                                    size: 30,
+                                    color: Color(0xFF7B2CBF),
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                post.user.username,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Color(0xFF27264A),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Posted on: ${formatDateTime(post.createdAt)}",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      post.content,
+                      style: const TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 17,
+                        height: 1.6,
+                        color: Color(0xFF27264A),
+                        fontWeight: FontWeight.w400,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        InkWell(
+                          borderRadius: BorderRadius.circular(20),
+                          onTap: toggleLike,
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            decoration: BoxDecoration(
+                              gradient: post.likedByMe
+                                  ? LinearGradient(
+                                      colors: [
+                                        Colors.pink.shade400,
+                                        Colors.pink.shade300,
+                                      ],
+                                    )
+                                  : LinearGradient(
+                                      colors: [
+                                        const Color(0xFF626C7A).withValues(alpha: 0.05),
+                                        const Color(0xFF626C7A).withValues(alpha: 0.02),
+                                      ],
+                                    ),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: post.likedByMe
+                                    ? Colors.pink.shade300
+                                    : const Color(0xFF626C7A).withValues(alpha: 0.2),
+                                width: 1,
+                              ),
+                              boxShadow: post.likedByMe
+                                  ? [
+                                      BoxShadow(
+                                        color: Colors.pink.withValues(alpha: 0.3),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  post.likedByMe ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                                  color: post.likedByMe ? Colors.white : const Color(0xFF626C7A),
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "${post.likesCount}",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: post.likedByMe ? Colors.white : const Color(0xFF626C7A),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "likes",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    color: post.likedByMe ? Colors.white.withValues(alpha: 0.8) : const Color(0xFF626C7A).withValues(alpha: 0.7),
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFF2196F3).withValues(alpha: 0.2),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.comment_rounded,
+                                color: const Color(0xFF2196F3),
+                                size: 22,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "${post.commentsCount}",
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: Color(0xFF2196F3),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                "comments",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  color: const Color(0xFF2196F3).withValues(alpha: 0.8),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Comments Section
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(25),
+                  border: Border.all(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                      blurRadius: 15,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  child: loadingComments
+                      ? Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(40),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(20),
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                    ),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: const CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                const Text(
+                                  'Loading comments...',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF27264A),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : comments.isEmpty
+                          ? Center(
+                              child: Container(
+                                padding: const EdgeInsets.all(40),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            const Color(0xFF626C7A).withValues(alpha: 0.1),
+                                            const Color(0xFF626C7A).withValues(alpha: 0.05),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Icon(
+                                        Icons.comment_outlined,
+                                        size: 48,
+                                        color: const Color(0xFF626C7A).withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      "No comments yet",
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                              child: ListView.separated(
+                                padding: const EdgeInsets.all(16),
+                                itemCount: comments.length,
+                                separatorBuilder: (_, __) => Container(
+                                  margin: const EdgeInsets.symmetric(vertical: 8),
+                                  height: 1,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                        const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                                        const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                itemBuilder: (context, index) {
+                                  final comment = comments[index];
+                                  return Container(
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.03),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                                              width: 1.5,
+                                            ),
+                                          ),
+                                          child: (comment.profileImageUrl != null && comment.profileImageUrl!.isNotEmpty)
+                                              ? CircleAvatar(
+                                                  backgroundImage: CachedNetworkImageProvider(comment.profileImageUrl!),
+                                                  radius: 20,
+                                                  backgroundColor: Colors.white,
+                                                )
+                                              : const CircleAvatar(
+                                                  radius: 20,
+                                                  backgroundColor: Colors.white,
+                                                  child: Icon(
+                                                    Icons.person_rounded,
+                                                    color: Color(0xFF7B2CBF),
+                                                    size: 20,
+                                                  ),
+                                                ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    comment.username,
+                                                    style: const TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 14,
+                                                      color: Color(0xFF27264A),
+                                                      letterSpacing: -0.3,
+                                                    ),
+                                                  ),
+                                                  const Spacer(),
+                                                  Text(
+                                                    DateFormat('MMM d, yyyy').format(comment.createdAt),
+                                                    style: TextStyle(
+                                                      fontFamily: 'Poppins',
+                                                      fontSize: 11,
+                                                      color: const Color(0xFF626C7A).withValues(alpha: 0.7),
+                                                      fontWeight: FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                comment.content,
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontSize: 14,
+                                                  color: Color(0xFF27264A),
+                                                  fontWeight: FontWeight.w400,
+                                                  height: 1.4,
+                                                  letterSpacing: -0.2,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                ),
+              ),
+            ),
+            
+            // Comment Input
+            Container(
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF626C7A).withValues(alpha: 0.03),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _commentController,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          decoration: const InputDecoration(
+                            hintText: "Write a comment...",
+                            hintStyle: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Color(0xFF626C7A),
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          minLines: 1,
+                          maxLines: 3,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.send_rounded),
+                        onPressed: addComment,
+                        color: Colors.white,
+                        iconSize: 20,
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          padding: const EdgeInsets.all(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
