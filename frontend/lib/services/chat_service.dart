@@ -17,7 +17,7 @@ class ChatService {
   Future<void> connect(String eventId) async {
     if (_channel != null) {
       print('Already connected');
-      return; 
+      return;
     }
 
     final token = await AuthService.getToken();
