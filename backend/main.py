@@ -21,8 +21,8 @@ else:
 # Run migrations first
 print("🔄 Running migrations...")
 try:
-    subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], 
-                  cwd=current_dir, check=True)
+    subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"],
+        cwd=current_dir, check=True)
     print("✅ Migrations completed")
 except subprocess.CalledProcessError as e:
     print(f"⚠️ Migrations failed: {e}")
