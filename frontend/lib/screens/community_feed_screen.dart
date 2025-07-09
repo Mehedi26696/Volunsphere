@@ -75,13 +75,30 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
 
   Widget buildPostCard(Post post) {
     final isLiked = post.likedByMe;
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      color: Theme.of(context).colorScheme.surface,
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.95),
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(
+          color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(25),
         onTap: () async {
           final updatedPost = await Navigator.push<Post>(
             context,
@@ -99,66 +116,121 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
           }
         },
         child: Padding(
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  post.user.profileImageUrl != null
-                      ? CircleAvatar(
-                          radius: 24,
-                          backgroundImage: CachedNetworkImageProvider(
-                            post.user.profileImageUrl!,
-                          ),
-                        )
-                      : const CircleAvatar(
-                          radius: 24,
-                          child: Icon(Icons.person, size: 28),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
-                  const SizedBox(width: 12),
+                      ],
+                    ),
+                    child: post.user.profileImageUrl != null
+                        ? CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.white,
+                            backgroundImage: CachedNetworkImageProvider(
+                              post.user.profileImageUrl!,
+                            ),
+                          )
+                        : const CircleAvatar(
+                            radius: 24,
+                            backgroundColor: Colors.white,
+                            child: Icon(
+                              Icons.person_rounded,
+                              size: 28,
+                              color: Color(0xFF7B2CBF),
+                            ),
+                          ),
+                  ),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           post.user.username,
-                          style: TextStyle(
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
                             fontWeight: FontWeight.bold,
                             fontSize: 17,
-                            color: Theme.of(context).colorScheme.primary,
+                            color: Color(0xFF27264A),
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           formatDateTime(post.createdAt),
                           style: TextStyle(
+                            fontFamily: 'Poppins',
                             fontSize: 12,
-                            color: Colors.grey[500],
+                            color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+                            fontWeight: FontWeight.w400,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert, color: Colors.grey[600]),
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'report',
-                        child: Text('Report'),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF626C7A).withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert_rounded,
+                        color: const Color(0xFF626C7A).withValues(alpha: 0.7),
                       ),
-                    ],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'report',
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: const Text(
+                              'Report',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xFF27264A),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 16),
               Text(
                 post.content,
                 maxLines: 6,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 16, height: 1.4),
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  height: 1.5,
+                  color: Color(0xFF27264A),
+                  fontWeight: FontWeight.w400,
+                  letterSpacing: -0.2,
+                ),
               ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   InkWell(
@@ -166,43 +238,91 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                     onTap: () => toggleLike(post),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: isLiked ? Colors.red.withOpacity(0.1) : Colors.transparent,
+                        gradient: isLiked
+                            ? LinearGradient(
+                                colors: [
+                                  Colors.pink.shade400,
+                                  Colors.pink.shade300,
+                                ],
+                              )
+                            : LinearGradient(
+                                colors: [
+                                  const Color(0xFF626C7A).withValues(alpha: 0.05),
+                                  const Color(0xFF626C7A).withValues(alpha: 0.02),
+                                ],
+                              ),
                         borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: isLiked
+                              ? Colors.pink.shade300
+                              : const Color(0xFF626C7A).withValues(alpha: 0.1),
+                          width: 1,
+                        ),
+                        boxShadow: isLiked
+                            ? [
+                                BoxShadow(
+                                  color: Colors.pink.withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                       ),
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            isLiked ? Icons.favorite : Icons.favorite_border,
-                            color: isLiked ? Colors.red : Colors.grey[600],
-                            size: 22,
+                            isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            color: isLiked ? Colors.white : const Color(0xFF626C7A),
+                            size: 20,
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Text(
                             "${post.likesCount}",
                             style: TextStyle(
-                              color: isLiked ? Colors.red : Colors.grey[700],
-                              fontWeight: FontWeight.w500,
+                              fontFamily: 'Poppins',
+                              color: isLiked ? Colors.white : const Color(0xFF626C7A),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(width: 18),
-                  Row(
-                    children: [
-                      Icon(Icons.comment_outlined, color: Colors.grey[600], size: 22),
-                      const SizedBox(width: 4),
-                      Text(
-                        "${post.commentsCount}",
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontWeight: FontWeight.w500,
-                        ),
+                  const SizedBox(width: 16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2196F3).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: const Color(0xFF2196F3).withValues(alpha: 0.2),
+                        width: 1,
                       ),
-                    ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.comment_rounded,
+                          color: const Color(0xFF2196F3),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          "${post.commentsCount}",
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Color(0xFF2196F3),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -215,91 +335,334 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
-      appBar: AppBar(
-        title: const Text("Community Newsfeed"),
-        elevation: 0,
-        backgroundColor: theme.colorScheme.background,
-        foregroundColor: theme.colorScheme.primary,
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ],
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-                  child: const Icon(Icons.edit, color: Colors.blueGrey),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: _postController,
-                    decoration: const InputDecoration(
-                      hintText: "What's on your mind?",
-                      border: InputBorder.none,
-                      isDense: true,
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
-                    minLines: 1,
-                    maxLines: 4,
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(10),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                    elevation: 0,
+                  const Expanded(
+                    child: Text(
+                      "Community Newsfeed",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                   ),
-                  onPressed: createPost,
-                  child: const Text("Post", style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-              ],
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.forum_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: loading
-                ? const Center(child: CircularProgressIndicator())
-                : RefreshIndicator(
-                    onRefresh: fetchPosts,
-                    child: posts.isEmpty
-                        ? Center(
-                            child: Text(
-                              "No posts yet. Be the first to share something!",
-                              style: TextStyle(
-                                color: Colors.grey[500],
-                                fontSize: 16,
+            
+            // Create Post Section
+            Container(
+              margin: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.95),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                            const Color(0xFF9D4EDD).withValues(alpha: 0.05),
+                          ],
+                        ),
+                        border: Border.all(
+                          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                          width: 1,
+                        ),
+                      ),
+                      child: const CircleAvatar(
+                        radius: 22,
+                        backgroundColor: Colors.transparent,
+                        child: Icon(
+                          Icons.edit_rounded,
+                          color: Color(0xFF7B2CBF),
+                          size: 24,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF626C7A).withValues(alpha: 0.03),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(
+                            color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+                            width: 1,
+                          ),
+                        ),
+                        child: TextField(
+                          controller: _postController,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Color(0xFF27264A),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          decoration: const InputDecoration(
+                            hintText: "What's on your mind?",
+                            hintStyle: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Color(0xFF626C7A),
+                              fontWeight: FontWeight.w400,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                          ),
+                          minLines: 1,
+                          maxLines: 4,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        ),
+                        onPressed: createPost,
+                        child: const Text(
+                          "Post",
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Posts List
+            Expanded(
+              child: loading
+                  ? Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(40),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                ),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
                               ),
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            itemCount: posts.length,
-                            itemBuilder: (context, index) => buildPostCard(posts[index]),
-                          ),
-                  ),
-          ),
-        ],
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Loading posts...',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF27264A),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: fetchPosts,
+                      color: const Color(0xFF7B2CBF),
+                      child: posts.isEmpty
+                          ? Center(
+                              child: Container(
+                                margin: const EdgeInsets.all(32),
+                                padding: const EdgeInsets.all(40),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.95),
+                                  borderRadius: BorderRadius.circular(30),
+                                  border: Border.all(
+                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                    width: 1.5,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                                      blurRadius: 20,
+                                      offset: const Offset(0, 8),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                            const Color(0xFF9D4EDD).withValues(alpha: 0.05),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Icon(
+                                        Icons.forum_rounded,
+                                        size: 48,
+                                        color: const Color(0xFF7B2CBF).withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      "No posts yet. Be the first to share something!",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ScrollConfiguration(
+                              behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                              child: ListView.builder(
+                                padding: const EdgeInsets.only(bottom: 16, top: 8),
+                                itemCount: posts.length,
+                                itemBuilder: (context, index) => buildPostCard(posts[index]),
+                              ),
+                            ),
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }

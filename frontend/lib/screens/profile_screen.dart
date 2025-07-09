@@ -196,24 +196,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     if (userProfile == null) {
       return Scaffold(
-        body: error != null
-            ? RefreshIndicator(
-                onRefresh: _loadProfile,
-                child: ListView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  children: [
-                    Center(
-                      heightFactor: 15,
-                      child: Text(
-                        error!,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(color: Colors.redAccent),
+        backgroundColor: const Color(0xFFF4F6F9),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 225, 192, 255),
+                Color.fromARGB(255, 255, 255, 255),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: error != null
+              ? RefreshIndicator(
+                  onRefresh: _loadProfile,
+                  color: const Color(0xFF9929ea),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      Center(
+                        heightFactor: 15,
+                        child: Text(
+                          error!,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontFamily: 'Poppins',
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                )
+              : const Center(
+                  child: CircularProgressIndicator(
+                    color: Color(0xFF9929ea),
+                  ),
                 ),
-              )
-            : const Center(child: CircularProgressIndicator()),
+        ),
       );
     }
 
@@ -221,104 +243,262 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final hasImage = profileImageUrl != null && profileImageUrl.toString().trim().isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profile"),
-        backgroundColor: Colors.teal,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () async {
-              final updated = await Navigator.push<bool>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditProfileScreen(userProfile: userProfile!),
-                ),
-              );
-              if (updated == true) {
-                _loadProfile();
-              }
-            },
-          )
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadProfile,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(20),
+      backgroundColor: const Color(0xFFF4F6F9),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 225, 192, 255),
+              Color.fromARGB(255, 255, 255, 255),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
           child: Column(
             children: [
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.grey.shade200,
-                        child: ClipOval(
-                          child: hasImage
-                              ? FadeInImage.assetNetwork(
-                                  placeholder: 'assets/images/default_profile.jpg',
-                                  image: cacheBustedUrl(profileImageUrl),
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
-                                  imageErrorBuilder: (context, error, stackTrace) {
-                                    return Image.asset(
-                                      'assets/images/default_profile.jpg',
-                                      fit: BoxFit.cover,
-                                      width: 100,
-                                      height: 100,
-                                    );
-                                  },
-                                )
-                              : Image.asset(
-                                  'assets/images/default_profile.jpg',
-                                  fit: BoxFit.cover,
-                                  width: 100,
-                                  height: 100,
-                                ),
+              // Custom App Bar
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Color(0xFF27264A),
+                        size: 24,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                    const Expanded(
+                      child: Text(
+                        "Profile",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF27264A),
+                          fontFamily: 'Poppins',
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -1,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      isUploading
-                          ? const CircularProgressIndicator()
-                          : ElevatedButton.icon(
-                              onPressed: isUploading ? null : _uploadImage,
-                              icon: const Icon(Icons.upload_file),
-                              label: const Text("Update Profile Picture"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
-                    ],
-                  ),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        final updated = await Navigator.push<bool>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditProfileScreen(userProfile: userProfile!),
+                          ),
+                        );
+                        if (updated == true) {
+                          _loadProfile();
+                        }
+                      },
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Color(0xFF9929ea),
+                        size: 24,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.white.withValues(alpha: 0.8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.all(12),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              Card(
-                elevation: 3,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _profileRow(Icons.person, "Name",
-                          "${userProfile!['first_name'] ?? ''} ${userProfile!['last_name'] ?? ''}"),
-                      _profileRow(Icons.account_circle, "Username", userProfile!['username'] ?? ''),
-                      _profileRow(Icons.email, "Email", userProfile!['email'] ?? ''),
-                      _profileRow(Icons.phone, "Phone", userProfile!['phone'] ?? ''),
-                      _profileRow(Icons.location_city, "City", userProfile!['city'] ?? ''),
-                      _profileRow(Icons.flag, "Country", userProfile!['country'] ?? ''),
-                    ],
+              
+              // Content
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _loadProfile,
+                  color: const Color(0xFF9929ea),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        // Profile Picture Card
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          padding: const EdgeInsets.all(28),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.08),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(0xFF9929ea).withValues(alpha: 0.3),
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF9929ea).withValues(alpha: 0.1),
+                                      blurRadius: 16,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: CircleAvatar(
+                                  radius: 60,
+                                  backgroundColor: Colors.grey.shade200,
+                                  child: ClipOval(
+                                    child: hasImage
+                                        ? FadeInImage.assetNetwork(
+                                            placeholder: 'assets/images/default_profile.jpg',
+                                            image: cacheBustedUrl(profileImageUrl),
+                                            fit: BoxFit.cover,
+                                            width: 120,
+                                            height: 120,
+                                            imageErrorBuilder: (context, error, stackTrace) {
+                                              return Image.asset(
+                                                'assets/images/default_profile.jpg',
+                                                fit: BoxFit.cover,
+                                                width: 120,
+                                                height: 120,
+                                              );
+                                            },
+                                          )
+                                        : Image.asset(
+                                            'assets/images/default_profile.jpg',
+                                            fit: BoxFit.cover,
+                                            width: 120,
+                                            height: 120,
+                                          ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                "${userProfile!['first_name'] ?? ''} ${userProfile!['last_name'] ?? ''}",
+                                style: const TextStyle(
+                                  color: Color(0xFF27264A),
+                                  fontFamily: 'Poppins',
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "@${userProfile!['username'] ?? ''}",
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w400,
+                                  color: Color(0xFF6E6E86),
+                                  fontSize: 16,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              isUploading
+                                  ? Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      child: const CircularProgressIndicator(
+                                        color: Color(0xFF9929ea),
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : SizedBox(
+                                      width: double.infinity,
+                                      child: ElevatedButton(
+                                        onPressed: isUploading ? null : _uploadImage,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: const Color(0xFF9929ea),
+                                          elevation: 0,
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 16,
+                                            horizontal: 24,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            const Icon(
+                                              Icons.upload_file,
+                                              color: Colors.white,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            const Text(
+                                              "Update Profile Picture",
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                                letterSpacing: -0.5,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                            ],
+                          ),
+                        ),
+
+                        // Profile Details Card
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 80),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.08),
+                                blurRadius: 24,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(28),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Personal Information",
+                                  style: TextStyle(
+                                    color: Color(0xFF27264A),
+                                    fontFamily: 'Poppins',
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                _profileRow(Icons.email_outlined, "Email", userProfile!['email'] ?? ''),
+                                _profileRow(Icons.phone_outlined, "Phone", userProfile!['phone'] ?? ''),
+                                _profileRow(Icons.location_city_outlined, "City", userProfile!['city'] ?? ''),
+                                _profileRow(Icons.flag_outlined, "Country", userProfile!['country'] ?? '', isLast: true),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -329,44 +509,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
       floatingActionButton: isGeneratingCertificate
           ? FloatingActionButton(
               onPressed: null,
-              backgroundColor: Colors.grey,
-              child: const CircularProgressIndicator(color: Colors.white),
+              backgroundColor: const Color(0xFF9929ea).withValues(alpha: 0.6),
+              child: const CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
             )
           : FloatingActionButton.extended(
               onPressed: _generateCertificate,
-              icon: const Icon(Icons.picture_as_pdf),
-              label: const Text("Generate Certificate"),
-              backgroundColor: Colors.teal.shade700,
+              backgroundColor: const Color(0xFF9929ea),
+              elevation: 8,
+              icon: const Icon(
+                Icons.picture_as_pdf,
+                color: Colors.white,
+              ),
+              label: const Text(
+                "Generate Certificate",
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
     );
   }
 
-  Widget _profileRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.teal),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    )),
-                Text(value,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    )),
-              ],
-            ),
+  Widget _profileRow(IconData icon, String label, String value, {bool isLast = false}) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF9929ea).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: const Color(0xFF9929ea),
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF626C7A),
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value.isEmpty ? "Not provided" : value,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w600,
+                        color: value.isEmpty ? const Color(0xFF626C7A) : const Color(0xFF27264A),
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+        if (!isLast)
+          Divider(
+            height: 1,
+            thickness: 1,
+            color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+          ),
+      ],
     );
   }
 }

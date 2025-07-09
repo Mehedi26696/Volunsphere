@@ -5,11 +5,13 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
 
 import 'auth_service.dart';
-import 'auth_service.dart';
 
 class ChatService {
   WebSocketChannel? _channel;
   final StreamController<Map<String, dynamic>> _messagesController = StreamController.broadcast();
+  String? _currentEventId;
+  String? _currentUserId;
+  bool _isInChat = false;
 
   Stream<Map<String, dynamic>> get messagesStream => _messagesController.stream;
 
@@ -22,6 +24,11 @@ class ChatService {
 
     final token = await AuthService.getToken();
     if (token == null) throw Exception('No auth token found');
+
+    // Get current user ID
+    final tokenData = await AuthService.getTokenData();
+    _currentUserId = tokenData?['sub'];
+    _currentEventId = eventId;
 
     // final uri = Uri.parse('ws://192.168.54.83:8080/api/v1/chat/ws/$eventId?token=$token');
     final uri = Uri.parse('$chatUrl/ws/$eventId?token=$token');
@@ -46,6 +53,10 @@ class ChatService {
         // Optionally notify listeners or try to reconnect
       },
     );
+  }
+
+  void setInChat(bool inChat) {
+    _isInChat = inChat;
   }
 
   /// Send a raw string message through WebSocket

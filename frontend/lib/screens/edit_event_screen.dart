@@ -315,20 +315,32 @@ class _EditEventScreenState extends State<EditEventScreen> {
   }) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: icon != null ? Icon(icon, color: Colors.teal) : null,
+      labelStyle: const TextStyle(
+        fontFamily: 'Poppins',
+        color: Color(0xFF626C7A),
+        fontWeight: FontWeight.w500,
+      ),
+      prefixIcon: icon != null ? Icon(icon, color: const Color(0xFF7B2CBF)) : null,
       filled: filled,
-      fillColor: Colors.grey.shade50,
+      fillColor: Colors.white.withValues(alpha: 0.8),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.teal.shade100),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+        ),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.teal.shade100),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: BorderSide(
+          color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: Colors.teal, width: 2),
+        borderRadius: BorderRadius.circular(18),
+        borderSide: const BorderSide(
+          color: Color(0xFF7B2CBF),
+          width: 2,
+        ),
       ),
       suffixIcon: suffix,
       contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
@@ -337,310 +349,673 @@ class _EditEventScreenState extends State<EditEventScreen> {
 
   Widget _sectionTitle(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8, top: 20),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 18,
-          color: Colors.teal.shade700,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.5,
-        ),
+      padding: const EdgeInsets.only(bottom: 16, top: 24),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 24,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+              ),
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            text,
+            style: const TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Color(0xFF27264A),
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    _locationController.dispose();
-    _dateController.dispose();
-    _startTimeController.dispose();
-    _endTimeController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
-      appBar: AppBar(
-        title: const Text('Edit Event'),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.teal),
-        titleTextStyle: theme.textTheme.titleLarge?.copyWith(
-          color: Colors.teal.shade800,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        child: _startTimeController == null || _endTimeController == null
-            ? const Center(child: CircularProgressIndicator())
-            : Form(
-                key: _formKey,
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: [
-                    _sectionTitle("Event Details"),
-                    TextFormField(
-                      controller: _titleController,
-                      decoration: _modernInputDecoration(label: 'Title *', icon: Icons.title),
-                      validator: (value) =>
-                          (value == null || value.trim().isEmpty) ? 'Title is required' : null,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Purple App Bar
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: _modernInputDecoration(label: 'Description', icon: Icons.description),
-                      maxLines: 3,
+                    child: IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        padding: const EdgeInsets.all(10),
+                      ),
                     ),
-                    _sectionTitle("Date & Time"),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _dateController,
-                            decoration: _modernInputDecoration(
-                              label: 'Date *',
-                              icon: Icons.calendar_today,
-                            ),
-                            readOnly: true,
-                            onTap: _pickDate,
-                            validator: (value) =>
-                                (value == null || value.isEmpty) ? 'Date is required' : null,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _startTimeController,
-                            decoration: _modernInputDecoration(
-                              label: 'Start Time *',
-                              icon: Icons.access_time,
-                            ),
-                            readOnly: true,
-                            onTap: () => _pickTime(isStart: true),
-                            validator: (value) =>
-                                (value == null || value.isEmpty) ? 'Start time is required' : null,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _endTimeController,
-                            decoration: _modernInputDecoration(
-                              label: 'End Time *',
-                              icon: Icons.access_time,
-                            ),
-                            readOnly: true,
-                            onTap: () => _pickTime(isStart: false),
-                            validator: (value) =>
-                                (value == null || value.isEmpty) ? 'End time is required' : null,
-                          ),
-                        ),
-                      ],
+                  ),
+                  const Expanded(
+                    child: Text(
+                      "Edit Event",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 22,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
                     ),
-                    _sectionTitle("Location"),
-                    TextFormField(
-                      controller: _locationController,
-                      decoration: _modernInputDecoration(
-                        label: 'Location',
-                        icon: Icons.location_on,
-                        suffix: IconButton(
-                          icon: const Icon(Icons.map, color: Colors.teal),
-                          onPressed: _pickMapLocation,
-                          tooltip: "Pick on Map",
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.edit_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Content
+            Expanded(
+              child: _startTimeController == null || _endTimeController == null
+                  ? Center(
+                      child: Container(
+                        padding: const EdgeInsets.all(40),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.9),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                ),
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              child: const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Loading event...',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF27264A),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      readOnly: true,
-                      onTap: _pickMapLocation,
-                    ),
-                    if (_locationController.text.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8, bottom: 8),
-                        child: Card(
-                          color: Colors.teal.shade50,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                    )
+                  : SingleChildScrollView(
+                      padding: const EdgeInsets.all(20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.95),
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(
+                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                            width: 1.5,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: Row(
-                              children: [
-                                Icon(Icons.place, color: Colors.teal.shade400),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _locationController.text,
-                                    style: const TextStyle(fontWeight: FontWeight.w600),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(24),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _sectionTitle("Event Details"),
+                              TextFormField(
+                                controller: _titleController,
+                                decoration: _modernInputDecoration(
+                                  label: 'Event Title *',
+                                  icon: Icons.title_rounded,
+                                ),
+                                validator: (value) =>
+                                    (value == null || value.trim().isEmpty) ? 'Title is required' : null,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15,
+                                  color: Color(0xFF27264A),
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                controller: _descriptionController,
+                                decoration: _modernInputDecoration(
+                                  label: 'Event Description',
+                                  icon: Icons.description_rounded,
+                                ),
+                                maxLines: 4,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15,
+                                  color: Color(0xFF27264A),
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+
+                              _sectionTitle("Date & Time"),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _dateController,
+                                      decoration: _modernInputDecoration(
+                                        label: 'Date *',
+                                        icon: Icons.calendar_today_rounded,
+                                      ),
+                                      readOnly: true,
+                                      onTap: _pickDate,
+                                      validator: (value) =>
+                                          (value == null || value.isEmpty) ? 'Date is required' : null,
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        color: Color(0xFF27264A),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _startTimeController,
+                                      decoration: _modernInputDecoration(
+                                        label: 'Start Time *',
+                                        icon: Icons.access_time_rounded,
+                                      ),
+                                      readOnly: true,
+                                      onTap: () => _pickTime(isStart: true),
+                                      validator: (value) =>
+                                          (value == null || value.isEmpty) ? 'Start time is required' : null,
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        color: Color(0xFF27264A),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: _endTimeController,
+                                      decoration: _modernInputDecoration(
+                                        label: 'End Time *',
+                                        icon: Icons.event_rounded,
+                                      ),
+                                      readOnly: true,
+                                      onTap: () => _pickTime(isStart: false),
+                                      validator: (value) =>
+                                          (value == null || value.isEmpty) ? 'End time is required' : null,
+                                      style: const TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        color: Color(0xFF27264A),
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              _sectionTitle("Location"),
+                              TextFormField(
+                                controller: _locationController,
+                                decoration: _modernInputDecoration(
+                                  label: 'Location',
+                                  icon: Icons.location_on_rounded,
+                                  suffix: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [Color(0xFF2196F3), Color(0xFF64B5F6)],
+                                      ),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.map_rounded, color: Colors.white, size: 18),
+                                      onPressed: _pickMapLocation,
+                                      tooltip: "Pick on Map",
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Colors.transparent,
+                                        padding: const EdgeInsets.all(6),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                readOnly: true,
+                                onTap: _pickMapLocation,
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 15,
+                                  color: Color(0xFF27264A),
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+
+                              if (_locationController.text.isNotEmpty) ...[
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        const Color(0xFF4CAF50).withValues(alpha: 0.1),
+                                        const Color(0xFF4CAF50).withValues(alpha: 0.05),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.place_rounded, color: const Color(0xFF4CAF50)),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          _locationController.text,
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                            color: Color(0xFF4CAF50),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    if (_latitude != null && _longitude != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: SizedBox(
-                            height: 180,
-                            child: GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                target: LatLng(_latitude!, _longitude!),
-                                zoom: 15,
-                              ),
-                              markers: _markers,
-                              onMapCreated: (controller) {
-                                _mapController = controller;
-                              },
-                              myLocationEnabled: false,
-                              zoomControlsEnabled: false,
-                              scrollGesturesEnabled: false,
-                              tiltGesturesEnabled: false,
-                              rotateGesturesEnabled: false,
-                            ),
-                          ),
-                        ),
-                      ),
-                    _sectionTitle("Images"),
-                    if (_existingImageUrls.isNotEmpty)
-                      SizedBox(
-                        height: 110,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _existingImageUrls.length,
-                          itemBuilder: (context, index) {
-                            final url = _existingImageUrls[index];
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
-                                      url,
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
+
+                              if (_latitude != null && _longitude != null) ...[
+                                const SizedBox(height: 20),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                      width: 1.5,
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
-                                  Positioned(
-                                    right: 4,
-                                    top: 4,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _existingImageUrls.removeAt(index);
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.black54,
-                                          shape: BoxShape.circle,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(20),
+                                    child: SizedBox(
+                                      height: 200,
+                                      child: GoogleMap(
+                                        initialCameraPosition: CameraPosition(
+                                          target: LatLng(_latitude!, _longitude!),
+                                          zoom: 15,
                                         ),
-                                        child: const Icon(Icons.close, color: Colors.white, size: 20),
+                                        markers: _markers,
+                                        onMapCreated: (controller) {
+                                          _mapController = controller;
+                                        },
+                                        myLocationEnabled: false,
+                                        zoomControlsEnabled: false,
+                                        scrollGesturesEnabled: false,
+                                        tiltGesturesEnabled: false,
+                                        rotateGesturesEnabled: false,
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    if (_pickedImages.isNotEmpty)
-                      SizedBox(
-                        height: 110,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: _pickedImages.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.file(
-                                      _pickedImages[index],
-                                      width: 100,
-                                      height: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    right: 4,
-                                    top: 4,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _pickedImages.removeAt(index);
-                                        });
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.black54,
-                                          shape: BoxShape.circle,
+                                ),
+                              ],
+
+                              _sectionTitle("Event Images"),
+                              if (_existingImageUrls.isNotEmpty) ...[
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: _existingImageUrls.length,
+                                    itemBuilder: (context, index) {
+                                      final url = _existingImageUrls[index];
+                                      return Container(
+                                        margin: const EdgeInsets.only(right: 12),
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                                  width: 1.5,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(14),
+                                                child: Image.network(
+                                                  url,
+                                                  width: 120,
+                                                  height: 120,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 8,
+                                              top: 8,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _existingImageUrls.removeAt(index);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [Colors.red.shade400, Colors.red.shade500],
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.red.withValues(alpha: 0.3),
+                                                        blurRadius: 6,
+                                                        offset: const Offset(0, 2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  padding: const EdgeInsets.all(6),
+                                                  child: const Icon(
+                                                    Icons.close_rounded,
+                                                    color: Colors.white,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                        child: const Icon(Icons.close, color: Colors.white, size: 20),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+
+                              if (_pickedImages.isNotEmpty) ...[
+                                Container(
+                                  height: 120,
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  child: ListView.builder(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: _pickedImages.length,
+                                    itemBuilder: (context, index) {
+                                      return Container(
+                                        margin: const EdgeInsets.only(right: 12),
+                                        child: Stack(
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(16),
+                                                border: Border.all(
+                                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                                  width: 1.5,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 4),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: ClipRRect(
+                                                borderRadius: BorderRadius.circular(14),
+                                                child: Image.file(
+                                                  _pickedImages[index],
+                                                  width: 120,
+                                                  height: 120,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 8,
+                                              top: 8,
+                                              child: GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    _pickedImages.removeAt(index);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                      colors: [Colors.red.shade400, Colors.red.shade500],
+                                                    ),
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                        color: Colors.red.withValues(alpha: 0.3),
+                                                        blurRadius: 6,
+                                                        offset: const Offset(0, 2),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  padding: const EdgeInsets.all(6),
+                                                  child: const Icon(
+                                                    Icons.close_rounded,
+                                                    color: Colors.white,
+                                                    size: 16,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ],
+
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      const Color(0xFFFF9800).withValues(alpha: 0.1),
+                                      const Color(0xFFFFB74D).withValues(alpha: 0.05),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: const Color(0xFFFF9800).withValues(alpha: 0.2),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(16),
+                                    onTap: _pickImages,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate_rounded,
+                                            color: const Color(0xFFFF9800),
+                                            size: 24,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Text(
+                                            "Pick Images (max 3)",
+                                            style: const TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: Color(0xFFFF9800),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                            );
-                          },
+
+                              const SizedBox(height: 32),
+
+                              // Submit Button
+                              _isLoading
+                                  ? Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                          ),
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: const CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 3,
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(18),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                                            blurRadius: 15,
+                                            offset: const Offset(0, 6),
+                                          ),
+                                        ],
+                                      ),
+                                      child: ElevatedButton(
+                                        onPressed: _submit,
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.transparent,
+                                          shadowColor: Colors.transparent,
+                                          elevation: 0,
+                                          padding: const EdgeInsets.symmetric(vertical: 18),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(18),
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          "Update Event",
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                            letterSpacing: -0.5,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                            ],
+                          ),
                         ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, bottom: 16),
-                      child: OutlinedButton.icon(
-                        icon: const Icon(Icons.add_photo_alternate, color: Colors.teal),
-                        label: const Text("Pick Images (max 3)", style: TextStyle(color: Colors.teal)),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.teal.shade200),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                        ),
-                        onPressed: _pickImages,
                       ),
                     ),
-                    _isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _submit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.teal.shade600,
-                                foregroundColor: Colors.white,
-                                elevation: 2,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                textStyle: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                              child: const Text("Update Event"),
-                            ),
-                          ),
-                    const SizedBox(height: 18),
-                  ],
-                ),
-              ),
+            ),
+          ],
+        ),
       ),
     );
   }
