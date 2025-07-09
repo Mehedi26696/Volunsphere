@@ -39,17 +39,20 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   void _showSignupDialog() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
           ),
           elevation: 0,
           backgroundColor: Colors.transparent,
           content: Container(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(isTablet ? 32 : 24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -59,7 +62,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
               border: Border.all(
                 color: Colors.white.withValues(alpha: 0.9),
                 width: 1.5,
@@ -71,45 +74,45 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(isTablet ? 16 : 12),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
                           colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
                         ),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.person_add_rounded,
                         color: Colors.white,
-                        size: 24,
+                        size: isTablet ? 28 : 24,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
+                    SizedBox(width: isTablet ? 20 : 16),
+                    Expanded(
                       child: Text(
                         "Sign Up Required",
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                          color: Color(0xFF27264A),
+                          fontSize: isTablet ? 24 : 20,
+                          color: const Color(0xFF27264A),
                           letterSpacing: -0.5,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                const Text(
+                SizedBox(height: isTablet ? 24 : 20),
+                Text(
                   "You need to sign up to view user profiles and join our community!",
                   style: TextStyle(
                     fontFamily: 'Poppins',
-                    fontSize: 14,
-                    color: Color(0xFF626C7A),
+                    fontSize: isTablet ? 16 : 14,
+                    color: const Color(0xFF626C7A),
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: isTablet ? 32 : 24),
                 Row(
                   children: [
                     Expanded(
@@ -121,9 +124,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               const Color(0xFF626C7A).withValues(alpha: 0.05),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 20 : 16,
+                          ),
                           border: Border.all(
-                            color: const Color(0xFF626C7A).withValues(alpha: 0.2),
+                            color: const Color(
+                              0xFF626C7A,
+                            ).withValues(alpha: 0.2),
                             width: 1,
                           ),
                         ),
@@ -131,31 +138,37 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                           onPressed: () => Navigator.pop(context),
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(
+                              vertical: isTablet ? 18 : 14,
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(
+                                isTablet ? 20 : 16,
+                              ),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             "Cancel",
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: Color(0xFF626C7A),
+                              color: const Color(0xFF626C7A),
                               fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                              fontSize: isTablet ? 18 : 16,
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: isTablet ? 16 : 12),
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
                             colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(
+                            isTablet ? 20 : 16,
+                          ),
                         ),
                         child: ElevatedButton(
                           onPressed: () {
@@ -166,18 +179,22 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
                             elevation: 0,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(
+                              vertical: isTablet ? 18 : 14,
+                            ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(
+                                isTablet ? 20 : 16,
+                              ),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             "Sign Up",
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: isTablet ? 18 : 16,
                             ),
                           ),
                         ),
@@ -230,10 +247,14 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   }
 
   Widget _buildList() {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
+    final isDesktop = screenWidth > 1200;
+
     if (_loading) {
       return Center(
         child: Container(
-          padding: const EdgeInsets.all(40),
+          padding: EdgeInsets.all(isTablet ? 50 : 40),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(30),
@@ -253,7 +274,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(isTablet ? 24 : 20),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
@@ -266,13 +287,13 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Loading leaderboard...',
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontSize: 18,
+                  fontSize: isTablet ? 22 : 18,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF27264A),
+                  color: const Color(0xFF27264A),
                 ),
               ),
             ],
@@ -284,8 +305,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     if (_error != null) {
       return Center(
         child: Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(30),
+          margin: EdgeInsets.all(isTablet ? 30 : 20),
+          padding: EdgeInsets.all(isTablet ? 40 : 30),
           decoration: BoxDecoration(
             color: Colors.red.shade50.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(25),
@@ -305,17 +326,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(isTablet ? 20 : 16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Colors.red.shade400, Colors.red.shade500],
                   ),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.error_outline_rounded,
                   color: Colors.white,
-                  size: 32,
+                  size: isTablet ? 40 : 32,
                 ),
               ),
               const SizedBox(height: 16),
@@ -323,7 +344,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 'Error loading data',
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontSize: 18,
+                  fontSize: isTablet ? 22 : 18,
                   fontWeight: FontWeight.w600,
                   color: Colors.red.shade700,
                 ),
@@ -334,7 +355,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontSize: 14,
+                  fontSize: isTablet ? 16 : 14,
                   color: Colors.red.shade600,
                 ),
               ),
@@ -347,8 +368,8 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
     if (_leaderboard.isEmpty) {
       return Center(
         child: Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(40),
+          margin: EdgeInsets.all(isTablet ? 30 : 20),
+          padding: EdgeInsets.all(isTablet ? 50 : 40),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(30),
@@ -368,7 +389,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(isTablet ? 24 : 20),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -380,7 +401,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 ),
                 child: Icon(
                   Icons.leaderboard_rounded,
-                  size: 48,
+                  size: isTablet ? 56 : 48,
                   color: const Color(0xFF626C7A).withValues(alpha: 0.8),
                 ),
               ),
@@ -389,7 +410,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                 'No leaderboard data',
                 style: TextStyle(
                   fontFamily: 'Poppins',
-                  fontSize: 18,
+                  fontSize: isTablet ? 22 : 18,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF626C7A).withValues(alpha: 0.9),
                 ),
@@ -402,295 +423,528 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
 
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        itemCount: _leaderboard.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        physics: const ClampingScrollPhysics(),
-        itemBuilder: (context, index) {
-          final user = _leaderboard[index];
-          final username = user['username'] ?? 'Unknown';
-          final profileUrl = user['profile_image_url'] as String?;
-          final eventsJoined = user['events_joined'] ?? 0;
-          final avgRating = _formatNumber(user['avg_rating'], decimals: 2);
-          final totalHours = _formatNumber(user['total_hours'], decimals: 1);
-          final overallScore = _formatNumber(user['overall_score'], decimals: 2);
-
-          // Better color palette for white background
-          final rankColors = [
-            [const Color(0xFFE91E63), const Color(0xFFF06292)], // Pink
-            [const Color(0xFF9C27B0), const Color(0xFFBA68C8)], // Purple
-            [const Color(0xFF3F51B5), const Color(0xFF7986CB)], // Indigo
-            [const Color(0xFF2196F3), const Color(0xFF64B5F6)], // Blue
-            [const Color(0xFF00BCD4), const Color(0xFF4DD0E1)], // Cyan
-            [const Color(0xFF4CAF50), const Color(0xFF81C784)], // Green
-            [const Color(0xFFFF9800), const Color(0xFFFFB74D)], // Orange
-            [const Color(0xFF795548), const Color(0xFFA1887F)], // Brown
-          ];
-
-          final colorIndex = index < rankColors.length ? index : (index % rankColors.length);
-          final rankGradient = rankColors[colorIndex];
-
-          return InkWell(
-            onTap: () {
-              if (_isGuest) {
-                _showSignupDialog();
-              } else {
-                final userMap = Map<String, dynamic>.from(user);
-                userMap['id'] = userMap['uid'];
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => UserProfileScreen(user: userMap),
-                  ),
-                );
-              }
-            },
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: rankGradient[0].withValues(alpha: 0.3),
-                  width: 1,
+      child:
+          isDesktop
+              ? GridView.builder(
+                padding: EdgeInsets.symmetric(
+                  vertical: isTablet ? 12 : 8,
+                  horizontal: isTablet ? 24 : 0,
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                  BoxShadow(
-                    color: rankGradient[0].withValues(alpha: 0.1),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.white.withValues(alpha: 0.1),
-                        Colors.white.withValues(alpha: 0.05),
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 3.5,
+                ),
+                itemCount: _leaderboard.length,
+                physics: const ClampingScrollPhysics(),
+                itemBuilder:
+                    (context, index) => _buildLeaderboardCard(
+                      context,
+                      index,
+                      isTablet,
+                      isDesktop,
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            // Rank Badge
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: rankGradient,
-                                ),
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: rankGradient[0].withValues(alpha: 0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                '${index + 1}',
-                                style: const TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            
-                            // Profile Picture
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: rankGradient[0].withValues(alpha: 0.4),
-                                  width: 1.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: rankGradient[0].withValues(alpha: 0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(13),
-                                child: Container(
-                                  width: 50,
-                                  height: 50,
-                                  color: Colors.white,
-                                  child: profileUrl != null
-                                      ? Image.network(
-                                          profileUrl,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Icon(
-                                              Icons.person_rounded,
-                                              size: 25,
-                                              color: rankGradient[0],
-                                            );
-                                          },
-                                        )
-                                      : Icon(
-                                          Icons.person_rounded,
-                                          size: 25,
-                                          color: rankGradient[0],
-                                        ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            
-                            // User Info
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    username,
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF27264A),
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Row(
-                                    children: [
-                                      _buildStatChip('Events', eventsJoined.toString(), const Color(0xFF4CAF50)),
-                                      const SizedBox(width: 6),
-                                      _buildStatChip('Rating', avgRating, const Color(0xFFFF9800)),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 4),
-                                  _buildStatChip('Hours', totalHours, const Color(0xFF2196F3)),
-                                ],
-                              ),
-                            ),
-                            
-                            // Score Display
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: rankGradient[0].withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: rankGradient[0].withValues(alpha: 0.3),
-                                  width: 0.8,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    _sortBy == 'rating'
-                                        ? avgRating
-                                        : _sortBy == 'hours'
-                                        ? totalHours
-                                        : _sortBy == 'events'
-                                        ? eventsJoined.toString()
-                                        : overallScore,
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                      color: rankGradient[0],
-                                      letterSpacing: -0.3,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    _sortBy == 'rating'
-                                        ? 'Rating'
-                                        : _sortBy == 'hours'
-                                        ? 'Hours'
-                                        : _sortBy == 'events'
-                                        ? 'Events'
-                                        : 'Score',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontSize: 9,
-                                      color: rankGradient[0].withValues(alpha: 0.8),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      // Bottom Accent
-                      Container(
-                        height: 2,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: rankGradient,
-                          ),
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              )
+              : ListView.separated(
+                padding: EdgeInsets.symmetric(vertical: isTablet ? 12 : 8),
+                itemCount: _leaderboard.length,
+                separatorBuilder:
+                    (_, __) => SizedBox(height: isTablet ? 16 : 12),
+                physics: const ClampingScrollPhysics(),
+                itemBuilder:
+                    (context, index) => _buildLeaderboardCard(
+                      context,
+                      index,
+                      isTablet,
+                      isDesktop,
+                    ),
+              ),
+    );
+  }
+
+  Widget _buildLeaderboardCard(
+    BuildContext context,
+    int index,
+    bool isTablet,
+    bool isDesktop,
+  ) {
+    final user = _leaderboard[index];
+    final username = user['username'] ?? 'Unknown';
+    final profileUrl = user['profile_image_url'] as String?;
+    final eventsJoined = user['events_joined'] ?? 0;
+    final avgRating = _formatNumber(user['avg_rating'], decimals: 2);
+    final totalHours = _formatNumber(user['total_hours'], decimals: 1);
+    final overallScore = _formatNumber(user['overall_score'], decimals: 2);
+
+    // Better color palette for white background
+    final rankColors = [
+      [const Color(0xFFE91E63), const Color(0xFFF06292)], // Pink
+      [const Color(0xFF9C27B0), const Color(0xFFBA68C8)], // Purple
+      [const Color(0xFF3F51B5), const Color(0xFF7986CB)], // Indigo
+      [const Color(0xFF2196F3), const Color(0xFF64B5F6)], // Blue
+      [const Color(0xFF00BCD4), const Color(0xFF4DD0E1)], // Cyan
+      [const Color(0xFF4CAF50), const Color(0xFF81C784)], // Green
+      [const Color(0xFFFF9800), const Color(0xFFFFB74D)], // Orange
+      [const Color(0xFF795548), const Color(0xFFA1887F)], // Brown
+    ];
+
+    final colorIndex =
+        index < rankColors.length ? index : (index % rankColors.length);
+    final rankGradient = rankColors[colorIndex];
+
+    return InkWell(
+      onTap: () {
+        if (_isGuest) {
+          _showSignupDialog();
+        } else {
+          final userMap = Map<String, dynamic>.from(user);
+          userMap['id'] = userMap['uid'];
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => UserProfileScreen(user: userMap)),
+          );
+        }
+      },
+      borderRadius: BorderRadius.circular(isTablet ? 24 : 20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.25),
+          borderRadius: BorderRadius.circular(isTablet ? 24 : 20),
+          border: Border.all(
+            color: rankGradient[0].withValues(alpha: 0.3),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: rankGradient[0].withValues(alpha: 0.1),
+              blurRadius: 15,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(isTablet ? 24 : 20),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Colors.white.withValues(alpha: 0.1),
+                  Colors.white.withValues(alpha: 0.05),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-          );
-        },
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(isTablet ? 24 : 20),
+                  child:
+                      isDesktop
+                          ? _buildDesktopLayout(
+                            index,
+                            rankGradient,
+                            username,
+                            profileUrl,
+                            eventsJoined,
+                            avgRating,
+                            totalHours,
+                            overallScore,
+                            isTablet,
+                          )
+                          : _buildMobileLayout(
+                            index,
+                            rankGradient,
+                            username,
+                            profileUrl,
+                            eventsJoined,
+                            avgRating,
+                            totalHours,
+                            overallScore,
+                            isTablet,
+                          ),
+                ),
+
+                // Bottom Accent
+                Container(
+                  height: 2,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: rankGradient),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(isTablet ? 24 : 20),
+                      bottomRight: Radius.circular(isTablet ? 24 : 20),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildStatChip(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 0.5,
+  Widget _buildMobileLayout(
+    int index,
+    List<Color> rankGradient,
+    String username,
+    String? profileUrl,
+    int eventsJoined,
+    String avgRating,
+    String totalHours,
+    String overallScore,
+    bool isTablet,
+  ) {
+    return Row(
+      children: [
+        // Rank Badge
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isTablet ? 20 : 16,
+            vertical: isTablet ? 16 : 12,
+          ),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: rankGradient),
+            borderRadius: BorderRadius.circular(isTablet ? 18 : 15),
+            boxShadow: [
+              BoxShadow(
+                color: rankGradient[0].withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Text(
+            '${index + 1}',
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontWeight: FontWeight.bold,
+              fontSize: isTablet ? 20 : 16,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
         ),
-      ),
-      child: Text(
-        '$label: $value',
-        style: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color: color,
-          letterSpacing: -0.2,
+        SizedBox(width: isTablet ? 20 : 16),
+
+        // Profile Picture
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(isTablet ? 18 : 15),
+            border: Border.all(
+              color: rankGradient[0].withValues(alpha: 0.4),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: rankGradient[0].withValues(alpha: 0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(isTablet ? 16 : 13),
+            child: Container(
+              width: isTablet ? 60 : 50,
+              height: isTablet ? 60 : 50,
+              color: Colors.white,
+              child:
+                  profileUrl != null
+                      ? Image.network(
+                        profileUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.person_rounded,
+                            size: isTablet ? 30 : 25,
+                            color: rankGradient[0],
+                          );
+                        },
+                      )
+                      : Icon(
+                        Icons.person_rounded,
+                        size: isTablet ? 30 : 25,
+                        color: rankGradient[0],
+                      ),
+            ),
+          ),
         ),
-      ),
+        SizedBox(width: isTablet ? 20 : 16),
+
+        // User Info
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                username,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: isTablet ? 20 : 17,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF27264A),
+                  letterSpacing: -0.5,
+                ),
+              ),
+              SizedBox(height: isTablet ? 8 : 6),
+              Wrap(
+                spacing: isTablet ? 8 : 6,
+                runSpacing: 4,
+                children: [
+                  _buildStatChip(
+                    'Events',
+                    eventsJoined.toString(),
+                    const Color(0xFF4CAF50),
+                    isTablet,
+                  ),
+                  _buildStatChip(
+                    'Rating',
+                    avgRating,
+                    const Color(0xFFFF9800),
+                    isTablet,
+                  ),
+                  _buildStatChip(
+                    'Hours',
+                    totalHours,
+                    const Color(0xFF2196F3),
+                    isTablet,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        // Score Display
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isTablet ? 18 : 14,
+            vertical: isTablet ? 14 : 10,
+          ),
+          decoration: BoxDecoration(
+            color: rankGradient[0].withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
+            border: Border.all(
+              color: rankGradient[0].withValues(alpha: 0.3),
+              width: 0.8,
+            ),
+          ),
+          child: Column(
+            children: [
+              Text(
+                _sortBy == 'rating'
+                    ? avgRating
+                    : _sortBy == 'hours'
+                    ? totalHours
+                    : _sortBy == 'events'
+                    ? eventsJoined.toString()
+                    : overallScore,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: isTablet ? 20 : 16,
+                  color: rankGradient[0],
+                  letterSpacing: -0.3,
+                ),
+              ),
+              SizedBox(height: isTablet ? 4 : 2),
+              Text(
+                _sortBy == 'rating'
+                    ? 'Rating'
+                    : _sortBy == 'hours'
+                    ? 'Hours'
+                    : _sortBy == 'events'
+                    ? 'Events'
+                    : 'Score',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: isTablet ? 11 : 9,
+                  color: rankGradient[0].withValues(alpha: 0.8),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDesktopLayout(
+    int index,
+    List<Color> rankGradient,
+    String username,
+    String? profileUrl,
+    int eventsJoined,
+    String avgRating,
+    String totalHours,
+    String overallScore,
+    bool isTablet,
+  ) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            // Rank Badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: rankGradient),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: rankGradient[0].withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                '${index + 1}',
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+
+            // Profile Picture
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: rankGradient[0].withValues(alpha: 0.4),
+                  width: 1.5,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  color: Colors.white,
+                  child:
+                      profileUrl != null
+                          ? Image.network(
+                            profileUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                Icons.person_rounded,
+                                size: 28,
+                                color: rankGradient[0],
+                              );
+                            },
+                          )
+                          : Icon(
+                            Icons.person_rounded,
+                            size: 28,
+                            color: rankGradient[0],
+                          ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+
+            // Username
+            Expanded(
+              child: Text(
+                username,
+                style: const TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF27264A),
+                  letterSpacing: -0.5,
+                ),
+              ),
+            ),
+
+            // Score Display
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: rankGradient[0].withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: rankGradient[0].withValues(alpha: 0.3),
+                  width: 0.8,
+                ),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    _sortBy == 'rating'
+                        ? avgRating
+                        : _sortBy == 'hours'
+                        ? totalHours
+                        : _sortBy == 'events'
+                        ? eventsJoined.toString()
+                        : overallScore,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: rankGradient[0],
+                      letterSpacing: -0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    _sortBy == 'rating'
+                        ? 'Rating'
+                        : _sortBy == 'hours'
+                        ? 'Hours'
+                        : _sortBy == 'events'
+                        ? 'Events'
+                        : 'Score',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 10,
+                      color: rankGradient[0].withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        // Stats row for desktop
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildStatChip(
+              'Events',
+              eventsJoined.toString(),
+              const Color(0xFF4CAF50),
+              true,
+            ),
+            _buildStatChip('Rating', avgRating, const Color(0xFFFF9800), true),
+            _buildStatChip('Hours', totalHours, const Color(0xFF2196F3), true),
+          ],
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth > 600;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -698,7 +952,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           children: [
             // Purple App Bar
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: EdgeInsets.symmetric(
+                horizontal: isTablet ? 30 : 20,
+                vertical: isTablet ? 20 : 16,
+              ),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
@@ -718,7 +975,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.3),
                         width: 1,
@@ -726,25 +983,25 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                     ),
                     child: IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         color: Colors.white,
-                        size: 20,
+                        size: isTablet ? 24 : 20,
                       ),
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.transparent,
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(isTablet ? 12 : 10),
                       ),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       "Leaderboard",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontWeight: FontWeight.w500,
-                        fontSize: 22,
+                        fontSize: isTablet ? 26 : 22,
                         color: Colors.white,
                         letterSpacing: -0.5,
                       ),
@@ -753,17 +1010,17 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                       border: Border.all(
                         color: Colors.white.withValues(alpha: 0.3),
                         width: 1,
                       ),
                     ),
                     child: PopupMenuButton<String>(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.sort_rounded,
                         color: Colors.white,
-                        size: 20,
+                        size: isTablet ? 24 : 20,
                       ),
                       onSelected: (value) {
                         setState(() {
@@ -780,13 +1037,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                               (e) => PopupMenuItem<String>(
                                 value: e.key,
                                 child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4,
+                                  ),
                                   child: Text(
                                     e.value,
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w500,
-                                      color: Color(0xFF27264A),
+                                      fontSize: isTablet ? 16 : 14,
+                                      color: const Color(0xFF27264A),
                                     ),
                                   ),
                                 ),
@@ -796,26 +1056,29 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       },
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.transparent,
-                        padding: const EdgeInsets.all(10),
+                        padding: EdgeInsets.all(isTablet ? 12 : 10),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             // Content
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(isTablet ? 30 : 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isTablet ? 20 : 16,
+                        vertical: isTablet ? 14 : 10,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
                         border: Border.all(
                           color: const Color(0xFF7B2CBF).withValues(alpha: 0.3),
                           width: 1,
@@ -823,16 +1086,16 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                       ),
                       child: Text(
                         'Sorted: ${sortOptions[_sortBy]}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 16,
+                          fontSize: isTablet ? 18 : 16,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF7B2CBF),
+                          color: const Color(0xFF7B2CBF),
                           letterSpacing: -0.3,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: isTablet ? 20 : 16),
                     Expanded(child: _buildList()),
                   ],
                 ),
@@ -843,5 +1106,33 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
       ),
     );
   }
-}
 
+  Widget _buildStatChip(
+    String label,
+    String value,
+    Color color, [
+    bool isTablet = false,
+  ]) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isTablet ? 8 : 6,
+        vertical: isTablet ? 4 : 3,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(isTablet ? 8 : 6),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 0.5),
+      ),
+      child: Text(
+        '$label: $value',
+        style: TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: isTablet ? 12 : 10,
+          fontWeight: FontWeight.w600,
+          color: color,
+          letterSpacing: -0.2,
+        ),
+      ),
+    );
+  }
+}
