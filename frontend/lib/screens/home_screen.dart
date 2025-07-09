@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'dart:async';
 
 import '../models/event_model.dart';
 import '../services/events_service.dart';
 import '../services/user_service.dart';
+import '../services/notification_service.dart';
+import '../services/notification_listener_service.dart';
+import '../services/missed_message_service.dart';
 
 import 'all_events_screen.dart';
 import 'create_event_screen.dart';
@@ -15,6 +20,7 @@ import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'app_drawer.dart';
 import 'community_feed_screen.dart';
+import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,6 +42,23 @@ class _HomeScreenState extends State<HomeScreen> {
     _futureEvents = EventsService.getAllEvents();
     _checkIfGuest();
     _loadUserStats();
+    _initializeNotificationService();
+  }
+
+  Future<void> _initializeNotificationService() async {
+    if (!isGuest) {
+      print('Initializing notification services...');
+      await NotificationService.instance.initialize();
+      await NotificationListenerService.instance.initialize();
+      
+      // Check for missed messages when the app starts
+      await MissedMessageService.checkMissedMessages();
+      
+      // Add a small delay then print debug info
+      Timer(const Duration(seconds: 2), () {
+        NotificationListenerService.instance.printDebugInfo();
+      });
+    }
   }
 
   Future<void> _checkIfGuest() async {
@@ -284,28 +307,83 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.notifications_none_rounded,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                      onPressed: () {},
-                      tooltip: "Notifications",
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        padding: const EdgeInsets.all(12),
-                      ),
-                    ),
+                  Consumer<NotificationService>(
+                    builder: (context, notificationService, child) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                        ),
+                        child: Stack(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.notifications_none_rounded,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation, secondaryAnimation) => 
+                                        const NotificationScreen(),
+                                    transitionDuration: const Duration(milliseconds: 300),
+                                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: const Offset(1.0, 0.0),
+                                          end: Offset.zero,
+                                        ).animate(CurvedAnimation(
+                                          parent: animation,
+                                          curve: Curves.easeInOut,
+                                        )),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              tooltip: "Notifications",
+                              style: IconButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                padding: const EdgeInsets.all(12),
+                              ),
+                            ),
+                            if (notificationService.unreadCount > 0)
+                              Positioned(
+                                right: 8,
+                                top: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 16,
+                                    minHeight: 16,
+                                  ),
+                                  child: Text(
+                                    notificationService.unreadCount > 9 
+                                        ? '9+' 
+                                        : notificationService.unreadCount.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -899,6 +977,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          print('Testing notification system...');
+          await MissedMessageService.checkMissedMessages();
+          NotificationListenerService.instance.printDebugInfo();
+        },
+        child: const Icon(Icons.bug_report),
+        backgroundColor: const Color(0xFF7B2CBF),
       ),
     );
   }

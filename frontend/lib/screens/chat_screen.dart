@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import '../services/chat_service.dart';
 import '../services/auth_service.dart';
+import '../services/notification_listener_service.dart';
+import '../services/missed_message_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String eventId;
@@ -57,12 +59,33 @@ class _ChatScreenState extends State<ChatScreen> {
     });
 
     await chatService.connect(widget.eventId);
+    chatService.setInChat(true); // Set that user is currently in chat
+    
+    // Notify listener service that user is in this chat
+    NotificationListenerService.instance.addActiveChatSession(widget.eventId);
+    
+    // Mark this event as read (user is now viewing messages)
+    await MissedMessageService.markEventAsRead(widget.eventId);
+    
     chatService.messagesStream.listen((msg) {
       setState(() {
         messages.add(msg);
       });
       _scrollToBottom();
     });
+  }
+
+  @override
+  void dispose() {
+    chatService.setInChat(false); // User leaving chat
+    
+    // Notify listener service that user left this chat
+    NotificationListenerService.instance.removeActiveChatSession(widget.eventId);
+    
+    chatService.dispose();
+    _scrollController.dispose();
+    _controller.dispose();
+    super.dispose();
   }
 
   void _scrollToBottom() {
@@ -75,14 +98,6 @@ class _ChatScreenState extends State<ChatScreen> {
         );
       }
     });
-  }
-
-  @override
-  void dispose() {
-    chatService.dispose();
-    _controller.dispose();
-    _scrollController.dispose();
-    super.dispose();
   }
 
   void _sendMessage() {
