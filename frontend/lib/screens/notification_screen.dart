@@ -19,13 +19,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
-    // Force refresh the notifications when screen opens
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Trigger a setState to ensure the widget rebuilds with current data
-      if (mounted) {
-        setState(() {});
-      }
-    });
+    // Fetch notifications from backend when screen opens
+    _notificationService.fetchNotificationsFromBackend();
+    // Optionally, listen for updates or refresh periodically
   }
 
   @override
@@ -37,228 +33,255 @@ class _NotificationScreenState extends State<NotificationScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Colors.white,
-              Colors.grey[50]!,
-            ],
+            colors: [Colors.white, Colors.grey[50]!],
           ),
         ),
         child: Column(
           children: [
-                  // Modern header with gradient
+            // Modern header with gradient
+            Container(
+              padding: const EdgeInsets.fromLTRB(24, 60, 20, 24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [const Color(0xFF7B2CBF), const Color(0xFF9D4EDD)],
+                ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                ),
+              ),
+              child: Row(
+                children: [
                   Container(
-                    padding: const EdgeInsets.fromLTRB(24, 60, 20, 24),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFF7B2CBF),
-                          const Color(0xFF9D4EDD),
-                        ],
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                      ),
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Row(
+                    child: const Icon(
+                      Icons.notifications_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(
-                            Icons.notifications_rounded,
+                        const Text(
+                          'Notifications',
+                          style: TextStyle(
                             color: Colors.white,
-                            size: 28,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Notifications',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        Consumer<NotificationService>(
+                          builder: (context, notificationService, child) {
+                            final unreadCount = notificationService.unreadCount;
+                            return Text(
+                              unreadCount > 0
+                                  ? '$unreadCount new notification${unreadCount > 1 ? 's' : ''}'
+                                  : 'All caught up!',
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 14,
                               ),
-                              Consumer<NotificationService>(
-                                builder: (context, notificationService, child) {
-                                  final unreadCount = notificationService.unreadCount;
-                                  return Text(
-                                    unreadCount > 0 
-                                        ? '$unreadCount new notification${unreadCount > 1 ? 's' : ''}'
-                                        : 'All caught up!',
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
-                                      fontSize: 14,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.close_rounded,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                          onPressed: () => Navigator.of(context).pop(),
+                            );
+                          },
                         ),
                       ],
                     ),
                   ),
-                  
-                  // Modern action buttons
-                  Consumer<NotificationService>(
-                    builder: (context, notificationService, child) {
-                      if (notificationService.notifications.isEmpty) {
-                        return const SizedBox.shrink();
-                      }
-                      
-                      return Container(
-                        margin: const EdgeInsets.all(20),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: () async {
-                                  await notificationService.markAllAsRead();
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.done_all_rounded, size: 18),
-                                label: const Text('Mark all read'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF7B2CBF),
-                                  foregroundColor: Colors.white,
-                                  elevation: 0,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () async {
-                                  await notificationService.clearAllNotifications();
-                                  setState(() {});
-                                },
-                                icon: const Icon(Icons.clear_all_rounded, size: 18),
-                                label: const Text('Clear all'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.red[600],
-                                  side: BorderSide(color: Colors.red[300]!),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  
-                  // Notifications list
-                  Expanded(
-                    child: Consumer<NotificationService>(
-                      builder: (context, notificationService, child) {
-                        final notifications = notificationService.notifications;
-                        
-                        if (notifications.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(32),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Icon(
-                                    Icons.notifications_none_rounded,
-                                    size: 64,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
-                                const SizedBox(height: 24),
-                                Text(
-                                  'All caught up!',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'No new notifications at the moment',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[500],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        
-                        return ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                          itemCount: notifications.length,
-                          itemBuilder: (context, index) {
-                            final notification = notifications[index];
-                            return _buildModernNotificationItem(notification);
-                          },
-                        );
-                      },
+                  IconButton(
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 28,
                     ),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
+              ),
+            ),
+
+            // Modern action buttons
+            Consumer<NotificationService>(
+              builder: (context, notificationService, child) {
+                if (notificationService.notifications.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
+                return Container(
+                  margin: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.grey[200]!),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            await notificationService.markAllAsRead();
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.done_all_rounded, size: 18),
+                          label: const Text('Mark all read'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF7B2CBF),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            await notificationService.clearAllNotifications();
+                            setState(() {});
+                          },
+                          icon: const Icon(Icons.clear_all_rounded, size: 18),
+                          label: const Text('Clear all'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red[600],
+                            side: BorderSide(color: Colors.red[300]!),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // Notifications list
+            Expanded(
+              child: Consumer<NotificationService>(
+                builder: (context, notificationService, child) {
+                  final notifications = notificationService.notifications;
+
+                  if (notifications.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(32),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: Icon(
+                              Icons.notifications_none_rounded,
+                              size: 64,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            'All caught up!',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'No new notifications at the moment',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                    itemCount: notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = notifications[index];
+                      return _buildModernNotificationItem(notification);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildModernNotificationItem(NotificationModel notification) {
+    IconData icon;
+    Color iconBg;
+    String? actionLabel;
+    VoidCallback? onTap;
+
+    // Choose icon and action based on notification type
+    switch (notification.type) {
+      case 'event_created':
+        icon = Icons.event_available_rounded;
+        iconBg = const Color(0xFF43A047);
+        actionLabel = 'View Event';
+        onTap = () => _navigateToEvent(notification.eventId);
+        break;
+      case 'event_updated':
+        icon = Icons.event_note_rounded;
+        iconBg = const Color(0xFF1976D2);
+        actionLabel = 'View Update';
+        onTap = () => _navigateToEvent(notification.eventId);
+        break;
+      case 'event_response_updated':
+        icon = Icons.assignment_turned_in_rounded;
+        iconBg = const Color(0xFFE91E63);
+        actionLabel = 'View Response';
+        onTap = () => _navigateToEvent(notification.eventId);
+        break;
+      default:
+        icon = Icons.chat_bubble_rounded;
+        iconBg = const Color(0xFF7B2CBF);
+        actionLabel = null;
+        onTap = () => _navigateToChat(notification.eventId);
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: notification.isRead 
-            ? Colors.white.withOpacity(0.95)
-            : Colors.white,
+        color:
+            notification.isRead ? Colors.white.withOpacity(0.95) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: notification.isRead 
-              ? const Color(0xFF7B2CBF).withOpacity(0.1)
-              : const Color(0xFF7B2CBF).withOpacity(0.2),
+          color:
+              notification.isRead
+                  ? const Color(0xFF7B2CBF).withOpacity(0.1)
+                  : const Color(0xFF7B2CBF).withOpacity(0.2),
           width: notification.isRead ? 1 : 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: notification.isRead 
-                ? const Color(0xFF7B2CBF).withOpacity(0.05)
-                : const Color(0xFF7B2CBF).withOpacity(0.12),
+            color:
+                notification.isRead
+                    ? const Color(0xFF7B2CBF).withOpacity(0.05)
+                    : const Color(0xFF7B2CBF).withOpacity(0.12),
             blurRadius: notification.isRead ? 8 : 15,
             offset: const Offset(0, 2),
           ),
@@ -270,16 +293,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () async {
-            // Mark as read first
-            await _notificationService.markAsRead(notification.id);
-            
-            // Force UI refresh immediately
-            if (mounted) {
-              setState(() {});
-            }
-            
-            // Navigate to chat screen
-            await _navigateToChat(notification.eventId);
+            await _notificationService.markAsReadBackend(notification.id);
+            if (mounted) setState(() {});
+            if (onTap != null) onTap();
           },
           hoverColor: const Color(0xFF7B2CBF).withOpacity(0.05),
           child: Padding(
@@ -292,21 +308,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: notification.isRead 
-                          ? [Colors.grey[400]!, Colors.grey[500]!]
-                          : [const Color(0xFF7B2CBF), const Color(0xFF9D4EDD)],
-                    ),
+                    color: iconBg,
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(
-                    Icons.chat_bubble_rounded,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: Icon(icon, color: Colors.white, size: 24),
                 ),
                 const SizedBox(width: 16),
-                
+
                 // Notification content
                 Expanded(
                   child: Column(
@@ -320,7 +328,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               notification.eventTitle,
                               style: TextStyle(
                                 fontFamily: 'Poppins',
-                                fontWeight: notification.isRead ? FontWeight.w600 : FontWeight.bold,
+                                fontWeight:
+                                    notification.isRead
+                                        ? FontWeight.w600
+                                        : FontWeight.bold,
                                 fontSize: 16,
                                 color: const Color(0xFF27264A),
                                 letterSpacing: -0.3,
@@ -332,15 +343,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           if (!notification.isRead) ...[
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFFE91E63), Color(0xFFFF4081)],
+                                  colors: [
+                                    Color(0xFFE91E63),
+                                    Color(0xFFFF4081),
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFE91E63).withOpacity(0.3),
+                                    color: const Color(
+                                      0xFFE91E63,
+                                    ).withOpacity(0.3),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -360,9 +379,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ],
                         ],
                       ),
-                      
+
                       const SizedBox(height: 8),
-                      
+
                       // Message text
                       Text(
                         notification.message,
@@ -377,9 +396,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      
+
                       const SizedBox(height: 8),
-                      
+
                       // Timestamp with icon
                       Row(
                         children: [
@@ -411,25 +430,27 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Read indicator or arrow
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: notification.isRead 
-                        ? Colors.grey[100]
-                        : const Color(0xFF7B2CBF).withOpacity(0.1),
+                    color:
+                        notification.isRead
+                            ? Colors.grey[100]
+                            : const Color(0xFF7B2CBF).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
-                    notification.isRead 
+                    notification.isRead
                         ? Icons.check_rounded
                         : Icons.arrow_forward_ios_rounded,
                     size: 16,
-                    color: notification.isRead 
-                        ? Colors.grey[600]
-                        : const Color(0xFF7B2CBF),
+                    color:
+                        notification.isRead
+                            ? Colors.grey[600]
+                            : const Color(0xFF7B2CBF),
                   ),
                 ),
               ],
@@ -446,7 +467,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       final attendees = await EventsService.getEventAttendees(eventId);
       final events = await EventsService.getAllEvents();
       final event = events.firstWhere((e) => e.id == eventId);
-      
+
       // Get creator info - look for creator in attendees list
       Map<String, dynamic>? creator;
       for (final attendee in attendees) {
@@ -455,37 +476,78 @@ class _NotificationScreenState extends State<NotificationScreen> {
           break;
         }
       }
-      
+
       // If creator not found in attendees, create a fallback
       if (creator == null) {
         creator = {
           'id': event.creatorId,
           'username': 'Event Creator',
-          'email': 'creator@example.com'
+          'email': 'creator@example.com',
         };
       }
-      
+
       // Close notification panel
       if (mounted) {
         Navigator.of(context).pop();
-        
+
         // Navigate to chat screen
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              eventId: eventId,
-              attendees: attendees,
-              creator: creator!,
-            ),
+            builder:
+                (context) => ChatScreen(
+                  eventId: eventId,
+                  attendees: attendees,
+                  creator: creator!,
+                ),
           ),
         );
       }
     } catch (e) {
       print('Error navigating to chat: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error opening chat: $e')),
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error opening chat: $e')));
+      }
+    }
+  }
+
+  Future<void> _navigateToEvent(String eventId) async {
+    try {
+      final events = await EventsService.getAllEvents();
+      final event = events.firstWhere((e) => e.id == eventId);
+      final attendees = await EventsService.getEventAttendees(eventId);
+      Map<String, dynamic>? creator;
+      for (final attendee in attendees) {
+        if (attendee['id'] == event.creatorId) {
+          creator = attendee;
+          break;
+        }
+      }
+      creator ??= {
+        'id': event.creatorId,
+        'username': 'Event Creator',
+        'email': 'creator@example.com',
+      };
+      if (mounted) {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (context) => ChatScreen(
+                  eventId: eventId,
+                  attendees: attendees,
+                  creator: creator!,
+                ),
+          ),
         );
+      }
+    } catch (e) {
+      print('Error navigating to event: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error opening event: $e')));
       }
     }
   }

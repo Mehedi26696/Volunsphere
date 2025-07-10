@@ -33,7 +33,7 @@ class Event(SQLModel, table=True):
      
     duration_minutes: int = Field(
         default=0,
-        sa_column=Column(nullable=False)
+        sa_column=Column(Integer, nullable=False)
     )
 
     latitude: Optional[float] = Field(default=None, nullable=True)

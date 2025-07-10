@@ -13,6 +13,9 @@ from src.auth.models import User
 from src.events.schemas import EventCreate, EventRead, EventResponseUpdate, EventResponseRead
 from supabase import create_client
 from src.config import Config
+from src.notifications.models import Notification
+from src.notifications.schemas import NotificationCreate
+from src.notifications.fcm import send_fcm_push
 
 
 events_router = APIRouter()
@@ -46,6 +49,30 @@ async def create_event(
     session.add(db_event)
     await session.commit()
     await session.refresh(db_event)
+
+    # Notify all users except creator about new event
+    users_result = await session.exec(select(User).where(User.uid != user_id))
+    users = users_result.all()
+    for user in users:
+        if user.fcm_token:
+            notification = Notification(
+                user_id=user.uid,
+                event_id=str(db_event.id),
+                event_title=db_event.title,
+                message=f"New event created: {db_event.title}",
+                type="event_created"
+            )
+            session.add(notification)
+            try:
+                send_fcm_push(
+                    token=user.fcm_token,
+                    title="New Event Created",
+                    body=f"{db_event.title} is now available!",
+                    data={"type": "event_created", "event_id": str(db_event.id)}
+                )
+            except Exception as e:
+                print(f"FCM push failed: {e}")
+    await session.commit()
     return db_event
 
 @events_router.get("/my", response_model=List[EventRead])
@@ -119,10 +146,33 @@ async def update_event(
     event.latitude = event_update.latitude
     event.longitude = event_update.longitude
     event.updated_at = datetime.now()
-
     session.add(event)
     await session.commit()
     await session.refresh(event)
+
+    # Notify all users except updater about event update
+    users_result = await session.exec(select(User).where(User.uid != user_id))
+    users = users_result.all()
+    for user in users:
+        if user.fcm_token:
+            notification = Notification(
+                user_id=user.uid,
+                event_id=str(event.id),
+                event_title=event.title,
+                message=f"Event updated: {event.title}",
+                type="event_updated"
+            )
+            session.add(notification)
+            try:
+                send_fcm_push(
+                    token=user.fcm_token,
+                    title="Event Updated",
+                    body=f"{event.title} has been updated!",
+                    data={"type": "event_updated", "event_id": str(event.id)}
+                )
+            except Exception as e:
+                print(f"FCM push failed: {e}")
+    await session.commit()
     return event
 
 
@@ -276,7 +326,50 @@ async def update_event_response(
     session.add(response)
     await session.commit()
     await session.refresh(response)
+
+    # Notify event creator and user about response update
+    # Only notify if updater is not the user or creator
+    if token_data["sub"] != str(user_id):
+        # Get event creator
+        creator = await session.get(User, event.creator_id)
+        user = await session.get(User, user_id)
+        if creator and creator.fcm_token:
+            notification = Notification(
+                user_id=creator.uid,
+                event_id=str(event.id),
+                event_title=event.title,
+                message=f"Response updated for event: {event.title}",
+                type="event_response_updated"
+            )
+            session.add(notification)
+            try:
+                send_fcm_push(
+                    token=creator.fcm_token,
+                    title="Event Response Updated",
+                    body=f"A response was updated for your event: {event.title}",
+                    data={"type": "event_response_updated", "event_id": str(event.id)}
+                )
+            except Exception as e:
+                print(f"FCM push failed: {e}")
+        if user and user.fcm_token:
+            notification = Notification(
+                user_id=user.uid,
+                event_id=str(event.id),
+                event_title=event.title,
+                message=f"Your response for event '{event.title}' was updated.",
+                type="event_response_updated"
+            )
+            session.add(notification)
+            try:
+                send_fcm_push(
+                    token=user.fcm_token,
+                    title="Your Event Response Updated",
+                    body=f"Your response for '{event.title}' was updated.",
+                    data={"type": "event_response_updated", "event_id": str(event.id)}
+                )
+            except Exception as e:
+                print(f"FCM push failed: {e}")
+        await session.commit()
     return {"message": "Response updated successfully"}
 
 
- 

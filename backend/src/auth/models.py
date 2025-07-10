@@ -1,4 +1,3 @@
-
 from sqlmodel import SQLModel , Field, Column
 import sqlalchemy.dialects.postgresql as pg
 import uuid
@@ -45,6 +44,7 @@ class User(SQLModel, table=True):
     is_verified: bool = Field(default=False)
     password_hash: str = Field(exclude=True)
     profile_image_url: Optional[str] = Field(default=None, nullable=True)
+    fcm_token: Optional[str] = Field(default=None, nullable=True)
     created_at: datetime = Field(
         sa_column = Column(
             pg.TIMESTAMP,

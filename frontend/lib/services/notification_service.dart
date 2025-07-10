@@ -1,20 +1,25 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/notification_model.dart';
+import '../utils/api.dart';
+import 'auth_service.dart';
 
 class NotificationService extends ChangeNotifier {
   static NotificationService? _instance;
-  static NotificationService get instance => _instance ??= NotificationService._();
+  static NotificationService get instance =>
+      _instance ??= NotificationService._();
   NotificationService._();
 
   final List<NotificationModel> _notifications = [];
-  final StreamController<List<NotificationModel>> _notificationController = 
+  final StreamController<List<NotificationModel>> _notificationController =
       StreamController<List<NotificationModel>>.broadcast();
 
   List<NotificationModel> get notifications => _notifications;
-  Stream<List<NotificationModel>> get notificationStream => _notificationController.stream;
+  Stream<List<NotificationModel>> get notificationStream =>
+      _notificationController.stream;
 
   int get unreadCount => _notifications.where((n) => !n.isRead).length;
 
@@ -26,16 +31,16 @@ class NotificationService extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final notificationsJson = prefs.getStringList('notifications') ?? [];
-      
+
       _notifications.clear();
       for (final jsonString in notificationsJson) {
         final notification = NotificationModel.fromJson(jsonDecode(jsonString));
         _notifications.add(notification);
       }
-      
+
       // Sort by timestamp (newest first)
       _notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-      
+
       _notificationController.add(_notifications);
       notifyListeners();
     } catch (e) {
@@ -46,10 +51,9 @@ class NotificationService extends ChangeNotifier {
   Future<void> _saveNotifications() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final notificationsJson = _notifications
-          .map((n) => jsonEncode(n.toJson()))
-          .toList();
-      
+      final notificationsJson =
+          _notifications.map((n) => jsonEncode(n.toJson())).toList();
+
       await prefs.setStringList('notifications', notificationsJson);
     } catch (e) {
       print('Error saving notifications: $e');
@@ -58,24 +62,26 @@ class NotificationService extends ChangeNotifier {
 
   Future<void> addNotification(NotificationModel notification) async {
     print('Adding notification with ID: ${notification.id}');
-    
+
     // Check if notification with same ID already exists
-    final existingIndex = _notifications.indexWhere((n) => n.id == notification.id);
-    
+    final existingIndex = _notifications.indexWhere(
+      (n) => n.id == notification.id,
+    );
+
     if (existingIndex != -1) {
       print('Notification with same ID already exists, skipping...');
       return;
     }
-    
+
     // Add new notification at the beginning
     _notifications.insert(0, notification);
     print('Added new notification. Total count: ${_notifications.length}');
-    
+
     // Keep only last 50 notifications
     if (_notifications.length > 50) {
       _notifications.removeRange(50, _notifications.length);
     }
-    
+
     await _saveNotifications();
     _notificationController.add(_notifications);
     notifyListeners();
@@ -86,23 +92,23 @@ class NotificationService extends ChangeNotifier {
     print('=== Mark as Read Debug ===');
     print('Looking for notification ID: $notificationId');
     print('Total notifications: ${_notifications.length}');
-    
+
     final index = _notifications.indexWhere((n) => n.id == notificationId);
     print('Found notification at index: $index');
-    
+
     if (index != -1) {
       final oldNotification = _notifications[index];
       print('Old notification isRead: ${oldNotification.isRead}');
-      
+
       _notifications[index] = _notifications[index].copyWith(isRead: true);
-      
+
       print('New notification isRead: ${_notifications[index].isRead}');
       print('Unread count before save: $unreadCount');
-      
+
       await _saveNotifications();
       _notificationController.add(_notifications);
       notifyListeners();
-      
+
       print('Unread count after save: $unreadCount');
       print('========================');
     } else {
@@ -126,6 +132,41 @@ class NotificationService extends ChangeNotifier {
     await _saveNotifications();
     _notificationController.add(_notifications);
     notifyListeners();
+  }
+
+  Future<void> fetchNotificationsFromBackend() async {
+    final tokenData = await AuthService.getTokenData();
+    final userId = tokenData != null ? tokenData['sub'] : null;
+    if (userId == null) return;
+    final url = '$baseUrl/notifications/$userId';
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        _notifications.clear();
+        for (final item in data) {
+          _notifications.add(NotificationModel.fromJson(item));
+        }
+        _notifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+        await _saveNotifications();
+        _notificationController.add(_notifications);
+        notifyListeners();
+      } else {
+        print('Failed to fetch notifications: \\${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching notifications: $e');
+    }
+  }
+
+  Future<void> markAsReadBackend(String notificationId) async {
+    final url = '$baseUrl/notifications/$notificationId/read';
+    try {
+      await http.post(Uri.parse(url));
+      await markAsRead(notificationId);
+    } catch (e) {
+      print('Error marking notification as read in backend: $e');
+    }
   }
 
   void dispose() {

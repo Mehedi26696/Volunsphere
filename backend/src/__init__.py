@@ -12,6 +12,8 @@ from src.chat.routes import chat_router
 from src.community.routes import community_router
 from src.leaderboard.routes import leaderboard_router
 from src.chatbot.routes import chatbot_router
+from src.notifications.routes import notification_router
+from src.auth.fcm_routes import fcm_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -77,4 +79,6 @@ app.include_router(chat_router, prefix=f"/api/{version}/chat", tags=["chat"])
 app.include_router(community_router, prefix=f"/api/{version}/community", tags=["community"])
 app.include_router(leaderboard_router, prefix=f"/api/{version}/leaderboard", tags=["leaderboard"])
 app.include_router(chatbot_router, prefix=f"/api/{version}/chatbot", tags=["chatbot"])
+app.include_router(notification_router, prefix=f"/api/{version}/notifications", tags=["notifications"])
+app.include_router(fcm_router, prefix=f"/api/{version}/fcm", tags=["fcm"])
 
