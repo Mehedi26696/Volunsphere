@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/auth_service.dart';
+import '../services/fcm_service.dart';
 import 'home_screen.dart';
 import 'signup_screen.dart';
 import 'forget_password_screen.dart';
@@ -246,19 +247,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                             
                             await _saveCredentials(
                               emailController.text.trim(),
                               passwordController.text.trim(),
                             );
 
-                            
                             final success = await authService.login(
                               emailController.text.trim(),
                               passwordController.text.trim(),
                             );
 
                             if (success && mounted) {
+                              // Register FCM token after successful login
+                              await FcmService.instance.initialize();
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(

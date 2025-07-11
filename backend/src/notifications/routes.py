@@ -47,7 +47,11 @@ async def create_notification(notification: NotificationCreate, session: AsyncSe
 
 @notification_router.get("/{user_id}", response_model=list[NotificationRead])
 async def get_notifications(user_id: UUID, session: AsyncSession = Depends(get_session)):
-    result = await session.execute(select(Notification).where(Notification.user_id == user_id))
+    result = await session.execute(
+        select(Notification).where(
+            (Notification.user_id == user_id) & (Notification.is_read == False)
+        )
+    )
     notifications = result.scalars().all()
     return notifications
 
