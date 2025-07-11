@@ -4,6 +4,7 @@ import '../services/chat_service.dart';
 import '../services/auth_service.dart';
 import '../services/notification_listener_service.dart';
 import '../services/missed_message_service.dart';
+import '../services/notification_service.dart';
 
 class ChatScreen extends StatefulWidget {
   final String eventId;
@@ -52,7 +53,6 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _initChat() async {
-     
     final tokenData = await AuthService.getTokenData();
     setState(() {
       currentUserEmail = tokenData?['email'] as String?;
@@ -60,13 +60,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
     await chatService.connect(widget.eventId);
     chatService.setInChat(true); // Set that user is currently in chat
-    
+
     // Notify listener service that user is in this chat
     NotificationListenerService.instance.addActiveChatSession(widget.eventId);
-    
+
     // Mark this event as read (user is now viewing messages)
     await MissedMessageService.markEventAsRead(widget.eventId);
-    
+
     chatService.messagesStream.listen((msg) {
       setState(() {
         messages.add(msg);
@@ -78,10 +78,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void dispose() {
     chatService.setInChat(false); // User leaving chat
-    
+
     // Notify listener service that user left this chat
-    NotificationListenerService.instance.removeActiveChatSession(widget.eventId);
-    
+    NotificationListenerService.instance.removeActiveChatSession(
+      widget.eventId,
+    );
+
     chatService.dispose();
     _scrollController.dispose();
     _controller.dispose();
@@ -100,11 +102,29 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       chatService.sendMessage(text);
       _controller.clear();
+      // Notify all event attendees except the sender
+      final tokenData = await AuthService.getTokenData();
+      final currentUserId = tokenData?['sub'];
+      final attendeeIds =
+          widget.attendees
+              .map((a) => a['id'] as String?)
+              .where((id) => id != null && id != currentUserId)
+              .cast<String>()
+              .toList();
+      if (attendeeIds.isNotEmpty) {
+        await NotificationService.instance.sendNotificationToUsers(
+          userIds: attendeeIds,
+          message: text,
+          eventId: widget.eventId,
+          eventTitle: widget.creator['username'] ?? '',
+          type: 'event_message',
+        );
+      }
     }
   }
 
@@ -112,7 +132,6 @@ class _ChatScreenState extends State<ChatScreen> {
     final email = msg['email'];
     final username = msg['username'];
 
-     
     final attendee = widget.attendees.firstWhere(
       (a) =>
           (a['email'] != null && a['email'] == email) ||
@@ -120,7 +139,6 @@ class _ChatScreenState extends State<ChatScreen> {
       orElse: () => {},
     );
 
-    
     if (attendee.isEmpty &&
         widget.creator['email'] == email &&
         widget.creator['username'] == username) {
@@ -131,9 +149,8 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessage(Map<String, dynamic> msg) {
-    final timestamp = msg['timestamp'] != null
-        ? DateTime.tryParse(msg['timestamp'])
-        : null;
+    final timestamp =
+        msg['timestamp'] != null ? DateTime.tryParse(msg['timestamp']) : null;
 
     final isMe = msg['email'] != null && msg['email'] == currentUserEmail;
 
@@ -147,7 +164,8 @@ class _ChatScreenState extends State<ChatScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isMe)
@@ -171,47 +189,58 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: CircleAvatar(
                   radius: 22,
                   backgroundColor: Colors.white,
-                  backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty
-                      ? NetworkImage(profileImageUrl)
-                      : null,
-                  child: (profileImageUrl == null || profileImageUrl.isEmpty)
-                      ? Icon(Icons.person_rounded, size: 24, color: const Color(0xFF9929ea))
-                      : null,
+                  backgroundImage:
+                      profileImageUrl != null && profileImageUrl.isNotEmpty
+                          ? NetworkImage(profileImageUrl)
+                          : null,
+                  child:
+                      (profileImageUrl == null || profileImageUrl.isEmpty)
+                          ? Icon(
+                            Icons.person_rounded,
+                            size: 24,
+                            color: const Color(0xFF9929ea),
+                          )
+                          : null,
                 ),
               ),
             ),
           Flexible(
             child: Container(
               decoration: BoxDecoration(
-                gradient: isMe
-                    ? const LinearGradient(
-                        colors: [Color(0xFF7312ba), Color(0xFF6c3a85)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : LinearGradient(
-                        colors: [
-                          Colors.white.withValues(alpha: 0.95),
-                          Colors.white.withValues(alpha: 0.85),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                gradient:
+                    isMe
+                        ? const LinearGradient(
+                          colors: [Color(0xFF7312ba), Color(0xFF6c3a85)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        )
+                        : LinearGradient(
+                          colors: [
+                            Colors.white.withValues(alpha: 0.95),
+                            Colors.white.withValues(alpha: 0.85),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(20),
                   topRight: const Radius.circular(20),
                   bottomLeft: Radius.circular(isMe ? 20 : 6),
                   bottomRight: Radius.circular(isMe ? 6 : 20),
                 ),
-                border: isMe ? null : Border.all(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  width: 1,
-                ),
+                border:
+                    isMe
+                        ? null
+                        : Border.all(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          width: 1,
+                        ),
                 boxShadow: [
                   BoxShadow(
-                    color: isMe 
-                        ? const Color(0xFF9929ea).withValues(alpha: 0.3)
-                        : Colors.black.withValues(alpha: 0.08),
+                    color:
+                        isMe
+                            ? const Color(0xFF9929ea).withValues(alpha: 0.3)
+                            : Colors.black.withValues(alpha: 0.08),
                     blurRadius: 15,
                     offset: const Offset(0, 4),
                   ),
@@ -243,18 +272,33 @@ class _ChatScreenState extends State<ChatScreen> {
                       if (isCreator) ...[
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: isMe 
-                                  ? [Colors.white.withValues(alpha: 0.3), Colors.white.withValues(alpha: 0.2)]
-                                  : [const Color(0xFF9929ea), const Color(0xFFB843F5)],
+                              colors:
+                                  isMe
+                                      ? [
+                                        Colors.white.withValues(alpha: 0.3),
+                                        Colors.white.withValues(alpha: 0.2),
+                                      ]
+                                      : [
+                                        const Color(0xFF9929ea),
+                                        const Color(0xFFB843F5),
+                                      ],
                             ),
                             borderRadius: BorderRadius.circular(10),
-                            border: isMe ? Border.all(
-                              color: Colors.white.withValues(alpha: 0.5),
-                              width: 1,
-                            ) : null,
+                            border:
+                                isMe
+                                    ? Border.all(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      width: 1,
+                                    )
+                                    : null,
                           ),
                           child: Text(
                             "Creator",
@@ -289,20 +333,28 @@ class _ChatScreenState extends State<ChatScreen> {
                       Icon(
                         Icons.access_time_rounded,
                         size: 13,
-                        color: isMe 
-                            ? Colors.white.withValues(alpha: 0.8)
-                            : const Color(0xFF626C7A).withValues(alpha: 0.7),
+                        color:
+                            isMe
+                                ? Colors.white.withValues(alpha: 0.8)
+                                : const Color(
+                                  0xFF626C7A,
+                                ).withValues(alpha: 0.7),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        timestamp != null ? timeago.format(timestamp.toLocal()) : '',
+                        timestamp != null
+                            ? timeago.format(timestamp.toLocal())
+                            : '',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 11,
                           fontWeight: FontWeight.w400,
-                          color: isMe 
-                              ? Colors.white.withValues(alpha: 0.8)
-                              : const Color(0xFF626C7A).withValues(alpha: 0.7),
+                          color:
+                              isMe
+                                  ? Colors.white.withValues(alpha: 0.8)
+                                  : const Color(
+                                    0xFF626C7A,
+                                  ).withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -332,12 +384,18 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: CircleAvatar(
                   radius: 22,
                   backgroundColor: Colors.white,
-                  backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty
-                      ? NetworkImage(profileImageUrl)
-                      : null,
-                  child: (profileImageUrl == null || profileImageUrl.isEmpty)
-                      ? Icon(Icons.person_rounded, size: 24, color: const Color(0xFF9929ea))
-                      : null,
+                  backgroundImage:
+                      profileImageUrl != null && profileImageUrl.isNotEmpty
+                          ? NetworkImage(profileImageUrl)
+                          : null,
+                  child:
+                      (profileImageUrl == null || profileImageUrl.isEmpty)
+                          ? Icon(
+                            Icons.person_rounded,
+                            size: 24,
+                            color: const Color(0xFF9929ea),
+                          )
+                          : null,
                 ),
               ),
             ),
@@ -371,7 +429,10 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               // Enhanced Custom App Bar
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -506,7 +567,10 @@ class _ChatScreenState extends State<ChatScreen> {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -524,7 +588,9 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                              color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF626C7A,
+                              ).withValues(alpha: 0.1),
                               width: 1,
                             ),
                           ),
@@ -565,7 +631,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF9929ea).withValues(alpha: 0.4),
+                              color: const Color(
+                                0xFF9929ea,
+                              ).withValues(alpha: 0.4),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -590,35 +658,36 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ),
       ),
-      floatingActionButton: _showScrollToBottom
-          ? Container(
-              margin: const EdgeInsets.only(bottom: 100),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF9929ea), Color(0xFFB843F5)],
-                ),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFF9929ea).withValues(alpha: 0.4),
-                    blurRadius: 15,
-                    offset: const Offset(0, 6),
+      floatingActionButton:
+          _showScrollToBottom
+              ? Container(
+                margin: const EdgeInsets.only(bottom: 100),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF9929ea), Color(0xFFB843F5)],
                   ),
-                ],
-              ),
-              child: FloatingActionButton(
-                mini: true,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                onPressed: _scrollToBottom,
-                child: const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  color: Colors.white,
-                  size: 28,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF9929ea).withValues(alpha: 0.4),
+                      blurRadius: 15,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
-              ),
-            )
-          : null,
+                child: FloatingActionButton(
+                  mini: true,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  onPressed: _scrollToBottom,
+                  child: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              )
+              : null,
     );
   }
 }

@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 import uuid
 
 class NotificationCreate(BaseModel):
-    user_id: uuid.UUID
+    user_ids: List[uuid.UUID]  # Changed from user_id to user_ids
     event_id: Optional[str] = None
     event_title: Optional[str] = None
     message: str

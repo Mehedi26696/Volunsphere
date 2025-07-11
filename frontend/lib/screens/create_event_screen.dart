@@ -5,6 +5,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../services/events_service.dart';
 import '../screens/map_picker_screen.dart';
+import '../services/notification_service.dart';
+import '../services/user_service.dart';
 
 class CreateEventScreen extends StatefulWidget {
   const CreateEventScreen({super.key});
@@ -33,9 +35,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   Future<void> _pickLocation() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const MapPickerScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const MapPickerScreen()),
     );
 
     if (result != null && result is Map<String, dynamic>) {
@@ -73,14 +73,21 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
     final time = await showTimePicker(
       context: context,
-      initialTime: _startDatetime != null
-          ? TimeOfDay.fromDateTime(_startDatetime!)
-          : TimeOfDay.now(),
+      initialTime:
+          _startDatetime != null
+              ? TimeOfDay.fromDateTime(_startDatetime!)
+              : TimeOfDay.now(),
     );
     if (time == null) return;
 
     setState(() {
-      _startDatetime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+      _startDatetime = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
       if (_endDatetime != null && _endDatetime!.isBefore(_startDatetime!)) {
         _endDatetime = null;
       }
@@ -98,17 +105,26 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
     final time = await showTimePicker(
       context: context,
-      initialTime: _endDatetime != null
-          ? TimeOfDay.fromDateTime(_endDatetime!)
-          : TimeOfDay.now(),
+      initialTime:
+          _endDatetime != null
+              ? TimeOfDay.fromDateTime(_endDatetime!)
+              : TimeOfDay.now(),
     );
     if (time == null) return;
 
-    final chosenEnd = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    final chosenEnd = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
 
     if (_startDatetime != null && chosenEnd.isBefore(_startDatetime!)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("End datetime cannot be before start datetime.")),
+        const SnackBar(
+          content: Text("End datetime cannot be before start datetime."),
+        ),
       );
       return;
     }
@@ -125,7 +141,11 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         _startDatetime == null ||
         _endDatetime == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please complete all fields and select start/end datetime and map location.")),
+        const SnackBar(
+          content: Text(
+            "Please complete all fields and select start/end datetime and map location.",
+          ),
+        ),
       );
       return;
     }
@@ -136,13 +156,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     try {
       final tempEventId = DateTime.now().millisecondsSinceEpoch.toString();
       if (_pickedImages.isNotEmpty) {
-        uploadedUrls = await EventsService.uploadEventImages(tempEventId, _pickedImages);
+        uploadedUrls = await EventsService.uploadEventImages(
+          tempEventId,
+          _pickedImages,
+        );
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Image upload failed: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Image upload failed: $e")));
       return;
     }
 
@@ -157,11 +180,20 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         longitude: _longitude!,
         imageUrls: uploadedUrls,
       );
+      // Notify all users after event creation
+      List<String> allUserIds = await UserService.getAllUserIds();
+      await NotificationService.instance.sendNotificationToUsers(
+        userIds: allUserIds,
+        message:
+            'A new event has been created: ${_titleController.text.trim()}',
+        eventTitle: _titleController.text.trim(),
+        type: 'event_created',
+      );
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to create event: $e")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Failed to create event: $e")));
       return;
     }
 
@@ -185,7 +217,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   String _formatDatetime(DateTime? dt) {
     if (dt == null) return 'Select datetime';
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} '
-           '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+        '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 
   InputDecoration _inputDecoration(String label, {Widget? suffixIcon}) {
@@ -212,10 +244,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(18),
-        borderSide: const BorderSide(
-          color: Color(0xFF7B2CBF),
-          width: 2,
-        ),
+        borderSide: const BorderSide(color: Color(0xFF7B2CBF), width: 2),
       ),
       suffixIcon: suffixIcon,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -483,7 +512,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             ),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                              color: const Color(
+                                0xFF7B2CBF,
+                              ).withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -491,36 +522,44 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           child: Row(
                             children: [
                               Expanded(
-                                child: _latitude == null || _longitude == null
-                                    ? Text(
-                                        'No location selected',
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          fontSize: 14,
-                                          color: const Color(0xFF626C7A).withValues(alpha: 0.7),
-                                          fontWeight: FontWeight.w400,
+                                child:
+                                    _latitude == null || _longitude == null
+                                        ? Text(
+                                          'No location selected',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 14,
+                                            color: const Color(
+                                              0xFF626C7A,
+                                            ).withValues(alpha: 0.7),
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        )
+                                        : Text(
+                                          'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}',
+                                          style: const TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontSize: 13,
+                                            color: Color(0xFF7B2CBF),
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
-                                      )
-                                    : Text(
-                                        'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}',
-                                        style: const TextStyle(
-                                          fontFamily: 'Poppins',
-                                          fontSize: 13,
-                                          color: Color(0xFF7B2CBF),
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
                               ),
                               const SizedBox(width: 12),
                               Container(
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF2196F3), Color(0xFF64B5F6)],
+                                    colors: [
+                                      Color(0xFF2196F3),
+                                      Color(0xFF64B5F6),
+                                    ],
                                   ),
                                   borderRadius: BorderRadius.circular(14),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF2196F3).withValues(alpha: 0.3),
+                                      color: const Color(
+                                        0xFF2196F3,
+                                      ).withValues(alpha: 0.3),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
                                     ),
@@ -537,7 +576,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(14),
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 10,
+                                    ),
                                     textStyle: const TextStyle(
                                       fontFamily: 'Poppins',
                                       fontWeight: FontWeight.w600,
@@ -557,12 +599,16 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                color: const Color(
+                                  0xFF7B2CBF,
+                                ).withValues(alpha: 0.2),
                                 width: 1.5,
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                  color: const Color(
+                                    0xFF7B2CBF,
+                                  ).withValues(alpha: 0.1),
                                   blurRadius: 15,
                                   offset: const Offset(0, 4),
                                 ),
@@ -579,9 +625,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                   ),
                                   markers: {
                                     Marker(
-                                      markerId: const MarkerId("selected_location"),
+                                      markerId: const MarkerId(
+                                        "selected_location",
+                                      ),
                                       position: LatLng(_latitude!, _longitude!),
-                                      infoWindow: const InfoWindow(title: "Event Location"),
+                                      infoWindow: const InfoWindow(
+                                        title: "Event Location",
+                                      ),
                                     ),
                                   },
                                   zoomControlsEnabled: false,
@@ -608,21 +658,29 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                     children: [
                                       Container(
                                         decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           border: Border.all(
-                                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
+                                            color: const Color(
+                                              0xFF7B2CBF,
+                                            ).withValues(alpha: 0.2),
                                             width: 1.5,
                                           ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
+                                              color: const Color(
+                                                0xFF7B2CBF,
+                                              ).withValues(alpha: 0.1),
                                               blurRadius: 8,
                                               offset: const Offset(0, 4),
                                             ),
                                           ],
                                         ),
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(14),
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
                                           child: Image.file(
                                             _pickedImages[index],
                                             width: 120,
@@ -643,12 +701,18 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                                           child: Container(
                                             decoration: BoxDecoration(
                                               gradient: LinearGradient(
-                                                colors: [Colors.red.shade400, Colors.red.shade500],
+                                                colors: [
+                                                  Colors.red.shade400,
+                                                  Colors.red.shade500,
+                                                ],
                                               ),
-                                              borderRadius: BorderRadius.circular(20),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                               boxShadow: [
                                                 BoxShadow(
-                                                  color: Colors.red.withValues(alpha: 0.3),
+                                                  color: Colors.red.withValues(
+                                                    alpha: 0.3,
+                                                  ),
                                                   blurRadius: 6,
                                                   offset: const Offset(0, 2),
                                                 ),
@@ -670,7 +734,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             ),
                           ),
                         ],
-                        
+
                         Container(
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
@@ -681,7 +745,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             ),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color(0xFFFF9800).withValues(alpha: 0.2),
+                              color: const Color(
+                                0xFFFF9800,
+                              ).withValues(alpha: 0.2),
                               width: 1,
                             ),
                           ),
@@ -722,60 +788,70 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         // Submit Button
                         _isLoading
                             ? Center(
-                                child: Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                    ),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: const CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 3,
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: double.infinity,
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
+                                    colors: [
+                                      Color(0xFF7B2CBF),
+                                      Color(0xFF9D4EDD),
+                                    ],
                                   ),
-                                  borderRadius: BorderRadius.circular(18),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
-                                      blurRadius: 15,
-                                      offset: const Offset(0, 6),
-                                    ),
-                                  ],
+                                  borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: ElevatedButton(
-                                  onPressed: _submit,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    elevation: 0,
-                                    padding: const EdgeInsets.symmetric(vertical: 18),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(18),
-                                    ),
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                            )
+                            : Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF7B2CBF),
+                                    Color(0xFF9D4EDD),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(18),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF7B2CBF,
+                                    ).withValues(alpha: 0.4),
+                                    blurRadius: 15,
+                                    offset: const Offset(0, 6),
                                   ),
-                                  child: const Text(
-                                    "Create Event",
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins',
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: Colors.white,
-                                      letterSpacing: -0.5,
-                                    ),
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed: _submit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 18,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                child: const Text(
+                                  "Create Event",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: Colors.white,
+                                    letterSpacing: -0.5,
                                   ),
                                 ),
                               ),
+                            ),
                       ],
                     ),
                   ),

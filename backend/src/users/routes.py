@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
 from typing import Optional
+from pydantic import BaseModel
 
 from src.db.main import get_session
 from src.auth.dependencies import AccessTokenBearer
@@ -16,6 +17,9 @@ from uuid import UUID
  
 
 user_router = APIRouter()
+
+class FCMTokenUpdate(BaseModel):
+    fcm_token: str
 
 @user_router.get("/stats")
 async def get_user_stats(
@@ -129,3 +133,19 @@ async def get_certificate_data_for_user(
         "average_rating": average_rating,
         "joined_event_titles": event_titles
     }
+
+@user_router.put("/{user_id}/fcm_token")
+async def update_fcm_token(user_id: UUID, data: FCMTokenUpdate, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(User).where(User.uid == user_id))
+    user = result.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.fcm_token = data.fcm_token
+    await session.commit()
+    return {"status": "success"}
+
+@user_router.get("/all-ids")
+async def get_all_user_ids(session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(User.uid))
+    user_ids = [str(row[0]) for row in result.all()]
+    return user_ids

@@ -15,6 +15,6 @@ class Notification(SQLModel, table=True):
     event_id: str = Field(nullable=True)
     event_title: str = Field(nullable=True)
     message: str
-    timestamp: datetime = Field(default_factory=datetime.utcnow, sa_column=Column(TIMESTAMP(timezone=True), nullable=False))
+    timestamp: datetime = Field(default_factory=datetime.now, sa_column=Column(TIMESTAMP(timezone=True), nullable=False))
     is_read: bool = Field(default=False, sa_column=Column(Boolean, nullable=False))
     type: str = Field(default="new_message")

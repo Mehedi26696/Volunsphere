@@ -169,6 +169,40 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
+  /// Send notification to multiple users
+  Future<void> sendNotificationToUsers({
+    required List<String> userIds,
+    required String message,
+    String? eventId,
+    String? eventTitle,
+    String type = "new_message",
+  }) async {
+    final url = '$baseUrl/notifications/';
+    final body = jsonEncode({
+      'user_ids': userIds,
+      'event_id': eventId,
+      'event_title': eventTitle,
+      'message': message,
+      'type': type,
+    });
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Notification sent to users');
+      } else {
+        print(
+          'Failed to send notification: ${response.statusCode} ${response.body}',
+        );
+      }
+    } catch (e) {
+      print('Error sending notification: $e');
+    }
+  }
+
   void dispose() {
     _notificationController.close();
     super.dispose();

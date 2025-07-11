@@ -42,14 +42,23 @@ class FcmService {
   Future<void> _sendTokenToBackend({String? token}) async {
     final fcmToken = token ?? await FirebaseMessaging.instance.getToken();
     print('FCM Token: $fcmToken');
-    // Send this token to your backend after login/signup if user is logged in
     final tokenData = await AuthService.getTokenData();
     final userId = tokenData != null ? tokenData['sub'] : null;
     if (userId != null && fcmToken != null) {
-      final url = '$baseUrl/fcm/users/$userId/fcm-token';
+      final url = '$userUrl/$userId/fcm_token';
       try {
-        await http.post(Uri.parse(url), body: {'token': fcmToken});
-        print('FCM token sent to backend');
+        final response = await http.put(
+          Uri.parse(url),
+          headers: {'Content-Type': 'application/json'},
+          body: '{"fcm_token": "$fcmToken"}',
+        );
+        if (response.statusCode == 200) {
+          print('FCM token sent to backend');
+        } else {
+          print(
+            'Failed to send FCM token to backend: \\${response.statusCode} - \\${response.body}',
+          );
+        }
       } catch (e) {
         print('Failed to send FCM token to backend: $e');
       }
