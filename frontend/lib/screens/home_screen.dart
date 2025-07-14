@@ -50,10 +50,10 @@ class _HomeScreenState extends State<HomeScreen> {
       print('Initializing notification services...');
       await NotificationService.instance.initialize();
       await NotificationListenerService.instance.initialize();
-      
+
       // Check for missed messages when the app starts
       await MissedMessageService.checkMissedMessages();
-      
+
       // Add a small delay then print debug info
       Timer(const Duration(seconds: 2), () {
         NotificationListenerService.instance.printDebugInfo();
@@ -121,7 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _buildStatItem(IconData icon, String label, String value, Color color) {
+  Widget _buildStatItem(
+    IconData icon,
+    String label,
+    String value,
+    Color color,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isSmall = constraints.maxWidth < 120;
@@ -137,10 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(isSmall ? 16 : 20),
-            border: Border.all(
-              color: color.withValues(alpha: 0.2),
-              width: 1.5,
-            ),
+            border: Border.all(color: color.withValues(alpha: 0.2), width: 1.5),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -153,11 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   borderRadius: BorderRadius.circular(isSmall ? 12 : 16),
                 ),
-                child: Icon(
-                  icon, 
-                  size: isSmall ? 24 : 32, 
-                  color: Colors.white
-                ),
+                child: Icon(icon, size: isSmall ? 24 : 32, color: Colors.white),
               ),
               SizedBox(height: isSmall ? 8 : 12),
               Text(
@@ -294,18 +292,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         child: Builder(
-                          builder: (context) => IconButton(
-                            onPressed: () => Scaffold.of(context).openDrawer(),
-                            icon: const Icon(
-                              Icons.menu_rounded,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              padding: const EdgeInsets.all(12),
-                            ),
-                          ),
+                          builder:
+                              (context) => IconButton(
+                                onPressed:
+                                    () => Scaffold.of(context).openDrawer(),
+                                icon: const Icon(
+                                  Icons.menu_rounded,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  padding: const EdgeInsets.all(12),
+                                ),
+                              ),
                         ),
                       ),
                       Expanded(
@@ -343,18 +343,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onPressed: () {
                                     Navigator.of(context).push(
                                       PageRouteBuilder(
-                                        pageBuilder: (context, animation, secondaryAnimation) => 
-                                            const NotificationScreen(),
-                                        transitionDuration: const Duration(milliseconds: 300),
-                                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                        pageBuilder:
+                                            (
+                                              context,
+                                              animation,
+                                              secondaryAnimation,
+                                            ) => const NotificationScreen(),
+                                        transitionDuration: const Duration(
+                                          milliseconds: 300,
+                                        ),
+                                        transitionsBuilder: (
+                                          context,
+                                          animation,
+                                          secondaryAnimation,
+                                          child,
+                                        ) {
                                           return SlideTransition(
                                             position: Tween<Offset>(
                                               begin: const Offset(1.0, 0.0),
                                               end: Offset.zero,
-                                            ).animate(CurvedAnimation(
-                                              parent: animation,
-                                              curve: Curves.easeInOut,
-                                            )),
+                                            ).animate(
+                                              CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.easeInOut,
+                                              ),
+                                            ),
                                             child: child,
                                           );
                                         },
@@ -382,9 +395,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         minHeight: 16,
                                       ),
                                       child: Text(
-                                        notificationService.unreadCount > 9 
-                                            ? '9+' 
-                                            : notificationService.unreadCount.toString(),
+                                        notificationService.unreadCount > 9
+                                            ? '9+'
+                                            : notificationService.unreadCount
+                                                .toString(),
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 10,
@@ -401,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   );
-                }
+                },
               ),
             ),
 
@@ -423,7 +437,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
+                              color: const Color(
+                                0xFF7B2CBF,
+                              ).withValues(alpha: 0.15),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -436,7 +452,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                                  colors: [
+                                    Color(0xFF7B2CBF),
+                                    Color(0xFF9D4EDD),
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(25),
                               ),
@@ -471,18 +490,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   final homeEvents = allEvents.take(3).toList();
 
                   return ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+                    behavior: ScrollConfiguration.of(
+                      context,
+                    ).copyWith(scrollbars: false),
                     child: LayoutBuilder(
                       builder: (context, constraints) {
                         final isSmallScreen = constraints.maxWidth < 400;
                         final horizontalPadding = isSmallScreen ? 16.0 : 20.0;
-                        
+
                         return ListView(
                           padding: EdgeInsets.all(horizontalPadding),
                           children: [
                             // Welcome Section
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4.0,
+                                vertical: 8.0,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -513,687 +537,995 @@ class _HomeScreenState extends State<HomeScreen> {
 
                             SizedBox(height: isSmallScreen ? 20 : 24),
 
-                        // Stats Section
-                        if (!isGuest)
-                          isStatsLoading
-                            ? const Center(
-                              child: CircularProgressIndicator(
-                              color: Color(0xFF7B2CBF),
-                              ),
-                            )
-                            : LayoutBuilder(
-                              builder: (context, constraints) {
-                                final isSmallScreen = constraints.maxWidth < 400;
-                                if (isSmallScreen) {
-                                  // For small screens, display stats in a 2x2 grid with the 3rd item spanning full width
-                                  return Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: _buildStatItem(
-                                              Icons.event_rounded,
-                                              "Events",
-                                              userStats?['events_joined']?.toString() ?? '0',
-                                              const Color(0xFF4CAF50),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: _buildStatItem(
-                                              Icons.access_time_rounded,
-                                              "Hours",
-                                              userStats?['hours_volunteered']?.toString() ?? '0',
-                                              const Color(0xFF2196F3),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Container(
-                                        width: double.infinity,
-                                        constraints: const BoxConstraints(maxWidth: 200),
-                                        child: _buildStatItem(
-                                          Icons.star_rounded,
-                                          "Avg. Rating",
-                                          userStats?['average_rating']?.toStringAsFixed(1) ?? '0.0',
-                                          const Color(0xFFFF9800),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                } else {
-                                  // For larger screens, keep the original row layout
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                        child: _buildStatItem(
-                                          Icons.event_rounded,
-                                          "Events Joined",
-                                          userStats?['events_joined']?.toString() ?? '0',
-                                          const Color(0xFF4CAF50),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: _buildStatItem(
-                                          Icons.access_time_rounded,
-                                          "Hours Volunteered",
-                                          userStats?['hours_volunteered']?.toString() ?? '0',
-                                          const Color(0xFF2196F3),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 16),
-                                      Expanded(
-                                        child: _buildStatItem(
-                                          Icons.star_rounded,
-                                          "Avg. Rating",
-                                          userStats?['average_rating']?.toStringAsFixed(1) ?? '0.0',
-                                          const Color(0xFFFF9800),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              },
-                            ),
-
-                        const SizedBox(height: 24),
-
-                        // Action Buttons
-                        if (!isGuest) ...[
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final isSmallScreen = constraints.maxWidth < 450;
-                              
-                              if (isSmallScreen) {
-                                // For small screens, stack buttons vertically
-                                return Column(
-                                  children: [
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: _buildActionButton(
-                                        icon: Icons.add_rounded,
-                                        title: "Create Event",
-                                        onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => const CreateEventScreen(),
-                                          ),
-                                        ),
-                                        gradientColors: [
-                                          const Color(0xFFE040FB),
-                                          const Color(0xFFFF80AB),
-                                        ],
-                                        isFullWidth: true,
-                                      ),
+                            // Stats Section
+                            if (!isGuest)
+                              isStatsLoading
+                                  ? const Center(
+                                    child: CircularProgressIndicator(
+                                      color: Color(0xFF7B2CBF),
                                     ),
-                                    const SizedBox(height: 12),
-                                    MouseRegion(
-                                      cursor: SystemMouseCursors.click,
-                                      child: _buildActionButton(
-                                        icon: Icons.event_note_rounded,
-                                        title: "My Events",
-                                        onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => const MyEventsScreen(),
-                                          ),
-                                        ),
-                                        gradientColors: [
-                                          const Color(0xFF2196F3),
-                                          const Color(0xFF64B5F6),
-                                        ],
-                                        isFullWidth: true,
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              } else {
-                                // For larger screens, keep the original row layout
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: _buildActionButton(
-                                          icon: Icons.add_rounded,
-                                          title: "Create Event",
-                                          onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => const CreateEventScreen(),
-                                            ),
-                                          ),
-                                          gradientColors: [
-                                            const Color(0xFFE040FB),
-                                            const Color(0xFFFF80AB),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 16),
-                                    Expanded(
-                                      child: MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        child: _buildActionButton(
-                                          icon: Icons.event_note_rounded,
-                                          title: "My Events",
-                                          onPressed: () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => const MyEventsScreen(),
-                                            ),
-                                          ),
-                                          gradientColors: [
-                                            const Color(0xFF2196F3),
-                                            const Color(0xFF64B5F6),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: _buildActionButton(
-                            icon: Icons.group_rounded,
-                            title: "Joined Events",
-                            onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const JoinedEventsScreen(),
-                            ),
-                            ),
-                            gradientColors: [
-                            const Color(0xFF4CAF50),
-                            const Color(0xFF81C784),
-                            ],
-                            isFullWidth: true,
-                          ),
-                          ),
-                          const SizedBox(height: 28),
-                        ],
-
-                        // Events Section
-                        Row(
-                          children: [
-                            const Expanded(
-                              child: Text(
-                                "Volunteer Opportunities",
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF27264A),
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                            ),
-                            Material(
-                              color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(12),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const AllEventsScreen(),
-                                    ),
-                                  );
-                                },
-                                hoverColor: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        "See All",
-                                        style: TextStyle(
-                                          fontFamily: 'Poppins',
-                                          color: const Color(0xFF7B2CBF),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 14,
-                                          letterSpacing: -0.2,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Icon(
-                                        Icons.arrow_forward_rounded,
-                                        color: const Color(0xFF7B2CBF),
-                                        size: 16,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Events List
-                        if (allEvents.isEmpty)
-                          Container(
-                            margin: const EdgeInsets.symmetric(vertical: 32),
-                            padding: const EdgeInsets.all(40),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.95),
-                              borderRadius: BorderRadius.circular(25),
-                              border: Border.all(
-                                color: const Color(0xFF626C7A).withValues(alpha: 0.2),
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Column(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF626C7A).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  child: Icon(
-                                    Icons.sentiment_dissatisfied_rounded,
-                                    color: const Color(0xFF626C7A).withValues(alpha: 0.7),
-                                    size: 48,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  "No volunteer opportunities currently available.",
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 16,
-                                    color: Color(0xFF626C7A),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          )
-                        else
-                          ...homeEvents.map(
-                            (event) => Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.95),
-                                borderRadius: BorderRadius.circular(25),
-                                border: Border.all(
-                                  color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
-                                  width: 1.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
-                                    blurRadius: 15,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                borderRadius: BorderRadius.circular(25),
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(25),
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => EventDetailsScreen(eventId: event.id),
-                                    ),
-                                  ),
-                                  hoverColor: const Color(0xFF7B2CBF).withValues(alpha: 0.05),
-                                  child: LayoutBuilder(
+                                  )
+                                  : LayoutBuilder(
                                     builder: (context, constraints) {
-                                      final isSmallScreen = constraints.maxWidth < 400;
-                                      return Padding(
-                                        padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
-                                        child: isSmallScreen 
-                                          ? Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                      final isSmallScreen =
+                                          constraints.maxWidth < 400;
+                                      if (isSmallScreen) {
+                                        // For small screens, display stats in a 2x2 grid with the 3rd item spanning full width
+                                        return Column(
+                                          children: [
+                                            Row(
                                               children: [
-                                                // Event title and icon row
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      width: 50,
-                                                      height: 50,
-                                                      decoration: BoxDecoration(
-                                                        gradient: const LinearGradient(
-                                                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(15),
-                                                      ),
-                                                      child: const Icon(
-                                                        Icons.event_rounded,
-                                                        color: Colors.white,
-                                                        size: 26,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Text(
-                                                            event.title,
-                                                            style: const TextStyle(
-                                                              fontFamily: 'Poppins',
-                                                              fontWeight: FontWeight.bold,
-                                                              fontSize: 16,
-                                                              color: Color(0xFF27264A),
-                                                              letterSpacing: -0.5,
-                                                            ),
-                                                            maxLines: 2,
-                                                            overflow: TextOverflow.ellipsis,
-                                                          ),
-                                                          const SizedBox(height: 4),
-                                                          Row(
-                                                            children: [
-                                                              Container(
-                                                                padding: const EdgeInsets.all(4),
-                                                                decoration: BoxDecoration(
-                                                                  color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-                                                                  borderRadius: BorderRadius.circular(6),
-                                                                ),
-                                                                child: Icon(
-                                                                  Icons.location_on_rounded,
-                                                                  size: 14,
-                                                                  color: const Color(0xFF4CAF50),
-                                                                ),
-                                                              ),
-                                                              const SizedBox(width: 6),
-                                                              Expanded(
-                                                                child: Text(
-                                                                  event.location ?? "No location",
-                                                                  style: const TextStyle(
-                                                                    fontFamily: 'Poppins',
-                                                                    fontSize: 12,
-                                                                    color: Color(0xFF626C7A),
-                                                                    fontWeight: FontWeight.w500,
-                                                                    letterSpacing: -0.2,
-                                                                  ),
-                                                                  maxLines: 1,
-                                                                  overflow: TextOverflow.ellipsis,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 12),
-                                                // Description
-                                                Text(
-                                                  event.description ?? "No description",
-                                                  style: const TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    fontSize: 13,
-                                                    color: Color(0xFF626C7A),
-                                                    letterSpacing: -0.2,
-                                                  ),
-                                                  maxLines: 2,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                                const SizedBox(height: 12),
-                                                // Time and button row
-                                                Row(
-                                                  children: [
-                                                    Container(
-                                                      padding: const EdgeInsets.all(4),
-                                                      decoration: BoxDecoration(
-                                                        color: const Color(0xFF2196F3).withValues(alpha: 0.1),
-                                                        borderRadius: BorderRadius.circular(6),
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.access_time_rounded,
-                                                        size: 14,
-                                                        color: const Color(0xFF2196F3),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    Expanded(
-                                                      child: Text(
-                                                        _formatDateRange(
-                                                          event.startDatetime,
-                                                          event.endDatetime,
-                                                        ),
-                                                        style: const TextStyle(
-                                                          fontFamily: 'Poppins',
-                                                          fontSize: 11,
-                                                          color: Color(0xFF626C7A),
-                                                          letterSpacing: -0.2,
-                                                        ),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        gradient: const LinearGradient(
-                                                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(10),
-                                                      ),
-                                                      child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                          backgroundColor: Colors.transparent,
-                                                          shadowColor: Colors.transparent,
-                                                          elevation: 0,
-                                                          shape: RoundedRectangleBorder(
-                                                            borderRadius: BorderRadius.circular(10),
-                                                          ),
-                                                          padding: const EdgeInsets.symmetric(
-                                                            horizontal: 12,
-                                                            vertical: 8,
-                                                          ),
-                                                        ),
-                                                        onPressed: () => Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (_) => EventDetailsScreen(
-                                                              eventId: event.id,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        child: const Text(
-                                                          "Details",
-                                                          style: TextStyle(
-                                                            fontFamily: 'Poppins',
-                                                            fontWeight: FontWeight.bold,
-                                                            color: Colors.white,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            )
-                                          : Row(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: 60,
-                                                  height: 60,
-                                                  decoration: BoxDecoration(
-                                                    gradient: const LinearGradient(
-                                                      colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(18),
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.event_rounded,
-                                                    color: Colors.white,
-                                                    size: 32,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 16),
                                                 Expanded(
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      Text(
-                                                        event.title,
-                                                        style: const TextStyle(
-                                                          fontFamily: 'Poppins',
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 17,
-                                                          color: Color(0xFF27264A),
-                                                          letterSpacing: -0.5,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(height: 8),
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                            padding: const EdgeInsets.all(6),
-                                                            decoration: BoxDecoration(
-                                                              color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-                                                              borderRadius: BorderRadius.circular(8),
-                                                            ),
-                                                            child: Icon(
-                                                              Icons.location_on_rounded,
-                                                              size: 16,
-                                                              color: const Color(0xFF4CAF50),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(width: 8),
-                                                          Expanded(
-                                                            child: Text(
-                                                              event.location ?? "No location",
-                                                              style: const TextStyle(
-                                                                fontFamily: 'Poppins',
-                                                                fontSize: 13,
-                                                                color: Color(0xFF626C7A),
-                                                                fontWeight: FontWeight.w500,
-                                                                letterSpacing: -0.2,
-                                                              ),
-                                                              maxLines: 1,
-                                                              overflow: TextOverflow.ellipsis,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      const SizedBox(height: 6),
-                                                      Text(
-                                                        event.description ?? "No description",
-                                                        style: const TextStyle(
-                                                          fontFamily: 'Poppins',
-                                                          fontSize: 13,
-                                                          color: Color(0xFF626C7A),
-                                                          letterSpacing: -0.2,
-                                                        ),
-                                                        maxLines: 2,
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                      const SizedBox(height: 8),
-                                                      Row(
-                                                        children: [
-                                                          Container(
-                                                            padding: const EdgeInsets.all(6),
-                                                            decoration: BoxDecoration(
-                                                              color: const Color(0xFF2196F3).withValues(alpha: 0.1),
-                                                              borderRadius: BorderRadius.circular(8),
-                                                            ),
-                                                            child: Icon(
-                                                              Icons.access_time_rounded,
-                                                              size: 15,
-                                                              color: const Color(0xFF2196F3),
-                                                            ),
-                                                          ),
-                                                          const SizedBox(width: 8),
-                                                          Text(
-                                                            _formatDateRange(
-                                                              event.startDatetime,
-                                                              event.endDatetime,
-                                                            ),
-                                                            style: const TextStyle(
-                                                              fontFamily: 'Poppins',
-                                                              fontSize: 12,
-                                                              color: Color(0xFF626C7A),
-                                                              letterSpacing: -0.2,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
+                                                  child: _buildStatItem(
+                                                    Icons.event_rounded,
+                                                    "Events",
+                                                    userStats?['events_joined']
+                                                            ?.toString() ??
+                                                        '0',
+                                                    const Color(0xFF4CAF50),
                                                   ),
                                                 ),
                                                 const SizedBox(width: 12),
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    gradient: const LinearGradient(
-                                                      colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                                    ),
-                                                    borderRadius: BorderRadius.circular(12),
-                                                  ),
-                                                  child: ElevatedButton(
-                                                    style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.transparent,
-                                                      shadowColor: Colors.transparent,
-                                                      elevation: 0,
-                                                      shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(12),
-                                                      ),
-                                                      padding: const EdgeInsets.symmetric(
-                                                        horizontal: 16,
-                                                        vertical: 10,
-                                                      ),
-                                                    ),
-                                                    onPressed: () => Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (_) => EventDetailsScreen(
-                                                          eventId: event.id,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    child: const Text(
-                                                      "Details",
-                                                      style: TextStyle(
-                                                        fontFamily: 'Poppins',
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.white,
-                                                        fontSize: 14,
-                                                      ),
-                                                    ),
+                                                Expanded(
+                                                  child: _buildStatItem(
+                                                    Icons.access_time_rounded,
+                                                    "Hours",
+                                                    userStats?['hours_volunteered']
+                                                            ?.toString() ??
+                                                        '0',
+                                                    const Color(0xFF2196F3),
                                                   ),
                                                 ),
                                               ],
                                             ),
+                                            const SizedBox(height: 12),
+                                            Container(
+                                              width: double.infinity,
+                                              constraints: const BoxConstraints(
+                                                maxWidth: 200,
+                                              ),
+                                              child: _buildStatItem(
+                                                Icons.star_rounded,
+                                                "Avg. Rating",
+                                                userStats?['average_rating']
+                                                        ?.toStringAsFixed(1) ??
+                                                    '0.0',
+                                                const Color(0xFFFF9800),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      } else {
+                                        // For larger screens, keep the original row layout
+                                        return Row(
+                                          children: [
+                                            Expanded(
+                                              child: _buildStatItem(
+                                                Icons.event_rounded,
+                                                "Events Joined",
+                                                userStats?['events_joined']
+                                                        ?.toString() ??
+                                                    '0',
+                                                const Color(0xFF4CAF50),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: _buildStatItem(
+                                                Icons.access_time_rounded,
+                                                "Hours Volunteered",
+                                                userStats?['hours_volunteered']
+                                                        ?.toString() ??
+                                                    '0',
+                                                const Color(0xFF2196F3),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: _buildStatItem(
+                                                Icons.star_rounded,
+                                                "Avg. Rating",
+                                                userStats?['average_rating']
+                                                        ?.toStringAsFixed(1) ??
+                                                    '0.0',
+                                                const Color(0xFFFF9800),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      }
+                                    },
+                                  ),
+
+                            const SizedBox(height: 24),
+
+                            // Action Buttons
+                            if (!isGuest) ...[
+                              LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final isSmallScreen =
+                                      constraints.maxWidth < 450;
+
+                                  if (isSmallScreen) {
+                                    // For small screens, stack buttons vertically
+                                    return Column(
+                                      children: [
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: _buildActionButton(
+                                            icon: Icons.add_rounded,
+                                            title: "Create Event",
+                                            onPressed:
+                                                () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (_) =>
+                                                            const CreateEventScreen(),
+                                                  ),
+                                                ),
+                                            gradientColors: [
+                                              const Color(0xFFE040FB),
+                                              const Color(0xFFFF80AB),
+                                            ],
+                                            isFullWidth: true,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        MouseRegion(
+                                          cursor: SystemMouseCursors.click,
+                                          child: _buildActionButton(
+                                            icon: Icons.event_note_rounded,
+                                            title: "My Events",
+                                            onPressed:
+                                                () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (_) =>
+                                                            const MyEventsScreen(),
+                                                  ),
+                                                ),
+                                            gradientColors: [
+                                              const Color(0xFF2196F3),
+                                              const Color(0xFF64B5F6),
+                                            ],
+                                            isFullWidth: true,
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  } else {
+                                    // For larger screens, keep the original row layout
+                                    return Row(
+                                      children: [
+                                        Expanded(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: _buildActionButton(
+                                              icon: Icons.add_rounded,
+                                              title: "Create Event",
+                                              onPressed:
+                                                  () => Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (_) =>
+                                                              const CreateEventScreen(),
+                                                    ),
+                                                  ),
+                                              gradientColors: [
+                                                const Color(0xFFE040FB),
+                                                const Color(0xFFFF80AB),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: MouseRegion(
+                                            cursor: SystemMouseCursors.click,
+                                            child: _buildActionButton(
+                                              icon: Icons.event_note_rounded,
+                                              title: "My Events",
+                                              onPressed:
+                                                  () => Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (_) =>
+                                                              const MyEventsScreen(),
+                                                    ),
+                                                  ),
+                                              gradientColors: [
+                                                const Color(0xFF2196F3),
+                                                const Color(0xFF64B5F6),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: _buildActionButton(
+                                  icon: Icons.group_rounded,
+                                  title: "Joined Events",
+                                  onPressed:
+                                      () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => const JoinedEventsScreen(),
+                                        ),
+                                      ),
+                                  gradientColors: [
+                                    const Color(0xFF4CAF50),
+                                    const Color(0xFF81C784),
+                                  ],
+                                  isFullWidth: true,
+                                ),
+                              ),
+                              const SizedBox(height: 28),
+                            ],
+
+                            // Events Section
+                            Row(
+                              children: [
+                                const Expanded(
+                                  child: Text(
+                                    "Volunteer Opportunities",
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF27264A),
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
+                                ),
+                                Material(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(12),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => const AllEventsScreen(),
+                                        ),
                                       );
-                                    }
+                                    },
+                                    hoverColor: const Color(
+                                      0xFF7B2CBF,
+                                    ).withValues(alpha: 0.1),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: const Color(
+                                          0xFF7B2CBF,
+                                        ).withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: const Color(
+                                            0xFF7B2CBF,
+                                          ).withValues(alpha: 0.2),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "See All",
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color: const Color(0xFF7B2CBF),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 14,
+                                              letterSpacing: -0.2,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Icon(
+                                            Icons.arrow_forward_rounded,
+                                            color: const Color(0xFF7B2CBF),
+                                            size: 16,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            // Events List
+                            if (allEvents.isEmpty)
+                              Container(
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 32,
+                                ),
+                                padding: const EdgeInsets.all(40),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.95),
+                                  borderRadius: BorderRadius.circular(25),
+                                  border: Border.all(
+                                    color: const Color(
+                                      0xFF626C7A,
+                                    ).withValues(alpha: 0.2),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: const Color(
+                                          0xFF626C7A,
+                                        ).withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Icon(
+                                        Icons.sentiment_dissatisfied_rounded,
+                                        color: const Color(
+                                          0xFF626C7A,
+                                        ).withValues(alpha: 0.7),
+                                        size: 48,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    const Text(
+                                      "No volunteer opportunities currently available.",
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 16,
+                                        color: Color(0xFF626C7A),
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              ...homeEvents.map(
+                                (event) => Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.95),
+                                    borderRadius: BorderRadius.circular(25),
+                                    border: Border.all(
+                                      color: const Color(
+                                        0xFF7B2CBF,
+                                      ).withValues(alpha: 0.15),
+                                      width: 1.5,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFF7B2CBF,
+                                        ).withValues(alpha: 0.08),
+                                        blurRadius: 15,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(25),
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(25),
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (_) => EventDetailsScreen(
+                                                    eventId: event.id,
+                                                  ),
+                                            ),
+                                          ),
+                                      hoverColor: const Color(
+                                        0xFF7B2CBF,
+                                      ).withValues(alpha: 0.05),
+                                      child: LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          final isSmallScreen =
+                                              constraints.maxWidth < 400;
+                                          return Padding(
+                                            padding: EdgeInsets.all(
+                                              isSmallScreen ? 16 : 20,
+                                            ),
+                                            child:
+                                                isSmallScreen
+                                                    ? Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        // Event title and icon row
+                                                        Row(
+                                                          children: [
+                                                            Container(
+                                                              width: 50,
+                                                              height: 50,
+                                                              decoration: BoxDecoration(
+                                                                gradient: const LinearGradient(
+                                                                  colors: [
+                                                                    Color(
+                                                                      0xFF7B2CBF,
+                                                                    ),
+                                                                    Color(
+                                                                      0xFF9D4EDD,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      15,
+                                                                    ),
+                                                              ),
+                                                              child: const Icon(
+                                                                Icons
+                                                                    .event_rounded,
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                                size: 26,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 12,
+                                                            ),
+                                                            Expanded(
+                                                              child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  Text(
+                                                                    event.title,
+                                                                    style: const TextStyle(
+                                                                      fontFamily:
+                                                                          'Poppins',
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                      fontSize:
+                                                                          16,
+                                                                      color: Color(
+                                                                        0xFF27264A,
+                                                                      ),
+                                                                      letterSpacing:
+                                                                          -0.5,
+                                                                    ),
+                                                                    maxLines: 2,
+                                                                    overflow:
+                                                                        TextOverflow
+                                                                            .ellipsis,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 4,
+                                                                  ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Container(
+                                                                        padding:
+                                                                            const EdgeInsets.all(
+                                                                              4,
+                                                                            ),
+                                                                        decoration: BoxDecoration(
+                                                                          color: const Color(
+                                                                            0xFF4CAF50,
+                                                                          ).withValues(
+                                                                            alpha:
+                                                                                0.1,
+                                                                          ),
+                                                                          borderRadius:
+                                                                              BorderRadius.circular(
+                                                                                6,
+                                                                              ),
+                                                                        ),
+                                                                        child: Icon(
+                                                                          Icons
+                                                                              .location_on_rounded,
+                                                                          size:
+                                                                              14,
+                                                                          color: const Color(
+                                                                            0xFF4CAF50,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            6,
+                                                                      ),
+                                                                      Expanded(
+                                                                        child: Text(
+                                                                          event.location ??
+                                                                              "No location",
+                                                                          style: const TextStyle(
+                                                                            fontFamily:
+                                                                                'Poppins',
+                                                                            fontSize:
+                                                                                12,
+                                                                            color: Color(
+                                                                              0xFF626C7A,
+                                                                            ),
+                                                                            fontWeight:
+                                                                                FontWeight.w500,
+                                                                            letterSpacing:
+                                                                                -0.2,
+                                                                          ),
+                                                                          maxLines:
+                                                                              1,
+                                                                          overflow:
+                                                                              TextOverflow.ellipsis,
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 12,
+                                                        ),
+                                                        // Description
+                                                        Text(
+                                                          event.description ??
+                                                              "No description",
+                                                          style:
+                                                              const TextStyle(
+                                                                fontFamily:
+                                                                    'Poppins',
+                                                                fontSize: 13,
+                                                                color: Color(
+                                                                  0xFF626C7A,
+                                                                ),
+                                                                letterSpacing:
+                                                                    -0.2,
+                                                              ),
+                                                          maxLines: 2,
+                                                          overflow:
+                                                              TextOverflow
+                                                                  .ellipsis,
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 12,
+                                                        ),
+                                                        // Time and button row
+                                                        Row(
+                                                          children: [
+                                                            Container(
+                                                              padding:
+                                                                  const EdgeInsets.all(
+                                                                    4,
+                                                                  ),
+                                                              decoration: BoxDecoration(
+                                                                color:
+                                                                    const Color(
+                                                                      0xFF2196F3,
+                                                                    ).withValues(
+                                                                      alpha:
+                                                                          0.1,
+                                                                    ),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      6,
+                                                                    ),
+                                                              ),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .access_time_rounded,
+                                                                size: 14,
+                                                                color:
+                                                                    const Color(
+                                                                      0xFF2196F3,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 6,
+                                                            ),
+                                                            Expanded(
+                                                              child: Text(
+                                                                _formatDateRange(
+                                                                  event
+                                                                      .startDatetime,
+                                                                  event
+                                                                      .endDatetime,
+                                                                ),
+                                                                style: const TextStyle(
+                                                                  fontFamily:
+                                                                      'Poppins',
+                                                                  fontSize: 11,
+                                                                  color: Color(
+                                                                    0xFF626C7A,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      -0.2,
+                                                                ),
+                                                                maxLines: 2,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 8,
+                                                            ),
+                                                            Container(
+                                                              decoration: BoxDecoration(
+                                                                gradient: const LinearGradient(
+                                                                  colors: [
+                                                                    Color(
+                                                                      0xFF7B2CBF,
+                                                                    ),
+                                                                    Color(
+                                                                      0xFF9D4EDD,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      10,
+                                                                    ),
+                                                              ),
+                                                              child: ElevatedButton(
+                                                                style: ElevatedButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      Colors
+                                                                          .transparent,
+                                                                  shadowColor:
+                                                                      Colors
+                                                                          .transparent,
+                                                                  elevation: 0,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
+                                                                          10,
+                                                                        ),
+                                                                  ),
+                                                                  padding:
+                                                                      const EdgeInsets.symmetric(
+                                                                        horizontal:
+                                                                            12,
+                                                                        vertical:
+                                                                            8,
+                                                                      ),
+                                                                ),
+                                                                onPressed:
+                                                                    () => Navigator.push(
+                                                                      context,
+                                                                      MaterialPageRoute(
+                                                                        builder:
+                                                                            (
+                                                                              _,
+                                                                            ) => EventDetailsScreen(
+                                                                              eventId:
+                                                                                  event.id,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                child: const Text(
+                                                                  "Details",
+                                                                  style: TextStyle(
+                                                                    fontFamily:
+                                                                        'Poppins',
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color:
+                                                                        Colors
+                                                                            .white,
+                                                                    fontSize:
+                                                                        12,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    )
+                                                    : Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Container(
+                                                          width: 60,
+                                                          height: 60,
+                                                          decoration: BoxDecoration(
+                                                            gradient:
+                                                                const LinearGradient(
+                                                                  colors: [
+                                                                    Color(
+                                                                      0xFF7B2CBF,
+                                                                    ),
+                                                                    Color(
+                                                                      0xFF9D4EDD,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  18,
+                                                                ),
+                                                          ),
+                                                          child: const Icon(
+                                                            Icons.event_rounded,
+                                                            color: Colors.white,
+                                                            size: 32,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 16,
+                                                        ),
+                                                        Expanded(
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                event.title,
+                                                                style: const TextStyle(
+                                                                  fontFamily:
+                                                                      'Poppins',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                  fontSize: 17,
+                                                                  color: Color(
+                                                                    0xFF27264A,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      -0.5,
+                                                                ),
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 8,
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Container(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                          6,
+                                                                        ),
+                                                                    decoration: BoxDecoration(
+                                                                      color: const Color(
+                                                                        0xFF4CAF50,
+                                                                      ).withValues(
+                                                                        alpha:
+                                                                            0.1,
+                                                                      ),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                            8,
+                                                                          ),
+                                                                    ),
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .location_on_rounded,
+                                                                      size: 16,
+                                                                      color: const Color(
+                                                                        0xFF4CAF50,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  Expanded(
+                                                                    child: Text(
+                                                                      event.location ??
+                                                                          "No location",
+                                                                      style: const TextStyle(
+                                                                        fontFamily:
+                                                                            'Poppins',
+                                                                        fontSize:
+                                                                            13,
+                                                                        color: Color(
+                                                                          0xFF626C7A,
+                                                                        ),
+                                                                        fontWeight:
+                                                                            FontWeight.w500,
+                                                                        letterSpacing:
+                                                                            -0.2,
+                                                                      ),
+                                                                      maxLines:
+                                                                          1,
+                                                                      overflow:
+                                                                          TextOverflow
+                                                                              .ellipsis,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 6,
+                                                              ),
+                                                              Text(
+                                                                event.description ??
+                                                                    "No description",
+                                                                style: const TextStyle(
+                                                                  fontFamily:
+                                                                      'Poppins',
+                                                                  fontSize: 13,
+                                                                  color: Color(
+                                                                    0xFF626C7A,
+                                                                  ),
+                                                                  letterSpacing:
+                                                                      -0.2,
+                                                                ),
+                                                                maxLines: 2,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              const SizedBox(
+                                                                height: 8,
+                                                              ),
+                                                              Row(
+                                                                children: [
+                                                                  Container(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                          6,
+                                                                        ),
+                                                                    decoration: BoxDecoration(
+                                                                      color: const Color(
+                                                                        0xFF2196F3,
+                                                                      ).withValues(
+                                                                        alpha:
+                                                                            0.1,
+                                                                      ),
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                            8,
+                                                                          ),
+                                                                    ),
+                                                                    child: Icon(
+                                                                      Icons
+                                                                          .access_time_rounded,
+                                                                      size: 15,
+                                                                      color: const Color(
+                                                                        0xFF2196F3,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 8,
+                                                                  ),
+                                                                  Text(
+                                                                    _formatDateRange(
+                                                                      event
+                                                                          .startDatetime,
+                                                                      event
+                                                                          .endDatetime,
+                                                                    ),
+                                                                    style: const TextStyle(
+                                                                      fontFamily:
+                                                                          'Poppins',
+                                                                      fontSize:
+                                                                          12,
+                                                                      color: Color(
+                                                                        0xFF626C7A,
+                                                                      ),
+                                                                      letterSpacing:
+                                                                          -0.2,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 12,
+                                                        ),
+                                                        Container(
+                                                          decoration: BoxDecoration(
+                                                            gradient:
+                                                                const LinearGradient(
+                                                                  colors: [
+                                                                    Color(
+                                                                      0xFF7B2CBF,
+                                                                    ),
+                                                                    Color(
+                                                                      0xFF9D4EDD,
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                            borderRadius:
+                                                                BorderRadius.circular(
+                                                                  12,
+                                                                ),
+                                                          ),
+                                                          child: ElevatedButton(
+                                                            style: ElevatedButton.styleFrom(
+                                                              backgroundColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              shadowColor:
+                                                                  Colors
+                                                                      .transparent,
+                                                              elevation: 0,
+                                                              shape: RoundedRectangleBorder(
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      12,
+                                                                    ),
+                                                              ),
+                                                              padding:
+                                                                  const EdgeInsets.symmetric(
+                                                                    horizontal:
+                                                                        16,
+                                                                    vertical:
+                                                                        10,
+                                                                  ),
+                                                            ),
+                                                            onPressed:
+                                                                () => Navigator.push(
+                                                                  context,
+                                                                  MaterialPageRoute(
+                                                                    builder:
+                                                                        (
+                                                                          _,
+                                                                        ) => EventDetailsScreen(
+                                                                          eventId:
+                                                                              event.id,
+                                                                        ),
+                                                                  ),
+                                                                ),
+                                                            child: const Text(
+                                                              "Details",
+                                                              style: TextStyle(
+                                                                fontFamily:
+                                                                    'Poppins',
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                                fontSize: 14,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
 
-                        const SizedBox(height: 20),
+                            const SizedBox(height: 20),
                           ],
                         );
-                      }
+                      },
                     ),
                   );
                 },
@@ -1219,7 +1551,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: BottomNavigationBar(
               selectedItemColor: const Color(0xFF7B2CBF),
-              unselectedItemColor: const Color(0xFF626C7A).withValues(alpha: 0.7),
+              unselectedItemColor: const Color(
+                0xFF626C7A,
+              ).withValues(alpha: 0.7),
               backgroundColor: Colors.white,
               currentIndex: _selectedIndex,
               onTap: _onNavTap,
@@ -1236,56 +1570,49 @@ class _HomeScreenState extends State<HomeScreen> {
                 fontSize: isSmallScreen ? 10 : 12,
               ),
               iconSize: isSmallScreen ? 22 : 24,
-              items: isGuest
-                  ? const [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home_rounded),
-                        label: "Home",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.event_rounded),
-                        label: "Events",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.forum_rounded),
-                        label: "Community",
-                      ),
-                    ]
-                  : const [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.home_rounded),
-                        label: "Home",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.event_rounded),
-                        label: "Events",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.forum_rounded),
-                        label: "Community",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.person_rounded),
-                        label: "Profile",
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.settings_rounded),
-                        label: "Settings",
-                      ),
-                    ],
+              items:
+                  isGuest
+                      ? const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home_rounded),
+                          label: "Home",
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.event_rounded),
+                          label: "Events",
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.forum_rounded),
+                          label: "Community",
+                        ),
+                      ]
+                      : const [
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.home_rounded),
+                          label: "Home",
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.event_rounded),
+                          label: "Events",
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.forum_rounded),
+                          label: "Community",
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.person_rounded),
+                          label: "Profile",
+                        ),
+                        BottomNavigationBarItem(
+                          icon: Icon(Icons.settings_rounded),
+                          label: "Settings",
+                        ),
+                      ],
             ),
           );
-        }
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          print('Testing notification system...');
-          await MissedMessageService.checkMissedMessages();
-          NotificationListenerService.instance.printDebugInfo();
         },
-        child: const Icon(Icons.bug_report),
-        backgroundColor: const Color(0xFF7B2CBF),
       ),
+      // Debug FloatingActionButton removed
     );
   }
 }

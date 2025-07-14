@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import select, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -17,6 +18,7 @@ from src.auth.utils import decode_token
 from datetime import datetime
 from fastapi import Query
 import json
+from src.community.schemas import PostUpdate, CommentUpdate
 
  
 
@@ -213,3 +215,50 @@ async def delete_comment(
     return {"message": "Comment deleted successfully"}
 
 
+
+# Edit post route
+
+
+@community_router.put("/posts/{post_id}", response_model=PostRead)
+async def edit_post(
+    post_id: UUID,
+    payload: PostUpdate,
+    token_data: dict = Depends(AccessTokenBearer()),
+    session: AsyncSession = Depends(get_session)
+):
+    user_id = UUID(token_data["sub"])
+    post = await session.get(Post, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    if post.user_id != user_id:
+        raise HTTPException(status_code=403, detail="You can only edit your own post.")
+    post.content = payload.content
+    post.updated_at = datetime.now()
+    session.add(post)
+    await session.commit()
+    await session.refresh(post)
+    return await get_post(post.id, session)
+
+# Edit comment route
+@community_router.put("/posts/{post_id}/comments/{comment_id}", response_model=CommentRead)
+async def edit_comment(
+    post_id: UUID,
+    comment_id: UUID,
+    payload: CommentUpdate,
+    token_data: dict = Depends(AccessTokenBearer()),
+    session: AsyncSession = Depends(get_session)
+):
+    user_id = UUID(token_data["sub"])
+    comment = await session.get(Comment, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Comment not found")
+    if comment.user_id != user_id:
+        raise HTTPException(status_code=403, detail="You can only edit your own comment.")
+    if comment.post_id != post_id:
+        raise HTTPException(status_code=400, detail="Comment does not belong to this post.")
+    comment.content = payload.content
+    session.add(comment)
+    await session.commit()
+    await session.refresh(comment)
+    await session.refresh(comment, attribute_names=["user"])
+    return comment

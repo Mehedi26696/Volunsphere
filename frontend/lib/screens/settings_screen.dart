@@ -5,6 +5,8 @@ import '../services/auth_service.dart';
 import 'change_password_screen.dart';
 import 'login_screen.dart';
 import 'theme_provider.dart';
+import 'about_us_screen.dart';
+import 'privacy_policy.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -30,64 +32,73 @@ class SettingsScreen extends StatelessWidget {
   void _showDeleteAccountDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: const Text(
-          'Delete Account',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF27264A),
-          ),
-        ),
-        content: const Text(
-          'Are you sure you want to delete your account? This action cannot be undone.',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            color: Color(0xFF626C7A),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            style: TextButton.styleFrom(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              'Cancel',
+            title: const Text(
+              'Delete Account',
               style: TextStyle(
                 fontFamily: 'Poppins',
-                color: Color(0xFF626C7A),
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF27264A),
               ),
             ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            content: const Text(
+              'Are you sure you want to delete your account? This action cannot be undone.',
+              style: TextStyle(fontFamily: 'Poppins', color: Color(0xFF626C7A)),
             ),
-            onPressed: () {
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text(
-                    'Account deletion is not implemented.',
-                    style: TextStyle(fontFamily: 'Poppins'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                style: TextButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  backgroundColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  behavior: SnackBarBehavior.floating,
                 ),
-              );
-            },
-            child: const Text(
-              'Delete',
-              style: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
-            ),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Color(0xFF626C7A),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text(
+                        'Account deletion is not implemented.',
+                        style: TextStyle(fontFamily: 'Poppins'),
+                      ),
+                      backgroundColor: Colors.redAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -142,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               // Content
               Expanded(
                 child: Padding(
@@ -164,7 +175,10 @@ class SettingsScreen extends StatelessWidget {
                           ],
                         ),
                         child: SwitchListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 8,
+                          ),
                           title: const Text(
                             "Dark Mode",
                             style: TextStyle(
@@ -182,7 +196,9 @@ class SettingsScreen extends StatelessWidget {
                           secondary: Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF9929ea).withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF9929ea,
+                              ).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Icon(
@@ -223,7 +239,9 @@ class SettingsScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const ChangePasswordScreen(),
+                                    builder:
+                                        (context) =>
+                                            const ChangePasswordScreen(),
                                   ),
                                 );
                               },
@@ -232,22 +250,24 @@ class SettingsScreen extends StatelessWidget {
                             _buildSettingsItem(
                               icon: Icons.info_outline,
                               title: "About",
-                              onTap: () => _showAboutDialog(context),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const AboutUsScreen(),
+                                  ),
+                                );
+                              },
                               showDivider: true,
                             ),
                             _buildSettingsItem(
                               icon: Icons.privacy_tip_outlined,
                               title: "Privacy Policy",
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: const Text(
-                                      'Privacy Policy not implemented.',
-                                      style: TextStyle(fontFamily: 'Poppins'),
-                                    ),
-                                    backgroundColor: const Color(0xFF9929ea),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                    behavior: SnackBarBehavior.floating,
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const PrivacyPolicyScreen(),
                                   ),
                                 );
                               },
@@ -311,13 +331,17 @@ class SettingsScreen extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 8,
+          ),
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: isDestructive 
-                  ? Colors.redAccent.withValues(alpha: 0.1)
-                  : const Color(0xFF9929ea).withValues(alpha: 0.1),
+              color:
+                  isDestructive
+                      ? Colors.redAccent.withValues(alpha: 0.1)
+                      : const Color(0xFF9929ea).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -336,11 +360,14 @@ class SettingsScreen extends StatelessWidget {
               letterSpacing: -0.5,
             ),
           ),
-          trailing: isDestructive ? null : Icon(
-            Icons.arrow_forward_ios,
-            size: 16,
-            color: const Color(0xFF626C7A).withValues(alpha: 0.6),
-          ),
+          trailing:
+              isDestructive
+                  ? null
+                  : Icon(
+                    Icons.arrow_forward_ios,
+                    size: 16,
+                    color: const Color(0xFF626C7A).withValues(alpha: 0.6),
+                  ),
           onTap: onTap,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),

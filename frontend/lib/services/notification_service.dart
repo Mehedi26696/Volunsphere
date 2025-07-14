@@ -60,32 +60,14 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
+  /// Only allow adding notifications from backend fetch.
+  /// This disables local-only notifications to ensure only backend notifications are shown.
   Future<void> addNotification(NotificationModel notification) async {
-    print('Adding notification with ID: ${notification.id}');
-
-    // Check if notification with same ID already exists
-    final existingIndex = _notifications.indexWhere(
-      (n) => n.id == notification.id,
+    // Instead of adding locally, always fetch from backend to ensure only backend notifications are shown.
+    print(
+      'addNotification called. Fetching notifications from backend to enforce backend-only notifications.',
     );
-
-    if (existingIndex != -1) {
-      print('Notification with same ID already exists, skipping...');
-      return;
-    }
-
-    // Add new notification at the beginning
-    _notifications.insert(0, notification);
-    print('Added new notification. Total count: ${_notifications.length}');
-
-    // Keep only last 50 notifications
-    if (_notifications.length > 50) {
-      _notifications.removeRange(50, _notifications.length);
-    }
-
-    await _saveNotifications();
-    _notificationController.add(_notifications);
-    notifyListeners();
-    print('Notification service updated. Unread count: $unreadCount');
+    await fetchNotificationsFromBackend();
   }
 
   Future<void> markAsRead(String notificationId) async {

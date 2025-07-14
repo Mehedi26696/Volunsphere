@@ -1,3 +1,4 @@
+import '../services/auth_service.dart';
 // community_newsfeed_screen.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -10,10 +11,12 @@ class CommunityNewsfeedScreen extends StatefulWidget {
   const CommunityNewsfeedScreen({super.key});
 
   @override
-  State<CommunityNewsfeedScreen> createState() => _CommunityNewsfeedScreenState();
+  State<CommunityNewsfeedScreen> createState() =>
+      _CommunityNewsfeedScreenState();
 }
 
 class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
+  String? currentUserId;
   List<Post> posts = [];
   bool loading = false;
   final TextEditingController _postController = TextEditingController();
@@ -21,7 +24,15 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     fetchPosts();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final tokenData = await AuthService.getTokenData();
+    setState(() {
+      currentUserId = tokenData != null ? tokenData['sub'] as String? : null;
+    });
   }
 
   Future<void> fetchPosts() async {
@@ -75,6 +86,7 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
 
   Widget buildPostCard(Post post) {
     final isLiked = post.likedByMe;
+    final isOwner = currentUserId != null && post.userId == currentUserId;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
@@ -102,9 +114,7 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
         onTap: () async {
           final updatedPost = await Navigator.push<Post>(
             context,
-            MaterialPageRoute(
-              builder: (_) => PostDetailsScreen(post: post),
-            ),
+            MaterialPageRoute(builder: (_) => PostDetailsScreen(post: post)),
           );
           if (updatedPost != null) {
             setState(() {
@@ -137,23 +147,24 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                         ),
                       ],
                     ),
-                    child: post.user.profileImageUrl != null
-                        ? CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.white,
-                            backgroundImage: CachedNetworkImageProvider(
-                              post.user.profileImageUrl!,
+                    child:
+                        post.user.profileImageUrl != null
+                            ? CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white,
+                              backgroundImage: CachedNetworkImageProvider(
+                                post.user.profileImageUrl!,
+                              ),
+                            )
+                            : const CircleAvatar(
+                              radius: 24,
+                              backgroundColor: Colors.white,
+                              child: Icon(
+                                Icons.person_rounded,
+                                size: 28,
+                                color: Color(0xFF7B2CBF),
+                              ),
                             ),
-                          )
-                        : const CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Colors.white,
-                            child: Icon(
-                              Icons.person_rounded,
-                              size: 28,
-                              color: Color(0xFF7B2CBF),
-                            ),
-                          ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -176,7 +187,9 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 12,
-                            color: const Color(0xFF626C7A).withValues(alpha: 0.8),
+                            color: const Color(
+                              0xFF626C7A,
+                            ).withValues(alpha: 0.8),
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -196,22 +209,179 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'report',
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: const Text(
-                              'Report',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF27264A),
+                      itemBuilder: (context) {
+                        return [
+                          if (isOwner)
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                ),
+                                child: const Text(
+                                  'Edit',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF27264A),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          PopupMenuItem(
+                            value: 'report',
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: const Text(
+                                'Report',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF27264A),
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ];
+                      },
+                      onSelected: (value) async {
+                        if (value == 'edit') {
+                          final newContent = await showDialog<String>(
+                            context: context,
+                            builder: (context) {
+                              final controller = TextEditingController(
+                                text: post.content,
+                              );
+                              return Dialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(18),
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.97),
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  padding: const EdgeInsets.all(24),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Edit Post',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                          color: Color(0xFF7B2CBF),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 18),
+                                      TextField(
+                                        controller: controller,
+                                        maxLines: 5,
+                                        style: const TextStyle(
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF27264A),
+                                        ),
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                            borderSide: const BorderSide(
+                                              color: Color(0xFF7B2CBF),
+                                            ),
+                                          ),
+                                          labelText: 'Content',
+                                          labelStyle: const TextStyle(
+                                            color: Color(0xFF7B2CBF),
+                                          ),
+                                          filled: false,
+                                          fillColor: Colors.transparent,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.pop(context),
+                                            style: TextButton.styleFrom(
+                                              foregroundColor: const Color(
+                                                0xFF7B2CBF,
+                                              ),
+                                            ),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                colors: [
+                                                  Color(0xFF7B2CBF),
+                                                  Color(0xFF9D4EDD),
+                                                ],
+                                                begin: Alignment.topLeft,
+                                                end: Alignment.bottomRight,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                shadowColor: Colors.transparent,
+                                                elevation: 0,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                              onPressed:
+                                                  () => Navigator.pop(
+                                                    context,
+                                                    controller.text.trim(),
+                                                  ),
+                                              child: const Text('Save'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                          if (newContent != null &&
+                              newContent.isNotEmpty &&
+                              newContent != post.content) {
+                            try {
+                              await CommunityService.editPost(
+                                post.id,
+                                newContent,
+                              );
+                              await fetchPosts();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Post updated successfully!'),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Failed to update post: $e'),
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
                     ),
                   ),
                 ],
@@ -238,44 +408,61 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                     onTap: () => toggleLike(post),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
-                        gradient: isLiked
-                            ? LinearGradient(
-                                colors: [
-                                  Colors.pink.shade400,
-                                  Colors.pink.shade300,
-                                ],
-                              )
-                            : LinearGradient(
-                                colors: [
-                                  const Color(0xFF626C7A).withValues(alpha: 0.05),
-                                  const Color(0xFF626C7A).withValues(alpha: 0.02),
-                                ],
-                              ),
+                        gradient:
+                            isLiked
+                                ? LinearGradient(
+                                  colors: [
+                                    Colors.pink.shade400,
+                                    Colors.pink.shade300,
+                                  ],
+                                )
+                                : LinearGradient(
+                                  colors: [
+                                    const Color(
+                                      0xFF626C7A,
+                                    ).withValues(alpha: 0.05),
+                                    const Color(
+                                      0xFF626C7A,
+                                    ).withValues(alpha: 0.02),
+                                  ],
+                                ),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: isLiked
-                              ? Colors.pink.shade300
-                              : const Color(0xFF626C7A).withValues(alpha: 0.1),
+                          color:
+                              isLiked
+                                  ? Colors.pink.shade300
+                                  : const Color(
+                                    0xFF626C7A,
+                                  ).withValues(alpha: 0.1),
                           width: 1,
                         ),
-                        boxShadow: isLiked
-                            ? [
-                                BoxShadow(
-                                  color: Colors.pink.withValues(alpha: 0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ]
-                            : null,
+                        boxShadow:
+                            isLiked
+                                ? [
+                                  BoxShadow(
+                                    color: Colors.pink.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                                : null,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                            color: isLiked ? Colors.white : const Color(0xFF626C7A),
+                            isLiked
+                                ? Icons.favorite_rounded
+                                : Icons.favorite_border_rounded,
+                            color:
+                                isLiked
+                                    ? Colors.white
+                                    : const Color(0xFF626C7A),
                             size: 20,
                           ),
                           const SizedBox(width: 6),
@@ -283,7 +470,10 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                             "${post.likesCount}",
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: isLiked ? Colors.white : const Color(0xFF626C7A),
+                              color:
+                                  isLiked
+                                      ? Colors.white
+                                      : const Color(0xFF626C7A),
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
@@ -294,7 +484,10 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                   ),
                   const SizedBox(width: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2196F3).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -413,7 +606,7 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                 ],
               ),
             ),
-            
+
             // Create Post Section
             Container(
               margin: const EdgeInsets.all(16),
@@ -465,10 +658,14 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF626C7A).withValues(alpha: 0.03),
+                          color: const Color(
+                            0xFF626C7A,
+                          ).withValues(alpha: 0.03),
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(
-                            color: const Color(0xFF626C7A).withValues(alpha: 0.1),
+                            color: const Color(
+                              0xFF626C7A,
+                            ).withValues(alpha: 0.1),
                             width: 1,
                           ),
                         ),
@@ -509,7 +706,9 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF7B2CBF).withValues(alpha: 0.4),
+                            color: const Color(
+                              0xFF7B2CBF,
+                            ).withValues(alpha: 0.4),
                             blurRadius: 12,
                             offset: const Offset(0, 4),
                           ),
@@ -523,7 +722,10 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                         ),
                         onPressed: createPost,
                         child: const Text(
@@ -541,125 +743,155 @@ class _CommunityNewsfeedScreenState extends State<CommunityNewsfeedScreen> {
                 ),
               ),
             ),
-            
+
             // Posts List
             Expanded(
-              child: loading
-                  ? Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(40),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.9),
-                            width: 1.5,
+              child:
+                  loading
+                      ? Center(
+                        child: Container(
+                          padding: const EdgeInsets.all(40),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              width: 1.5,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: const Color(
+                                  0xFF7B2CBF,
+                                ).withValues(alpha: 0.15),
+                                blurRadius: 20,
+                                offset: const Offset(0, 8),
+                              ),
+                            ],
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF7B2CBF).withValues(alpha: 0.15),
-                              blurRadius: 20,
-                              offset: const Offset(0, 8),
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                                ),
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: const CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            const Text(
-                              'Loading posts...',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF27264A),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: fetchPosts,
-                      color: const Color(0xFF7B2CBF),
-                      child: posts.isEmpty
-                          ? Center(
-                              child: Container(
-                                margin: const EdgeInsets.all(32),
-                                padding: const EdgeInsets.all(40),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.95),
-                                  borderRadius: BorderRadius.circular(30),
-                                  border: Border.all(
-                                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
-                                    width: 1.5,
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Color(0xFF7B2CBF),
+                                      Color(0xFF9D4EDD),
+                                    ],
                                   ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFF7B2CBF).withValues(alpha: 0.08),
-                                      blurRadius: 20,
-                                      offset: const Offset(0, 8),
-                                    ),
-                                  ],
+                                  borderRadius: BorderRadius.circular(25),
                                 ),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            const Color(0xFF7B2CBF).withValues(alpha: 0.1),
-                                            const Color(0xFF9D4EDD).withValues(alpha: 0.05),
-                                          ],
+                                child: const CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              const Text(
+                                'Loading posts...',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF27264A),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      : RefreshIndicator(
+                        onRefresh: fetchPosts,
+                        color: const Color(0xFF7B2CBF),
+                        child:
+                            posts.isEmpty
+                                ? Center(
+                                  child: Container(
+                                    margin: const EdgeInsets.all(32),
+                                    padding: const EdgeInsets.all(40),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.95,
+                                      ),
+                                      borderRadius: BorderRadius.circular(30),
+                                      border: Border.all(
+                                        color: const Color(
+                                          0xFF7B2CBF,
+                                        ).withValues(alpha: 0.2),
+                                        width: 1.5,
+                                      ),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: const Color(
+                                            0xFF7B2CBF,
+                                          ).withValues(alpha: 0.08),
+                                          blurRadius: 20,
+                                          offset: const Offset(0, 8),
                                         ),
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      child: Icon(
-                                        Icons.forum_rounded,
-                                        size: 48,
-                                        color: const Color(0xFF7B2CBF).withValues(alpha: 0.7),
-                                      ),
+                                      ],
                                     ),
-                                    const SizedBox(height: 20),
-                                    Text(
-                                      "No posts yet. Be the first to share something!",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins',
-                                        color: const Color(0xFF626C7A).withValues(alpha: 0.8),
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(20),
+                                          decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                              colors: [
+                                                const Color(
+                                                  0xFF7B2CBF,
+                                                ).withValues(alpha: 0.1),
+                                                const Color(
+                                                  0xFF9D4EDD,
+                                                ).withValues(alpha: 0.05),
+                                              ],
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              25,
+                                            ),
+                                          ),
+                                          child: Icon(
+                                            Icons.forum_rounded,
+                                            size: 48,
+                                            color: const Color(
+                                              0xFF7B2CBF,
+                                            ).withValues(alpha: 0.7),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                        Text(
+                                          "No posts yet. Be the first to share something!",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            color: const Color(
+                                              0xFF626C7A,
+                                            ).withValues(alpha: 0.8),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
+                                )
+                                : ScrollConfiguration(
+                                  behavior: ScrollConfiguration.of(
+                                    context,
+                                  ).copyWith(scrollbars: false),
+                                  child: ListView.builder(
+                                    padding: const EdgeInsets.only(
+                                      bottom: 16,
+                                      top: 8,
+                                    ),
+                                    itemCount: posts.length,
+                                    itemBuilder:
+                                        (context, index) =>
+                                            buildPostCard(posts[index]),
+                                  ),
                                 ),
-                              ),
-                            )
-                          : ScrollConfiguration(
-                              behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-                              child: ListView.builder(
-                                padding: const EdgeInsets.only(bottom: 16, top: 8),
-                                itemCount: posts.length,
-                                itemBuilder: (context, index) => buildPostCard(posts[index]),
-                              ),
-                            ),
-                    ),
+                      ),
             ),
           ],
         ),

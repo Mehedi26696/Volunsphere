@@ -1,3 +1,5 @@
+
+
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
@@ -58,3 +60,10 @@ class LikeRead(BaseModel):
     model_config = {
         "from_attributes": True   
     }
+
+# Update schemas for editing
+class PostUpdate(BaseModel):
+    content: str
+
+class CommentUpdate(BaseModel):
+    content: str

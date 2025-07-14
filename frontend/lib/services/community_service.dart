@@ -20,7 +20,9 @@ class CommunityService {
     return token;
   }
 
-  static Future<Map<String, String>> _buildHeaders({bool withContentType = true}) async {
+  static Future<Map<String, String>> _buildHeaders({
+    bool withContentType = true,
+  }) async {
     final token = await _getTokenOrThrow();
     final headers = <String, String>{};
     if (withContentType) headers['Content-Type'] = 'application/json';
@@ -31,7 +33,7 @@ class CommunityService {
   static Future<List<Post>> fetchPosts() async {
     final headers = await _buildHeaders(withContentType: false);
     final response = await http.get(
-      Uri.parse('$communityUrl/posts'),  
+      Uri.parse('$communityUrl/posts'),
       headers: headers,
     );
 
@@ -39,7 +41,9 @@ class CommunityService {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((item) => Post.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to load posts (code ${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Failed to load posts (code ${response.statusCode}): ${response.body}',
+      );
     }
   }
 
@@ -52,7 +56,9 @@ class CommunityService {
     );
 
     if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception("Failed to create post (code ${response.statusCode}): ${response.body}");
+      throw Exception(
+        "Failed to create post (code ${response.statusCode}): ${response.body}",
+      );
     }
   }
 
@@ -64,7 +70,9 @@ class CommunityService {
     );
 
     if (response.statusCode != 201) {
-      throw Exception("Failed to like post (code ${response.statusCode}): ${response.body}");
+      throw Exception(
+        "Failed to like post (code ${response.statusCode}): ${response.body}",
+      );
     }
   }
 
@@ -76,7 +84,9 @@ class CommunityService {
     );
 
     if (response.statusCode != 200) {
-      throw Exception("Failed to unlike post (code ${response.statusCode}): ${response.body}");
+      throw Exception(
+        "Failed to unlike post (code ${response.statusCode}): ${response.body}",
+      );
     }
   }
 
@@ -91,7 +101,9 @@ class CommunityService {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((item) => Comment.fromJson(item)).toList();
     } else {
-      throw Exception('Failed to load comments (code ${response.statusCode}): ${response.body}');
+      throw Exception(
+        'Failed to load comments (code ${response.statusCode}): ${response.body}',
+      );
     }
   }
 
@@ -104,9 +116,41 @@ class CommunityService {
     );
 
     if (response.statusCode != 200 && response.statusCode != 201) {
-      throw Exception("Failed to create comment (code ${response.statusCode}): ${response.body}");
+      throw Exception(
+        "Failed to create comment (code ${response.statusCode}): ${response.body}",
+      );
+    }
+  }
+
+  static Future<void> editPost(String postId, String content) async {
+    final headers = await _buildHeaders();
+    final response = await http.put(
+      Uri.parse('$communityUrl/posts/$postId'),
+      headers: headers,
+      body: jsonEncode({"content": content}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to edit post (code ${response.statusCode}): ${response.body}',
+      );
+    }
+  }
+
+  static Future<void> editComment(
+    String postId,
+    String commentId,
+    String content,
+  ) async {
+    final headers = await _buildHeaders();
+    final response = await http.put(
+      Uri.parse('$communityUrl/posts/$postId/comments/$commentId'),
+      headers: headers,
+      body: jsonEncode({"content": content}),
+    );
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to edit comment (code ${response.statusCode}): ${response.body}',
+      );
     }
   }
 }
-
-
