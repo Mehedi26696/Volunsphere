@@ -107,6 +107,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (text.isNotEmpty) {
       chatService.sendMessage(text);
       _controller.clear();
+
       // Notify all event attendees except the sender
       final tokenData = await AuthService.getTokenData();
       final currentUserId = tokenData?['sub'];

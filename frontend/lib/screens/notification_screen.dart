@@ -5,6 +5,7 @@ import '../models/notification_model.dart';
 import '../services/notification_service.dart';
 import '../services/events_service.dart';
 import 'chat_screen.dart';
+import 'event_details_screen.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -465,9 +466,35 @@ class _NotificationScreenState extends State<NotificationScreen> {
     try {
       // Get event details and attendees
       final attendees = await EventsService.getEventAttendees(eventId);
+      if (attendees.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Event attendees not found. The event may have been deleted.',
+              ),
+            ),
+          );
+        }
+        return;
+      }
       final events = await EventsService.getAllEvents();
-      final event = events.firstWhere((e) => e.id == eventId);
-
+      print('[DEBUG] Notification eventId: $eventId');
+      print('[DEBUG] All event IDs: ${events.map((e) => e.id).toList()}');
+      final event =
+          events.where((e) => e.id == eventId).isNotEmpty
+              ? events.firstWhere((e) => e.id == eventId)
+              : null;
+      if (event == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Event not found or may have been deleted.'),
+            ),
+          );
+        }
+        return;
+      }
       // Get creator info - look for creator in attendees list
       Map<String, dynamic>? creator;
       for (final attendee in attendees) {
@@ -476,20 +503,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
           break;
         }
       }
-
       // If creator not found in attendees, create a fallback
-      if (creator == null) {
-        creator = {
-          'id': event.creatorId,
-          'username': 'Event Creator',
-          'email': 'creator@example.com',
-        };
-      }
-
+      creator ??= {
+        'id': event.creatorId,
+        'username': 'Event Creator',
+        'email': 'creator@example.com',
+      };
       // Close notification panel
       if (mounted) {
         Navigator.of(context).pop();
-
         // Navigate to chat screen
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -515,7 +537,22 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Future<void> _navigateToEvent(String eventId) async {
     try {
       final events = await EventsService.getAllEvents();
-      final event = events.firstWhere((e) => e.id == eventId);
+      print('[DEBUG] Notification eventId: $eventId');
+      print('[DEBUG] All event IDs: ${events.map((e) => e.id).toList()}');
+      final event =
+          events.where((e) => e.id == eventId).isNotEmpty
+              ? events.firstWhere((e) => e.id == eventId)
+              : null;
+      if (event == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Event not found or may have been deleted.'),
+            ),
+          );
+        }
+        return;
+      }
       final attendees = await EventsService.getEventAttendees(eventId);
       Map<String, dynamic>? creator;
       for (final attendee in attendees) {
@@ -533,12 +570,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         Navigator.of(context).pop();
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder:
-                (context) => ChatScreen(
-                  eventId: eventId,
-                  attendees: attendees,
-                  creator: creator!,
-                ),
+            builder: (context) => EventDetailsScreen(
+              eventId: eventId,
+            ),
           ),
         );
       }

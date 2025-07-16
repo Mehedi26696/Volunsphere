@@ -52,11 +52,11 @@ class NotificationModel {
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
       id: json['id'] ?? '',
-      eventId: json['eventId'] ?? '',
-      eventTitle: json['eventTitle'] ?? '',
+      eventId: json['event_id'] ?? '', // Map snake_case from backend
+      eventTitle: json['event_title'] ?? '',
       message: json['message'] ?? '',
       timestamp: DateTime.parse(json['timestamp']),
-      isRead: json['isRead'] ?? false,
+      isRead: json['is_read'] ?? false,
       type: json['type'] ?? 'new_message',
     );
   }

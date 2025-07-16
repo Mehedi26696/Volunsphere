@@ -10,13 +10,12 @@ import '../utils/api.dart';
 import '../services/auth_service.dart';
 
 class EventsService {
-   
   static Future<http.Response> authorizedRequest({
     required String endpoint,
     String method = 'GET',
     Map<String, String>? headers,
     Object? body,
-    String? base,  
+    String? base,
   }) async {
     final token = await AuthService.getToken();
 
@@ -56,7 +55,7 @@ class EventsService {
     return response;
   }
 
-  static Future<void> createEvent({
+  static Future<Event> createEvent({
     required String title,
     required String description,
     required String location,
@@ -78,15 +77,18 @@ class EventsService {
     });
 
     final response = await authorizedRequest(
-      endpoint: '/create',     
+      endpoint: '/create',
       method: 'POST',
       body: body,
-      base: eventUrl,          
+      base: eventUrl,
     );
 
     if (response.statusCode != 200 && response.statusCode != 201) {
       throw Exception('Failed to create event: ${response.body}');
     }
+
+    final eventJson = jsonDecode(response.body);
+    return Event.fromJson(eventJson);
   }
 
   static Future<List<String>> uploadEventImages(
@@ -126,7 +128,7 @@ class EventsService {
 
   static Future<List<Event>> getMyEvents() async {
     final response = await authorizedRequest(
-      endpoint: '/my',        
+      endpoint: '/my',
       method: 'GET',
       base: eventUrl,
     );
@@ -140,7 +142,6 @@ class EventsService {
   }
 
   static Future<List<Event>> getAllEvents() async {
-    
     final url = Uri.parse('$eventUrl/all');
     final response = await http.get(url);
 
@@ -233,7 +234,9 @@ class EventsService {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getEventAttendees(String eventId) async {
+  static Future<List<Map<String, dynamic>>> getEventAttendees(
+    String eventId,
+  ) async {
     final response = await authorizedRequest(
       endpoint: '/$eventId/attendees',
       method: 'GET',

@@ -101,7 +101,7 @@ async def chat_ws(
                 username=user_obj.username,
                 email=user_obj.email,
                 message=text,
-                timestamp=datetime.now(),
+                timestamp=datetime.now(datetime.timezone.utc),
             )
             session.add(chat_msg)
             await session.commit()

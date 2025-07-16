@@ -170,7 +170,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     }
 
     try {
-      await EventsService.createEvent(
+      final createdEvent = await EventsService.createEvent(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
         location: _locationController.text.trim(),
@@ -180,12 +180,15 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         longitude: _longitude!,
         imageUrls: uploadedUrls,
       );
+      print('Created event: $createdEvent'); // Add this for debugging
+
       // Notify all users after event creation
       List<String> allUserIds = await UserService.getAllUserIds();
       await NotificationService.instance.sendNotificationToUsers(
         userIds: allUserIds,
         message:
             'A new event has been created: ${_titleController.text.trim()}',
+        eventId: createdEvent.id.toString(),
         eventTitle: _titleController.text.trim(),
         type: 'event_created',
       );

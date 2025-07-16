@@ -13,6 +13,11 @@ notification_router = APIRouter()
 
 @notification_router.post("/", response_model=list[NotificationRead])
 async def create_notification(notification: NotificationCreate, session: AsyncSession = Depends(get_session)):
+    # Validate event_id for event-related notifications
+    event_related_types = {"event_created", "event_updated", "event_message", "event_response_updated"}
+    if notification.type in event_related_types and (not notification.event_id or str(notification.event_id).strip() == ""):
+        raise HTTPException(status_code=400, detail="event_id is required for event-related notifications")
+
     created_notifications = []
     for user_id in notification.user_ids:
         db_notification = Notification(
