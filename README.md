@@ -93,7 +93,25 @@ Volunsphere is a full-stack application consisting of:
 - 🔍 **Advanced Search** - Filter events by location, date, and categories
 - 📲 **Push Notifications** - Firebase Cloud Messaging integration
 
-## 🛠️ Technology Stack
+
+
+## 🗂️ Sample API File (Flutter)
+
+Below is a sample `lib/utils/api.dart` file for configuring API endpoints in your Flutter app. Replace the placeholder URL with your actual backend URL:
+
+```dart
+// utils/api.dart
+
+const String baseUrl = "https://your-backend-url/api/v1"; // <-- Replace with your backend URL
+
+const String authUrl = "$baseUrl/auth";
+const String eventUrl = "$baseUrl/events";
+const String userUrl = "$baseUrl/users";
+const String chatUrl = "wss://your-backend-url/api/v1/chat"; // <-- Replace with your backend WebSocket URL
+const String communityUrl = "$baseUrl/community";
+const String leaderboardUrl = "$baseUrl/leaderboard";
+```
+
 
 ### Frontend (Flutter)
 ```yaml
@@ -279,7 +297,14 @@ flutter run -d android     # Android
 flutter run -d ios         # iOS
 ```
 
-## 📱 Platform Support
+
+## � Download APK
+
+You can download the latest Volunsphere Android APK from the following Google Drive link:
+
+[👉 Download Volunsphere APK](https://drive.google.com/file/d/120QFg7ldNSJppr34CKiaw3ckg6Mt9JgQ/view?usp=sharing)
+
+_Replace the above link with your actual APK file location on Google Drive._
 
 - ✅ **Android** - Full support with native features
 - ✅ **iOS** - Full support with native features  
