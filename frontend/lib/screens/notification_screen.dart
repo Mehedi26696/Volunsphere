@@ -512,15 +512,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
       // Close notification panel
       if (mounted) {
         Navigator.of(context).pop();
-        // Navigate to chat screen
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder:
-                (context) => ChatScreen(
-                  eventId: eventId,
-                  attendees: attendees,
-                  creator: creator!,
-                ),
+            builder: (context) => EventDetailsScreen(
+              eventId: eventId,
+            ),
           ),
         );
       }

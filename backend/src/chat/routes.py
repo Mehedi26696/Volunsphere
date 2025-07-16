@@ -2,7 +2,7 @@ from src.chat.models import ChatMessage
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
-from datetime import datetime
+from datetime import datetime, timezone
 from src.db.main import get_session
 
 
@@ -14,7 +14,6 @@ from fastapi import WebSocket, WebSocketDisconnect, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from sqlalchemy import or_
-from datetime import datetime
 import uuid
 import json
 from src.notifications.models import Notification
