@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "145323436687",
-    "project_id": "volunsphere-bce64",
-    "storage_bucket": "volunsphere-bce64.firebasestorage.app"
+    "project_number": "504070385469",
+    "project_id": "volunsphere-da0c3",
+    "storage_bucket": "volunsphere-da0c3.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:145323436687:android:f8eef7685c37cf757d9efa",
+        "mobilesdk_app_id": "1:504070385469:android:8b00a6540140fac2a79f54",
         "android_client_info": {
           "package_name": "com.example.volunsphere"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC6RLEAzG80NrfzpguqZvMcA_YVw1jThlk"
+          "current_key": "AIzaSyAVP1HVSam9d7yf9-Kep-GBFf8M0K2EfTE"
         }
       ],
       "services": {

@@ -3,7 +3,7 @@ from firebase_admin import credentials, messaging
 import os
 
 # Path to your Firebase service account key JSON file
-FIREBASE_CRED_PATH = os.getenv("FIREBASE_CRED_PATH", "volunsphere-bce64-6dbdaedacce9.json")
+FIREBASE_CRED_PATH = os.getenv("FIREBASE_CRED_PATH", "volunsphere-da0c3-efa3c652531c.json")
 
 if not firebase_admin._apps:
     cred = credentials.Certificate(FIREBASE_CRED_PATH)
