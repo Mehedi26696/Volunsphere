@@ -116,10 +116,7 @@ class _AppDrawerState extends State<AppDrawer> {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Colors.white,
-              const Color(0xFFF8F9FA),
-            ],
+            colors: [Colors.white, const Color(0xFFF8F9FA)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -136,113 +133,120 @@ class _AppDrawerState extends State<AppDrawer> {
             children: [
               _loading
                   ? Container(
-                      height: 200,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                    height: 200,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 3,
-                        ),
+                    ),
+                    child: const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 3,
                       ),
-                    )
+                    ),
+                  )
                   : Container(
-                      padding: const EdgeInsets.fromLTRB(16, 40, 16, 20),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
+                    padding: const EdgeInsets.fromLTRB(16, 40, 16, 20),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF7B2CBF), Color(0xFF9D4EDD)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.3),
-                                    width: 3,
-                                  ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  width: 3,
                                 ),
-                                child: CircleAvatar(
-                                  radius: 35,
-                                  backgroundColor: Colors.white,
-                                  backgroundImage: profileImageUrl != null && profileImageUrl.isNotEmpty
-                                      ? NetworkImage(profileImageUrl)
-                                      : const AssetImage("assets/images/default_profile.jpg") as ImageProvider,
-                                  child: profileImageUrl == null || profileImageUrl.isEmpty
-                                      ? Icon(
+                              ),
+                              child: CircleAvatar(
+                                radius: 35,
+                                backgroundColor: Colors.white,
+                                backgroundImage:
+                                    profileImageUrl != null &&
+                                            profileImageUrl.isNotEmpty
+                                        ? NetworkImage(profileImageUrl)
+                                        : const AssetImage(
+                                              "assets/images/default_profile.jpg",
+                                            )
+                                            as ImageProvider,
+                                child:
+                                    profileImageUrl == null ||
+                                            profileImageUrl.isEmpty
+                                        ? Icon(
                                           Icons.person_rounded,
                                           size: 40,
                                           color: const Color(0xFF7B2CBF),
                                         )
-                                      : null,
-                                ),
+                                        : null,
                               ),
-                              const Spacer(),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.3),
-                                    width: 1,
-                                  ),
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(
-                                    Icons.refresh_rounded,
-                                    color: Colors.white,
-                                    size: 20,
-                                  ),
-                                  onPressed: () async {
-                                    await _checkIfGuest();
-                                    await _fetchProfile();
-                                  },
-                                  tooltip: 'Refresh Profile',
-                                  style: IconButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    padding: const EdgeInsets.all(8),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            userName,
-                            style: const TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white,
-                              letterSpacing: -0.5,
                             ),
-                          ),
-                          if (userEmail != null) ...[
-                            const SizedBox(height: 4),
-                            Text(
-                              userEmail,
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 14,
-                                color: Colors.white.withValues(alpha: 0.8),
-                                fontWeight: FontWeight.w400,
+                            const Spacer(),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  width: 1,
+                                ),
+                              ),
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.refresh_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                onPressed: () async {
+                                  await _checkIfGuest();
+                                  await _fetchProfile();
+                                },
+                                tooltip: 'Refresh Profile',
+                                style: IconButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  padding: const EdgeInsets.all(8),
+                                ),
                               ),
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          userName,
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: Colors.white,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        if (userEmail != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            userEmail,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 14,
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
                         ],
-                      ),
+                      ],
                     ),
+                  ),
 
               const SizedBox(height: 8),
 
@@ -270,7 +274,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 _buildDrawerItem(
                   icon: Icons.group_rounded,
                   title: "Joined Events",
-                  onTap: () => _navigateAndCloseDrawer(const JoinedEventsScreen()),
+                  onTap:
+                      () => _navigateAndCloseDrawer(const JoinedEventsScreen()),
                   color: const Color(0xFFE91E63),
                 ),
               ],
@@ -336,49 +341,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
               const SizedBox(height: 8),
 
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: const Color(0xFF7B2CBF).withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
-                child: SwitchListTile(
-                  secondary: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF424242).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(
-                      Icons.dark_mode_rounded,
-                      color: const Color(0xFF424242),
-                      size: 20,
-                    ),
-                  ),
-                  title: const Text(
-                    "Dark Mode",
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: Color(0xFF27264A),
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  value: themeProvider.themeMode == ThemeMode.dark,
-                  onChanged: (val) => themeProvider.toggleTheme(val),
-                  activeColor: const Color(0xFF7B2CBF),
-                  inactiveThumbColor: const Color(0xFF626C7A),
-                  inactiveTrackColor: const Color(0xFF626C7A).withValues(alpha: 0.3),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
+              // ...existing code...
               _buildDrawerItem(
                 icon: Icons.logout_rounded,
                 title: "Logout",
@@ -402,10 +365,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   decoration: BoxDecoration(
                     color: Colors.red.shade50,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.red.shade200,
-                      width: 1,
-                    ),
+                    border: Border.all(color: Colors.red.shade200, width: 1),
                   ),
                   child: Text(
                     _error!,
@@ -440,9 +400,10 @@ class _AppDrawerState extends State<AppDrawer> {
         color: Colors.white.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isLogout 
-              ? Colors.red.withValues(alpha: 0.3)
-              : color.withValues(alpha: 0.2),
+          color:
+              isLogout
+                  ? Colors.red.withValues(alpha: 0.3)
+                  : color.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -452,26 +413,25 @@ class _AppDrawerState extends State<AppDrawer> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: onTap,
-          hoverColor: isLogout 
-              ? Colors.red.withValues(alpha: 0.1)
-              : color.withValues(alpha: 0.1),
-          splashColor: isLogout 
-              ? Colors.red.withValues(alpha: 0.2)
-              : color.withValues(alpha: 0.2),
+          hoverColor:
+              isLogout
+                  ? Colors.red.withValues(alpha: 0.1)
+                  : color.withValues(alpha: 0.1),
+          splashColor:
+              isLogout
+                  ? Colors.red.withValues(alpha: 0.2)
+                  : color.withValues(alpha: 0.2),
           child: ListTile(
             leading: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isLogout 
-                    ? Colors.red.withValues(alpha: 0.1)
-                    : color.withValues(alpha: 0.1),
+                color:
+                    isLogout
+                        ? Colors.red.withValues(alpha: 0.1)
+                        : color.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                icon,
-                color: isLogout ? Colors.red : color,
-                size: 20,
-              ),
+              child: Icon(icon, color: isLogout ? Colors.red : color, size: 20),
             ),
             title: Text(
               title,
@@ -486,7 +446,10 @@ class _AppDrawerState extends State<AppDrawer> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 4,
+            ),
           ),
         ),
       ),

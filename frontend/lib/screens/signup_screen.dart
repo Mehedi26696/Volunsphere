@@ -306,7 +306,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         : null,
                           ),
                           const SizedBox(height: 16),
-                           
+
                           DropdownSearch<String>(
                             asyncItems: (_) async => countries,
                             selectedItem: selectedCountry,
@@ -441,14 +441,38 @@ class _SignupScreenState extends State<SignupScreen> {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
-                              const Expanded(
-                                child: Text(
-                                  "I agree to the Terms & Conditions",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'Poppins',
-                                    color: Color(0xFF626C7A),
-                                  ),
+                              Expanded(
+                                child: Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 8,
+                                  children: [
+                                    const Text(
+                                      "I agree to the Terms & Conditions",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins',
+                                        color: Color(0xFF626C7A),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                          context,
+                                          '/privacy',
+                                        );
+                                      },
+                                      child: const Text(
+                                        "Privacy Policy",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: 'Poppins',
+                                          color: Color(0xFF9929ea),
+                                          decoration: TextDecoration.underline,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -469,7 +493,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ),
                                 disabledBackgroundColor: const Color(
                                   0xFF9929ea,
-                                ).withValues(alpha: 0.6),
+                                ).withOpacity(0.6),
                               ),
                               onPressed:
                                   isLoading

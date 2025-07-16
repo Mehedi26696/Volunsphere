@@ -105,7 +105,6 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = AuthService();
-    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F9),
@@ -160,61 +159,7 @@ class SettingsScreen extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: ListView(
                     children: [
-                      // Dark Mode Toggle Card
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.9),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 16,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: SwitchListTile(
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 8,
-                          ),
-                          title: const Text(
-                            "Dark Mode",
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
-                              color: Color(0xFF27264A),
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          value: themeProvider.themeMode == ThemeMode.dark,
-                          onChanged: (value) {
-                            themeProvider.toggleTheme(value);
-                          },
-                          secondary: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(
-                                0xFF9929ea,
-                              ).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              themeProvider.themeMode == ThemeMode.dark
-                                  ? Icons.dark_mode
-                                  : Icons.light_mode,
-                              color: const Color(0xFF9929ea),
-                              size: 24,
-                            ),
-                          ),
-                          activeColor: const Color(0xFF9929ea),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
-                      ),
+                      // ...existing code...
 
                       // Main Settings Card
                       Container(
@@ -267,7 +212,9 @@ class SettingsScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const PrivacyPolicyScreen(),
+                                    builder:
+                                        (context) =>
+                                            const PrivacyPolicyScreen(),
                                   ),
                                 );
                               },
