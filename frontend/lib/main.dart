@@ -17,6 +17,7 @@ import 'services/auth_service.dart';
 import 'services/fcm_service.dart';
 import 'utils/api.dart';
 import 'models/notification_model.dart';
+import 'screens/privacy_policy.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
             '/home': (context) => const HomeScreen(),
             '/signup': (context) => const SignupScreen(),
             '/chatbot': (context) => const ChatbotScreen(),
+            '/privacy': (context) => const PrivacyPolicyScreen(),   
           },
           home: const SplashScreen(),
         );
