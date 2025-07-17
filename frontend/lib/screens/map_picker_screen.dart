@@ -124,6 +124,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         'latitude': selectedLatLng!.latitude,
         'longitude': selectedLatLng!.longitude,
         'address': address,
+        
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

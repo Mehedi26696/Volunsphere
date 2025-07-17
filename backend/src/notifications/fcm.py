@@ -1,12 +1,15 @@
 import firebase_admin
 from firebase_admin import credentials, messaging
 import os
+import json
 
-# Path to your Firebase service account key JSON file
-FIREBASE_CRED_PATH = os.getenv("FIREBASE_CRED_PATH", "volunsphere-da0c3-efa3c652531c.json")
+# Load Firebase credentials from environment variable
+firebase_json = os.getenv("FIREBASE_CREDENTIALS_JSON")
+cred_dict = json.loads(firebase_json)
 
+# Initialize Firebase if not already initialized
 if not firebase_admin._apps:
-    cred = credentials.Certificate(FIREBASE_CRED_PATH)
+    cred = credentials.Certificate(cred_dict)
     firebase_admin.initialize_app(cred)
 
 def send_fcm_push(token: str, title: str, body: str, data: dict = None):
