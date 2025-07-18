@@ -12,22 +12,22 @@ A comprehensive volunteer management platform that connects volunteers with mean
 <details open>
   <summary><b>Expand Table of Contents</b></summary>
   <ul>
-    <li><a href="#📱-project-overview">📱 Project Overview</a></li>
-    <li><a href="#🎯-key-app-screens">🎯 Key App Screens</a></li>
-    <li><a href="#✨-features">✨ Features</a></li>
-    <li><a href="#🗂️-sample-api-file-(flutter)">🗂️ Sample API File (Flutter)</a></li>
-    <li><a href="#📋-prerequisites">📋 Prerequisites</a></li>
-    <li><a href="#🚀-installation-&-setup">🚀 Installation & Setup</a></li>
-    <li><a href="#�-download-apk">📦 Download APK</a></li>
-    <li><a href="#🏗️-project-architecture">🏗️ Project Architecture</a></li>
-    <li><a href="#🔧-development">🔧 Development</a></li>
-    <li><a href="#🛡️-security-features">🛡️ Security Features</a></li>
-    <li><a href="#📊-performance-optimizations">📊 Performance Optimizations</a></li>
-    <li><a href="#🤝-contributing">🤝 Contributing</a></li>
-    <li><a href="#👥-contributors">👥 Contributors</a></li>
-    <li><a href="#📄-license">📄 License</a></li>
-    <li><a href="#🆘-support-&-documentation">🆘 Support & Documentation</a></li>
-    <li><a href="#🎯-future-roadmap">🎯 Future Roadmap</a></li>
+    <li><a href="#-project-overview">📱 Project Overview</a></li>
+    <li><a href="#-key-app-screens">🎯 Key App Screens</a></li>
+    <li><a href="#-features">✨ Features</a></li>
+    <li><a href="#-sample-api-file-(flutter)">🗂️ Sample API File (Flutter)</a></li>
+    <li><a href="#-prerequisites">📋 Prerequisites</a></li>
+    <li><a href="#-installation-&-setup">🚀 Installation & Setup</a></li>
+    <li><a href="#-download-apk">📦 Download APK</a></li>
+    <li><a href="#-project-architecture">🏗️ Project Architecture</a></li>
+    <li><a href="#-development">🔧 Development</a></li>
+    <li><a href="#-security-features">🛡️ Security Features</a></li>
+    <li><a href="#-performance-optimizations">📊 Performance Optimizations</a></li>
+    <li><a href="#-contributing">🤝 Contributing</a></li>
+    <li><a href="#-contributors">👥 Contributors</a></li>
+    <li><a href="#-license">📄 License</a></li>
+    <li><a href="#-support-&-documentation">🆘 Support & Documentation</a></li>
+    <li><a href="#-future-roadmap">🎯 Future Roadmap</a></li>
   </ul>
 </details>
 
