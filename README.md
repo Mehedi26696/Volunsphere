@@ -1,98 +1,143 @@
 <div align="center">
-  <img src="frontend/screenshots/image.png" alt="Volunsphere Logo" width="300"/>
+  <img src="frontend/screenshots/logo.jpg" alt="Volunsphere Logo" width="300"/>
 </div>
 
 # Volunsphere 🌟
 
 A comprehensive volunteer management platform that connects volunteers with meaningful opportunities and helps organizations manage their volunteer programs effectively.
+## 📑 Table of Contents
 
 ## 📑 Table of Contents
 
-<div align="center">
+<details open>
+  <summary><b>Expand Table of Contents</b></summary>
+  <ul>
+    <li><a href="#📱-project-overview">📱 Project Overview</a></li>
+    <li><a href="#🎯-key-app-screens">🎯 Key App Screens</a></li>
+    <li><a href="#✨-features">✨ Features</a></li>
+    <li><a href="#🗂️-sample-api-file-(flutter)">🗂️ Sample API File (Flutter)</a></li>
+    <li><a href="#📋-prerequisites">📋 Prerequisites</a></li>
+    <li><a href="#🚀-installation-&-setup">🚀 Installation & Setup</a></li>
+    <li><a href="#�-download-apk">📦 Download APK</a></li>
+    <li><a href="#🏗️-project-architecture">🏗️ Project Architecture</a></li>
+    <li><a href="#🔧-development">🔧 Development</a></li>
+    <li><a href="#🛡️-security-features">🛡️ Security Features</a></li>
+    <li><a href="#📊-performance-optimizations">📊 Performance Optimizations</a></li>
+    <li><a href="#🤝-contributing">🤝 Contributing</a></li>
+    <li><a href="#👥-contributors">👥 Contributors</a></li>
+    <li><a href="#📄-license">📄 License</a></li>
+    <li><a href="#🆘-support-&-documentation">🆘 Support & Documentation</a></li>
+    <li><a href="#🎯-future-roadmap">🎯 Future Roadmap</a></li>
+  </ul>
+</details>
 
-| **🚀 Getting Started** | **📋 Documentation** | **👥 Community** |
-|------------------------|----------------------|------------------|
-| [📱 Project Overview](#-project-overview) | [🏗️ Project Architecture](#️-project-architecture) | [👥 Contributors](#-contributors) |
-| [📸 Screenshots](#-screenshots) | [🔧 Development](#-development) | [🤝 Contributing](#-contributing) |
-| [✨ Features](#-features) | [🧪 Testing](#-testing) | [📄 License](#-license) |
-| [🛠️ Technology Stack](#️-technology-stack) | [🚀 Deployment](#-deployment) | [🆘 Support & Documentation](#-support--documentation) |
-| [📋 Prerequisites](#-prerequisites) | [🛡️ Security Features](#️-security-features) | [🌟 Acknowledgments](#-acknowledgments) |
-| [🚀 Installation & Setup](#-installation--setup) | [📊 Performance Optimizations](#-performance-optimizations) | |
-| [📱 Platform Support](#-platform-support) | [🌍 Internationalization](#-internationalization) | |
 
-| **🎯 Roadmap & Stats** |
-|----------------------|
-| [🎯 Future Roadmap](#-future-roadmap) |
-| [📈 Project Statistics](#-project-statistics) |
-
-</div>
 
 ---
 
 ## 📱 Project Overview
 
 Volunsphere is a full-stack application consisting of:
+
 - **Frontend**: Flutter mobile application with cross-platform support
 - **Backend**: FastAPI REST API with modern Python stack
 - **Database**: PostgreSQL with Redis for caching
 - **Storage**: Supabase for file storage and additional services
-
-## 📸 Screenshots
-
-<div align="center">
-  <img src="frontend/screenshots/signin.png" alt="Sign In Screen" width="200"/>
-  <img src="frontend/screenshots/home_page.png" alt="Home Screen" width="200"/>
-  <img src="frontend/screenshots/home_page2.png" alt="Home Screen Extended" width="200"/>
-  <img src="frontend/screenshots/events_page.png" alt="Events Screen" width="200"/>
-</div>
+- **Push Notifications**: Firebase Cloud Messaging (FCM) for real-time alerts
+## 🎯 Key App Screens
 
 <div align="center">
-  <img src="frontend/screenshots/signup.png" alt="Profile Screen" width="200"/>
-  <img src="frontend/screenshots/leaderboard.png" alt="Community Newsfeed" width="200"/>
-  <img src="frontend/screenshots/side_navbar.png" alt="Side Navigation" width="200"/>
-  <img src="frontend/screenshots/community.png" alt="Side Navigation" width="200"/>
+  <table>
+    <tr>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/signin.png" alt="Sign In" width="100"/><br>
+        <b>🔐 Sign In</b><br>
+        <span style="font-size:13px;">Secure authentication with remember me option</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/home.jpg" alt="Home Dashboard" width="100"/><br>
+        <b>🏠 Home Dashboard</b><br>
+        <span style="font-size:13px;">Volunteer statistics and opportunities</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/events_page.png" alt="Events" width="100"/><br>
+        <b>📅 Events</b><br>
+        <span style="font-size:13px;">Browse and manage volunteer events</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/leaderboard.png" alt="Leaderboard" width="100"/><br>
+        <b>� Leaderboard</b><br>
+        <span style="font-size:13px;">Track volunteer hours and achievements</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/bot.jpg" alt="AI Agent" width="100"/><br>
+        <b>🤖 AI Agent</b><br>
+        <span style="font-size:13px;">Interact with AI for event insights</span>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/profile.jpg" alt="Profile" width="100"/><br>
+        <b>👤 Profile</b><br>
+        <span style="font-size:13px;">User profile management, stats, achievements</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/community.png" alt="Community" width="100"/><br>
+        <b>🌐 Community</b><br>
+        <span style="font-size:13px;">Social newsfeed for engagement and updates</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/p24.jpg" alt="Event Details" width="100"/><br>
+        <b>📝 Event Details</b><br>
+        <span style="font-size:13px;">Detailed event info and actions</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/chat.jpg" alt="Chat" width="100"/><br>
+        <b>💬 Chat</b><br>
+        <span style="font-size:13px;">Real-time messaging for events</span>
+      </td>
+      <td align="center" width="20%">
+        <img src="frontend/screenshots/side_navbar.png" alt="Navigation" width="100"/><br>
+        <b>📱 Navigation</b><br>
+        <span style="font-size:13px;">Elegant side drawer, purple theme, animations</span>
+      </td>
+    </tr>
+  </table>
 </div>
 
-### 🎯 Key App Screens
-- **🔐 Sign In**: Secure authentication with remember me option
-- **🏠 Home Dashboard**: Welcome section with volunteer statistics and opportunities
-- **📅 Events**: Browse and manage volunteer events with beautiful cards
-- **👤 Profile**: User profile management with statistics and achievements
-- **🌐 Community**: Social newsfeed for community engagement and updates
-- **📱 Navigation**: Elegant side drawer with purple theme and smooth animations
-
+---
 ## ✨ Features
 
-### For Volunteers
-- 🔐 **User Authentication** - Secure login/signup with JWT tokens and guest mode
-- 📍 **Location-Based Events** - Find volunteer opportunities near you using Google Maps
-- 📅 **Event Management** - Browse, join, and track volunteer events
-- 💬 **Real-time Chat** - Communicate with other volunteers and organizers
-- 👤 **Profile Management** - Customize your volunteer profile with image upload
-- 🏆 **Leaderboard** - Track volunteer hours and achievements with ranking system
-- 🌐 **Community Feed** - Share posts, like, comment, and engage with the community
-- 📱 **Cross-Platform** - Available on Android, iOS, and Web
-- 🎨 **Modern UI** - Beautiful purple-themed interface with smooth animations
+### 👤 For Volunteers
+- 🔐 **Secure Authentication** – JWT-based login/signup, guest mode
+- 📅 **Event Management** – Browse, join, and track volunteer events
+- 💬 **Real-Time Chat** – Communicate with volunteers and organizers
+- 👤 **Profile Management** – Customize profiles, image upload
+- 🏆 **Leaderboard** – Rank volunteers by achievements
+- 🌐 **Community Feed** – Create posts, like, comment, engage
+- 🎨 **Modern UI** – Purple-themed, smooth animations
+- 📄 **Certification** – Download certificates after volunteering
+- 🤖 **AI Agent** – Get event and volunteer insights via AI
 
-### For Organizations
-- 📝 **Event Creation** - Create and manage volunteer events with location mapping
-- 👥 **Volunteer Management** - Track participant registrations and attendance
-- 📊 **Community Feed** - Share updates and engage with volunteers
-- 📈 **Analytics** - Monitor volunteer engagement and event success
-- ⭐ **Rating System** - Rate volunteers after events completion
-- 📧 **Email Notifications** - Automated email communications for events
+### 🏢 For Organizations
+- 🗓️ **Event Creation** – Organize/manage events, location mapping
+- 👥 **Volunteer Management** – Track registrations, attendance
+- 🌐 **Community Feed** – Share updates/posts with volunteers
+- 📊 **Analytics** – Monitor engagement, event performance
+- ⭐ **Rating System** – Rate volunteers after events
 
-### Technical Features
-- 🌓 **Modern Theme** - Purple gradient design with glassmorphism effects
-- 📧 **Email Integration** - Automated notifications and OTP verification
-- 📄 **PDF Generation** - Generate certificates and reports
-- 🔄 **Real-time Updates** - WebSocket connections for live chat
-- 📱 **Phone Integration** - Direct calling functionality
-- 🖼️ **Image Handling** - Photo upload and cropping capabilities
-- 🗺️ **Interactive Maps** - Google Maps integration for location selection
-- 🔍 **Advanced Search** - Filter events by location, date, and categories
-- 📲 **Push Notifications** - Firebase Cloud Messaging integration
-
+### ⚙️ Technical Features
+- 🎨 **Modern Theme** – Purple gradient, glassmorphism effects
+- ✉️ **Email Integration** – OTP verification for password changes
+- 📝 **PDF Generation** – Create volunteer certificates
+- 🔄 **Real-Time Updates** – WebSocket live chat & sync
+- 🖼️ **Image Handling** – Upload, crop profile/event photos
+- 🗺️ **Interactive Maps** – Google Maps for location selection
+- 🔍 **Advanced Search** – Search events and volunteers
+- 🤖 **AI Agent** – Automated chat service
+- ⏰ **Automated Logout** – Redirect to login on session expiry
+- 💾 **Saved Credentials** – Device remembers login for a period
+- 🔔 **Push Notifications** – Via Firebase Cloud Messaging
 
 
 ## 🗂️ Sample API File (Flutter)
@@ -112,8 +157,8 @@ const String communityUrl = "$baseUrl/community";
 const String leaderboardUrl = "$baseUrl/leaderboard";
 ```
 
-
 ### Frontend (Flutter)
+
 ```yaml
 dependencies:
   flutter: ^3.7.2
@@ -155,6 +200,9 @@ python-multipart==0.0.6
 supabase==2.0.2
 requests==2.31.0
 
+# Firebase Admin SDK for FCM
+firebase-admin==6.2.0
+
 # Email & Communication
 smtplib (built-in)
 email-validator==2.1.0
@@ -163,10 +211,12 @@ email-validator==2.1.0
 python-dotenv==1.0.0
 pydantic==2.5.0
 ```
+```
 
 ## 📋 Prerequisites
 
 ### System Requirements
+
 - **Flutter SDK** 3.7.2 or higher
 - **Python** 3.9 or higher
 - **PostgreSQL** 12 or higher
@@ -175,15 +225,18 @@ pydantic==2.5.0
 - **Google Maps API Key** for location services
 - **Firebase Project** for push notifications
 - **Supabase Account** for additional services
+- **GROQ API Access**: Valid API key for [GROQ](https://groq.com/) (for chatbot integration)
 
 ### Development Tools
+
 - Git version control
-- Postman (for API testing)
+- Postman/Fastapi Swagger Docs(for API testing)
 - Android/iOS emulators or physical devices
 
 ## 🚀 Installation & Setup
 
 ### 1. Clone the Repository
+
 ```bash
 git clone https://github.com/your-username/Volunsphere.git
 cd Volunsphere
@@ -192,11 +245,13 @@ cd Volunsphere
 ### 2. Backend Setup
 
 #### Navigate to backend directory
+
 ```bash
 cd backend
 ```
 
 #### Create and activate virtual environment
+
 ```bash
 python -m venv env
 # On Windows
@@ -206,12 +261,15 @@ source env/bin/activate
 ```
 
 #### Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 #### Environment Configuration
+
 Create a `.env` file in the backend directory:
+
 ```env
 # Database Configuration
 DATABASE_URL=postgresql://username:password@localhost:5432/volunsphere
@@ -232,16 +290,24 @@ GMAIL_PASSWORD=your-app-password
 
 # Supabase Configuration
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_KEY=your-supabase-anon-key
+SUPABASE_KEY=your-supabase-service_role-key
 
 # Google Maps API
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 
+# GROQ API KEY
+GROQ_API_KEY = your-GROQ-api-key
+
 # Environment
 ENVIRONMENT=development
+
+# Firebase Credentials
+
+FIREBASE_CREDENTIALS_JSON = your-firbase-project-credentials-as-string
 ```
 
 #### Database Setup
+
 ```bash
 # Create database
 createdb volunsphere
@@ -249,11 +315,10 @@ createdb volunsphere
 # Run migrations
 alembic upgrade head
 
-# (Optional) Seed initial data
-python scripts/seed_data.py
 ```
 
 #### Start the backend server
+
 ```bash
 uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
 ```
@@ -261,25 +326,23 @@ uvicorn src.main:app --reload --host 0.0.0.0 --port 8080
 ### 3. Frontend Setup
 
 #### Navigate to frontend directory
+
 ```bash
 cd frontend
 ```
 
 #### Install Flutter dependencies
+
 ```bash
 flutter pub get
 ```
 
 #### Configure API endpoints
-Create `lib/config/api_config.dart`:
-```dart
-class ApiConfig {
-  static const String baseUrl = 'http://localhost:8080';
-  static const String googleMapsApiKey = 'your-google-maps-api-key';
-}
-```
 
+Create `lib/utils/api.dart`:
+ 
 #### Firebase Configuration
+
 1. Create a Firebase project
 2. Add Android/iOS apps to your Firebase project
 3. Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
@@ -287,6 +350,7 @@ class ApiConfig {
 5. Configure Firebase in `lib/main.dart`
 
 #### Run the Flutter app
+
 ```bash
 # For development
 flutter run
@@ -297,25 +361,21 @@ flutter run -d android     # Android
 flutter run -d ios         # iOS
 ```
 
-
 ## � Download APK
 
 You can download the latest Volunsphere Android APK from the following Google Drive link:
 
 [👉 Download Volunsphere APK](https://drive.google.com/file/d/120QFg7ldNSJppr34CKiaw3ckg6Mt9JgQ/view?usp=sharing)
 
-_Replace the above link with your actual APK file location on Google Drive._
 
 - ✅ **Android** - Full support with native features
-- ✅ **iOS** - Full support with native features  
+- ✅ **iOS** - Full support with native features
 - ✅ **Web** - Full support with responsive design
-- ⚠️ **Windows** - Basic support (limited features)
-- ⚠️ **macOS** - Basic support (limited features)
-- ⚠️ **Linux** - Basic support (limited features)
 
 ## 🏗️ Project Architecture
 
 ### Backend Architecture
+
 ```
 backend/
 ├── src/
@@ -340,16 +400,17 @@ backend/
 │   │   └── base.py       # Base models
 │   └── main.py           # FastAPI app initialization
 ├── migrations/           # Alembic migrations
-├── tests/               # Unit & integration tests
+|
 └── requirements.txt     # Python dependencies
 ```
 
 ### Frontend Architecture
+
 ```
 frontend/
 ├── lib/
 │   ├── main.dart                    # App entry point
-│   ├── config/                      # Configuration files
+│   |
 │   ├── models/                      # Data models
 │   │   ├── user_model.dart
 │   │   ├── event_model.dart
@@ -381,91 +442,27 @@ frontend/
 ## 🔧 Development
 
 ### Backend Development
+
 - **API Documentation**: Available at `http://localhost:8080/docs` (Swagger UI)
-- **Database Migrations**: 
+- **Database Migrations**:
   ```bash
   alembic revision --autogenerate -m "description"
   alembic upgrade head
   ```
-- **Run Tests**: 
-  ```bash
-  pytest tests/ -v
-  ```
-- **Code Formatting**:
-  ```bash
-  black src/
-  isort src/
-  ```
 
 ### Frontend Development
+
 - **Hot Reload**: Enabled automatically in development mode
-- **Widget Testing**: 
+- **Build for Development**:
   ```bash
-  flutter test
+  flutter run
   ```
-- **Build for Production**: 
+- **Build for Production**:
   ```bash
   flutter build apk --release           # Android APK
   flutter build ios --release           # iOS
   flutter build web --release           # Web
   ```
-- **Code Analysis**:
-  ```bash
-  flutter analyze
-  dart format lib/
-  ```
-
-## 🧪 Testing
-
-### Backend Tests
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=src tests/
-
-# Run specific test file
-pytest tests/test_auth.py -v
-```
-
-### Frontend Tests
-```bash
-# Unit tests
-flutter test
-
-# Integration tests
-flutter test integration_test/
-
-# Widget tests
-flutter test test/widget_test.dart
-```
-
-## 🚀 Deployment
-
-### Backend Deployment
-```bash
-# Using Docker
-docker build -t volunsphere-backend .
-docker run -p 8080:8080 volunsphere-backend
-
-# Using cloud platforms (Heroku, Railway, etc.)
-# Configure environment variables
-# Deploy using platform-specific commands
-```
-
-### Frontend Deployment
-```bash
-# Android Play Store
-flutter build appbundle --release
-
-# iOS App Store
-flutter build ios --release
-
-# Web deployment
-flutter build web --release
-# Deploy dist files to hosting service
-```
 
 ## 🛡️ Security Features
 
@@ -473,7 +470,6 @@ flutter build web --release
 - **Password Hashing** using bcrypt
 - **Input Validation** with Pydantic
 - **CORS Configuration** for web security
-- **Rate Limiting** on API endpoints
 - **SQL Injection Protection** via SQLAlchemy ORM
 - **File Upload Validation** for images
 - **Environment Variables** for sensitive data
@@ -488,16 +484,6 @@ flutter build web --release
 - **Flutter Widget Optimization**
 - **Code Splitting** for web builds
 
-## 🌍 Internationalization
-
-Currently supports:
-- **English** (Primary)
-
-Planned languages:
-- Bengali
-- Spanish
-- French
-
 ## 🤝 Contributing
 
 We welcome contributions! Please follow these steps:
@@ -511,6 +497,7 @@ We welcome contributions! Please follow these steps:
 7. **Open a Pull Request**
 
 ### Coding Standards
+
 - Follow **Flutter/Dart** style guidelines
 - Follow **PEP 8** for Python code
 - Write **meaningful commit messages**
@@ -568,8 +555,9 @@ We welcome contributions! Please follow these steps:
 </div>
 
 ### Contact Information
+
 - **H.M. Mehedi Hasan**: hasanmehedi26696@gmail.com
-- **Abu Bakar Siddique**: bojackabs@gmail.com  
+- **Abu Bakar Siddique**: bojackabs@gmail.com
 - **Ahil Islam Aurnob**: aheelislam03@gmail.com
 - **S M Shamiun Ferdous**: shamiunferdous1234@gmail.com
 
@@ -577,40 +565,19 @@ We welcome contributions! Please follow these steps:
 
 This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-```
-MIT License
-
-Copyright (c) 2024 Volunsphere Team
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
 ## 🆘 Support & Documentation
 
 ### Getting Help
-- 📖 **Documentation**: Check our [Wiki](../../wiki) for detailed guides
-- 🐛 **Bug Reports**: Use our [Issue Template](../../issues/new?template=bug_report.md)
-- 💡 **Feature Requests**: Use our [Feature Template](../../issues/new?template=feature_request.md)
-- 💬 **Discussions**: Join our [Discussions](../../discussions)
+
 - 📧 **Email Support**: contact@volunsphere.com
 
 ### Useful Links
-- [API Documentation](http://localhost:8080/docs)
 - [Flutter Documentation](https://docs.flutter.dev/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 
 ## 🎯 Future Roadmap
 
-### Version 2.0 (Planned)
 - [ ] **Advanced Analytics Dashboard** with charts and insights
 - [ ] **Multi-language Support** (Bengali, Spanish, French)
 - [ ] **Offline Mode** capabilities with data synchronization
@@ -619,33 +586,6 @@ copies or substantial portions of the Software.
 - [ ] **Gamification Features** with badges and achievements
 - [ ] **Event Categories** and advanced filtering
 - [ ] **Mobile App Widgets** for quick actions
-
-### Version 3.0 (Future)
-- [ ] **AI-Powered Matching** between volunteers and opportunities
-- [ ] **Video Calling** integration for remote volunteering
-- [ ] **Blockchain Integration** for volunteer hour verification
-- [ ] **AR/VR Features** for immersive event experiences
-- [ ] **IoT Integration** for smart event management
-- [ ] **Machine Learning** for predictive analytics
-
-## 📈 Project Statistics
-
-- **Lines of Code**: ~15,000+
-- **API Endpoints**: 50+
-- **Database Tables**: 15+
-- **Supported Platforms**: 6
-- **Test Coverage**: 85%+
-- **Performance Score**: 95+
-
-## 🌟 Acknowledgments
-
-- **Flutter Team** for the amazing framework
-- **FastAPI** for the excellent Python web framework
-- **PostgreSQL** for reliable database management
-- **Google Maps** for location services
-- **Firebase** for push notifications
-- **Supabase** for additional backend services
-- **Open Source Community** for inspiration and tools
 
 ---
 
