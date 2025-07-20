@@ -5,7 +5,6 @@
 # Volunsphere 🌟
 
 A comprehensive volunteer management platform that connects volunteers with meaningful opportunities and helps organizations manage their volunteer programs effectively.
-## 📑 Table of Contents
 
 ## 📑 Table of Contents
 
@@ -213,6 +212,8 @@ pydantic==2.5.0
 ```
 ```
 
+```
+
 ## 📋 Prerequisites
 
 ### System Requirements
@@ -226,13 +227,15 @@ pydantic==2.5.0
 - **Firebase Project** for push notifications
 - **Supabase Account** for additional services
 - **GROQ API Access**: Valid API key for [GROQ](https://groq.com/) (for chatbot integration)
-
+```
+```
 ### Development Tools
 
 - Git version control
 - Postman/Fastapi Swagger Docs(for API testing)
 - Android/iOS emulators or physical devices
-
+```
+```
 ## 🚀 Installation & Setup
 
 ### 1. Clone the Repository
