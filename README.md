@@ -564,16 +564,6 @@ We welcome contributions! Please follow these steps:
 - **Ahil Islam Aurnob**: aheelislam03@gmail.com
 - **S M Shamiun Ferdous**: shamiunferdous1234@gmail.com
 
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support & Documentation
-
-### Getting Help
-
-- 📧 **Email Support**: contact@volunsphere.com
-
 ### Useful Links
 - [Flutter Documentation](https://docs.flutter.dev/)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
